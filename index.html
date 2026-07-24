@@ -1,565 +1,1369 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>PM Dynamics Consulting | Convertimos Datos en Decisiones</title>
-  <meta name="description" content="Consultoría especializada en mejora de procesos, análisis de datos y gestión de proyectos para pequeñas y medianas empresas." />
-  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,300;0,600;0,700;1,300&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet" />
-  <style>
-    :root {
-      --navy: #0a1628;
-      --teal: #0d7377;
-      --teal-light: #14a8ae;
-      --gold: #c9a84c;
-      --cream: #f7f3ec;
-      --white: #ffffff;
-      --gray: #6b7280;
-      --light-gray: #f0ede8;
-    }
- 
-    * { margin: 0; padding: 0; box-sizing: border-box; }
-    body { font-family: 'DM Sans', sans-serif; background: var(--cream); color: var(--navy); overflow-x: hidden; }
- 
-    /* ── NAV ── */
-    nav {
-      position: fixed; top: 0; width: 100%; z-index: 100;
-      display: flex; justify-content: space-between; align-items: center;
-      padding: 1.2rem 5%;
-      background: rgba(10,22,40,0.96); backdrop-filter: blur(8px);
-    }
-    .nav-logo { font-family: 'Fraunces', serif; font-size: 1.25rem; font-weight: 700; color: var(--white); }
-    .nav-logo span { color: var(--gold); }
-    .nav-links { display: flex; gap: 2rem; list-style: none; }
-    .nav-links a { color: rgba(255,255,255,0.75); text-decoration: none; font-size: 0.875rem; letter-spacing: 0.04em; text-transform: uppercase; transition: color 0.2s; }
-    .nav-links a:hover { color: var(--gold); }
-    .nav-cta { background: var(--teal); color: var(--white); padding: 0.5rem 1.25rem; border-radius: 4px; text-decoration: none; font-size: 0.875rem; font-weight: 500; transition: background 0.2s; }
-    .nav-cta:hover { background: var(--teal-light); }
- 
-    /* ── HERO ── */
-    .hero {
-      min-height: 100vh;
-      background: var(--navy);
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      align-items: center;
-      padding: 8rem 5% 5rem;
-      position: relative; overflow: hidden;
-      gap: 4rem;
-    }
-    .hero::after {
-      content: '';
-      position: absolute; bottom: 0; left: 0; right: 0; height: 2px;
-      background: linear-gradient(90deg, transparent, var(--gold), transparent);
-    }
-    .hero-content { position: relative; z-index: 1; }
-    .hero-eyebrow {
-      font-size: 0.78rem; letter-spacing: 0.18em; text-transform: uppercase;
-      color: var(--gold); margin-bottom: 1.25rem;
-      display: flex; align-items: center; gap: 0.75rem;
-    }
-    .hero-eyebrow::before { content: ''; display: block; width: 32px; height: 1px; background: var(--gold); }
-    h1 { font-family: 'Fraunces', serif; font-size: clamp(2.5rem, 5vw, 4.5rem); font-weight: 700; line-height: 1.08; color: var(--white); margin-bottom: 1.5rem; }
-    h1 em { font-style: italic; color: var(--teal-light); }
-    .hero-sub { font-size: 1.05rem; line-height: 1.7; color: rgba(255,255,255,0.65); margin-bottom: 0.5rem; }
-    .hero-sub-en { font-size: 0.9rem; color: rgba(255,255,255,0.35); margin-bottom: 2.5rem; font-style: italic; }
-    .hero-buttons { display: flex; gap: 1rem; flex-wrap: wrap; }
-    .btn-primary { background: var(--teal); color: var(--white); padding: 0.875rem 2rem; border-radius: 4px; text-decoration: none; font-weight: 500; font-size: 0.95rem; transition: background 0.2s, transform 0.15s; display: inline-block; }
-    .btn-primary:hover { background: var(--teal-light); transform: translateY(-2px); }
-    .btn-outline { border: 1px solid rgba(255,255,255,0.3); color: var(--white); padding: 0.875rem 2rem; border-radius: 4px; text-decoration: none; font-weight: 400; font-size: 0.95rem; transition: border-color 0.2s, transform 0.15s; display: inline-block; }
-    .btn-outline:hover { border-color: var(--gold); transform: translateY(-2px); }
- 
-    /* ── CAROUSEL ── */
-    .hero-carousel {
-      position: relative; z-index: 1;
-      border-radius: 12px; overflow: hidden;
-      height: 480px;
-      box-shadow: 0 32px 64px rgba(0,0,0,0.4);
-    }
-    .carousel-track { display: flex; height: 100%; transition: transform 0.7s cubic-bezier(0.4,0,0.2,1); }
-    .carousel-slide {
-      min-width: 100%; height: 100%; position: relative; flex-shrink: 0;
-    }
-    .carousel-slide img { width: 100%; height: 100%; object-fit: cover; }
-    .carousel-slide::after {
-      content: '';
-      position: absolute; inset: 0;
-      background: linear-gradient(to top, rgba(10,22,40,0.55) 0%, transparent 60%);
-    }
-    .carousel-caption {
-      position: absolute; bottom: 1.5rem; left: 1.5rem; right: 1.5rem;
-      z-index: 2; color: var(--white);
-      font-size: 0.85rem; font-style: italic;
-      opacity: 0.85;
-    }
-    .carousel-dots {
-      position: absolute; bottom: -2rem; left: 50%; transform: translateX(-50%);
-      display: flex; gap: 0.5rem; z-index: 2;
-    }
-    .carousel-dot {
-      width: 8px; height: 8px; border-radius: 50%;
-      background: rgba(255,255,255,0.3); cursor: pointer;
-      transition: background 0.3s, transform 0.3s; border: none;
-    }
-    .carousel-dot.active { background: var(--gold); transform: scale(1.3); }
-    .carousel-btn {
-      position: absolute; top: 50%; transform: translateY(-50%);
-      z-index: 3; background: rgba(255,255,255,0.12);
-      border: 1px solid rgba(255,255,255,0.2);
-      color: white; width: 40px; height: 40px; border-radius: 50%;
-      cursor: pointer; font-size: 1rem; backdrop-filter: blur(4px);
-      transition: background 0.2s; display: flex; align-items: center; justify-content: center;
-    }
-    .carousel-btn:hover { background: rgba(255,255,255,0.25); }
-    .carousel-btn.prev { left: 1rem; }
-    .carousel-btn.next { right: 1rem; }
- 
-    /* ── STATS ── */
-    .stats {
-      background: var(--white); padding: 3rem 5%;
-      display: grid; grid-template-columns: repeat(3, 1fr); gap: 2rem;
-      border-bottom: 1px solid rgba(10,22,40,0.08);
-    }
-    .stat { text-align: center; padding: 1rem; }
-    .stat-number { font-family: 'Fraunces', serif; font-size: 2.75rem; font-weight: 700; color: var(--teal); line-height: 1; }
-    .stat-label { font-size: 0.875rem; color: var(--gray); margin-top: 0.4rem; line-height: 1.4; }
- 
-    /* ── SECTION SHARED ── */
-    section { padding: 6rem 5%; }
-    .section-tag { font-size: 0.75rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--teal); margin-bottom: 0.75rem; }
-    h2 { font-family: 'Fraunces', serif; font-size: clamp(2rem, 4vw, 3rem); font-weight: 600; line-height: 1.15; margin-bottom: 0.75rem; }
-    .section-sub { font-size: 0.9rem; color: var(--gray); font-style: italic; margin-bottom: 3rem; }
- 
-    /* ── ABOUT ── */
-    .about { background: var(--cream); display: grid; grid-template-columns: 1fr 1fr; gap: 5rem; align-items: center; }
-    .about-body { font-size: 1.05rem; line-height: 1.8; color: #374151; }
-    .about-body p { margin-bottom: 1.25rem; }
-    .about-body .en { font-size: 0.9rem; color: var(--gray); font-style: italic; }
-    .about-photo {
-      position: relative; border-radius: 12px; overflow: hidden;
-      height: 420px;
-      box-shadow: 0 24px 48px rgba(10,22,40,0.15);
-    }
-    .about-photo img { width: 100%; height: 100%; object-fit: cover; }
-    .about-photo-badge {
-      position: absolute; bottom: 1.5rem; left: 1.5rem;
-      background: var(--navy); color: var(--white);
-      padding: 1rem 1.5rem; border-radius: 8px;
-      border-left: 3px solid var(--gold);
-    }
-    .about-photo-badge strong { font-family: 'Fraunces', serif; font-size: 1.1rem; display: block; }
-    .about-photo-badge span { font-size: 0.8rem; color: rgba(255,255,255,0.6); }
- 
-    /* ── SERVICES ── */
-    .services { background: var(--white); }
-    .services-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2rem; margin-top: 1rem; }
-    .service-card {
-      border-radius: 10px; overflow: hidden;
-      border: 1px solid rgba(10,22,40,0.07);
-      transition: transform 0.25s, box-shadow 0.25s;
-      background: var(--cream);
-    }
-    .service-card:hover { transform: translateY(-6px); box-shadow: 0 20px 40px rgba(10,22,40,0.1); }
-    .service-img { height: 180px; overflow: hidden; }
-    .service-img img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.4s; }
-    .service-card:hover .service-img img { transform: scale(1.05); }
-    .service-body { padding: 2rem; position: relative; }
-    .service-body::before {
-      content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px;
-      background: var(--teal); transform: scaleX(0); transform-origin: left; transition: transform 0.3s;
-    }
-    .service-card:hover .service-body::before { transform: scaleX(1); }
-    .service-number { font-family: 'Fraunces', serif; font-size: 2.5rem; font-weight: 700; color: rgba(13,115,119,0.12); line-height: 1; margin-bottom: 0.5rem; }
-    .service-title { font-family: 'Fraunces', serif; font-size: 1.3rem; font-weight: 600; margin-bottom: 0.3rem; }
-    .service-title-en { font-size: 0.8rem; color: var(--gray); font-style: italic; margin-bottom: 0.75rem; }
-    .service-desc { font-size: 0.9rem; line-height: 1.7; color: #4b5563; }
- 
-    /* ── PROCESS ── */
-    .process { background: var(--cream); }
-    .process-steps { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1.5rem; margin-top: 1rem; }
-    .process-step { padding: 2rem 1.5rem; border: 1px solid rgba(10,22,40,0.1); border-radius: 8px; background: var(--white); transition: border-color 0.2s, box-shadow 0.2s; }
-    .process-step:hover { border-color: var(--teal); box-shadow: 0 8px 24px rgba(10,22,40,0.07); }
-    .step-num { font-family: 'Fraunces', serif; font-size: 2rem; color: var(--gold); margin-bottom: 1rem; }
-    .step-title { font-size: 1rem; font-weight: 500; color: var(--navy); margin-bottom: 0.4rem; }
-    .step-title-en { font-size: 0.78rem; color: var(--gray); font-style: italic; margin-bottom: 0.75rem; }
-    .step-desc { font-size: 0.875rem; color: #6b7280; line-height: 1.6; }
- 
-    /* ── GALLERY STRIP ── */
-    .gallery-strip {
-      background: var(--navy);
-      padding: 4rem 0;
-      overflow: hidden;
-    }
-    .gallery-strip-label {
-      text-align: center; font-size: 0.75rem; letter-spacing: 0.2em;
-      text-transform: uppercase; color: var(--gold);
-      margin-bottom: 2rem; padding: 0 5%;
-    }
-    .gallery-track {
-      display: flex; gap: 1rem; padding: 0 5%;
-      overflow-x: auto; scrollbar-width: none;
-      scroll-snap-type: x mandatory;
-    }
-    .gallery-track::-webkit-scrollbar { display: none; }
-    .gallery-item {
-      flex-shrink: 0; width: 280px; height: 200px;
-      border-radius: 8px; overflow: hidden;
-      scroll-snap-align: start;
-      position: relative;
-    }
-    .gallery-item img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.4s; }
-    .gallery-item:hover img { transform: scale(1.06); }
-    .gallery-item-label {
-      position: absolute; bottom: 0; left: 0; right: 0;
-      padding: 1rem 1rem 0.75rem;
-      background: linear-gradient(to top, rgba(10,22,40,0.8), transparent);
-      color: white; font-size: 0.8rem; font-style: italic;
-    }
- 
-    /* ── WHY US ── */
-    .why { background: var(--white); }
-    .why-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 3rem; align-items: start; }
-    .why-list { list-style: none; }
-    .why-item { padding: 1.5rem 0; border-bottom: 1px solid var(--light-gray); display: grid; grid-template-columns: 3rem 1fr; gap: 1rem; align-items: start; }
-    .why-item:last-child { border-bottom: none; }
-    .why-icon { width: 3rem; height: 3rem; border-radius: 8px; background: rgba(13,115,119,0.08); display: flex; align-items: center; justify-content: center; font-size: 1.25rem; }
-    .why-item-title { font-weight: 500; margin-bottom: 0.3rem; }
-    .why-item-title-en { font-size: 0.78rem; color: var(--gray); font-style: italic; margin-bottom: 0.4rem; }
-    .why-item-desc { font-size: 0.875rem; color: #6b7280; line-height: 1.6; }
-    .why-photo {
-      border-radius: 12px; overflow: hidden;
-      height: 420px; position: sticky; top: 7rem;
-      box-shadow: 0 24px 48px rgba(10,22,40,0.12);
-    }
-    .why-photo img { width: 100%; height: 100%; object-fit: cover; }
- 
-    /* ── CONTACT ── */
-    .contact { background: var(--navy); text-align: center; padding: 6rem 5%; }
-    .contact h2 { color: var(--white); }
-    .contact .section-tag { color: rgba(255,255,255,0.5); }
-    .contact-sub { font-size: 1.1rem; color: rgba(255,255,255,0.8); margin-bottom: 0.4rem; }
-    .contact-sub-en { font-size: 0.9rem; color: rgba(255,255,255,0.45); font-style: italic; margin-bottom: 2.5rem; }
-    .contact .btn-primary { background: var(--teal); font-size: 1rem; padding: 1rem 2.5rem; }
-    .contact .btn-primary:hover { background: var(--teal-light); }
-    .contact-email { margin-top: 1.5rem; font-size: 0.9rem; color: rgba(255,255,255,0.45); }
-    .contact-email a { color: rgba(255,255,255,0.7); }
- 
-    /* ── FOOTER ── */
-    footer { background: var(--navy); padding: 2.5rem 5%; display: flex; justify-content: space-between; align-items: center; border-top: 1px solid rgba(255,255,255,0.06); }
-    .footer-logo { font-family: 'Fraunces', serif; font-size: 1.1rem; color: var(--white); font-weight: 700; }
-    .footer-logo span { color: var(--gold); }
-    .footer-copy { font-size: 0.8rem; color: rgba(255,255,255,0.35); }
- 
-    /* ── RESPONSIVE ── */
-    @media (max-width: 900px) {
-      .hero { grid-template-columns: 1fr; }
-      .hero-carousel { height: 300px; }
-      .about, .why-grid { grid-template-columns: 1fr; }
-      .services-grid { grid-template-columns: 1fr; }
-      .process-steps { grid-template-columns: 1fr 1fr; }
-      .stats { grid-template-columns: 1fr; gap: 1rem; }
-      .why-photo { position: static; height: 280px; }
-    }
-    @media (max-width: 600px) {
-      nav { padding: 1rem 4%; }
-      .nav-links { display: none; }
-      .process-steps { grid-template-columns: 1fr; }
-      h1 { font-size: 2.4rem; }
-    }
-  </style>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Sprinkler Progress Tracker</title>
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#10161E">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
+<meta name="apple-mobile-web-app-title" content="Tracker">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<meta name="robots" content="noindex, nofollow">
+<style>
+  html,body{margin:0;padding:0;background:#F2F4F3;-webkit-text-size-adjust:100%}
+  body{padding:env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left)}
+</style>
 </head>
 <body>
- 
-<!-- NAV -->
-<nav>
-  <div class="nav-logo">PM <span>Dynamics</span></div>
-  <ul class="nav-links">
-    <li><a href="#servicios">Servicios</a></li>
-    <li><a href="#proceso">Proceso</a></li>
-    <li><a href="#nosotros">Nosotros</a></li>
-    <li><a href="#contacto">Contacto</a></li>
-  </ul>
-  <a href="#contacto" class="nav-cta">Consulta gratuita</a>
-</nav>
- 
-<!-- HERO -->
-<section class="hero">
-  <div class="hero-content">
-    <p class="hero-eyebrow">Consultoría Empresarial · PME</p>
-    <h1>Convertimos<br>Datos en<br><em>Decisiones</em></h1>
-    <p class="hero-sub">Ayudamos a pequeñas y medianas empresas a mejorar sus procesos, entender sus datos y ejecutar proyectos con resultados reales.</p>
-    <p class="hero-sub-en">We help small and mid-size businesses improve processes, understand their data, and execute projects with real results.</p>
-    <div class="hero-buttons">
-      <a href="#contacto" class="btn-primary">Agenda una consulta gratuita</a>
-      <a href="#servicios" class="btn-outline">Ver servicios</a>
-    </div>
-  </div>
- 
-  <!-- CAROUSEL -->
-  <div class="hero-carousel" style="position:relative;">
-    <div class="carousel-track" id="carouselTrack">
-      <div class="carousel-slide">
-        <img src="https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=800&q=80" alt="Equipo trabajando en estrategia" />
-        <div class="carousel-caption">Mejora de procesos con equipos reales</div>
-      </div>
-      <div class="carousel-slide">
-        <img src="https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=800&q=80" alt="Dashboard de datos y analítica" />
-        <div class="carousel-caption">Dashboards que convierten datos en decisiones</div>
-      </div>
-      <div class="carousel-slide">
-        <img src="https://images.unsplash.com/photo-1600880292203-757bb62b4baf?w=800&q=80" alt="Reunión de consultoría empresarial" />
-        <div class="carousel-caption">Consultoría adaptada a tu realidad empresarial</div>
-      </div>
-      <div class="carousel-slide">
-        <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=800&q=80" alt="Planificación de proyectos" />
-        <div class="carousel-caption">Gestión de proyectos con resultados medibles</div>
-      </div>
-    </div>
-    <button class="carousel-btn prev" id="prevBtn">&#8592;</button>
-    <button class="carousel-btn next" id="nextBtn">&#8594;</button>
-    <div class="carousel-dots" id="carouselDots"></div>
-  </div>
-</section>
- 
-<!-- STATS -->
-<div class="stats">
-  <div class="stat">
-    <div class="stat-number">+40%</div>
-    <div class="stat-label">Reducción promedio en ineficiencias de proceso<br><em style="font-size:0.75rem;opacity:0.6">Average process inefficiency reduction</em></div>
-  </div>
-  <div class="stat">
-    <div class="stat-number">PME</div>
-    <div class="stat-label">Especialistas en pequeñas y medianas empresas<br><em style="font-size:0.75rem;opacity:0.6">SMB specialists</em></div>
-  </div>
-  <div class="stat">
-    <div class="stat-number">3 en 1</div>
-    <div class="stat-label">Procesos · Datos · Gestión de proyectos<br><em style="font-size:0.75rem;opacity:0.6">Process · Data · Project management</em></div>
-  </div>
-</div>
- 
-<!-- ABOUT -->
-<section class="about" id="nosotros">
-  <div class="about-text">
-    <p class="section-tag">Sobre Nosotros · About Us</p>
-    <h2>Tu negocio merece decisiones basadas en datos</h2>
-    <div class="about-body">
-      <p>En PM Dynamics Consulting sabemos que dirigir una pequeña o mediana empresa es complejo. Muchas decisiones se toman por intuición, los procesos crecen sin orden, y los datos se acumulan sin convertirse en información útil.</p>
-      <p class="en">At PM Dynamics Consulting, we know that running a small or mid-size business is complex — decisions made on gut feeling, processes that grow without structure, and data that piles up without becoming useful.</p>
-      <p>Nuestra misión es clara: transformar la forma en que tu empresa opera y decide, usando metodologías probadas adaptadas a tu realidad.</p>
-      <p class="en">Our mission is clear: transform how your business operates and makes decisions, using proven methodologies tailored to your reality.</p>
-    </div>
-  </div>
-  <div class="about-photo">
-    <img src="https://images.unsplash.com/photo-1542744173-8e7e53415bb0?w=800&q=80" alt="Consultoría empresarial estratégica" />
-    <div class="about-photo-badge">
-      <strong>Enfoque en resultados</strong>
-      <span>No diagnósticos — transformaciones reales</span>
-    </div>
-  </div>
-</section>
- 
-<!-- SERVICES -->
-<section class="services" id="servicios">
-  <p class="section-tag">Servicios · Services</p>
-  <h2>Tres áreas de impacto</h2>
-  <p class="section-sub">Three impact areas — built for growing businesses</p>
-  <div class="services-grid">
- 
-    <div class="service-card">
-      <div class="service-img">
-        <img src="https://images.unsplash.com/photo-1581291518857-4e27b48ff24e?w=600&q=80" alt="Mejora de procesos" />
-      </div>
-      <div class="service-body">
-        <div class="service-number">01</div>
-        <div class="service-title">Mejora de Procesos</div>
-        <div class="service-title-en">Process Improvement</div>
-        <div class="service-desc">Identificamos los cuellos de botella en tus operaciones y rediseñamos los flujos de trabajo para que tu equipo trabaje de forma más eficiente, con menos errores y mayor velocidad.</div>
-      </div>
-    </div>
- 
-    <div class="service-card">
-      <div class="service-img">
-        <img src="https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=600&q=80" alt="Análisis de datos" />
-      </div>
-      <div class="service-body">
-        <div class="service-number">02</div>
-        <div class="service-title">Análisis de Datos</div>
-        <div class="service-title-en">Data Analytics & Reporting</div>
-        <div class="service-desc">Convertimos tus datos en paneles claros y reportes accionables. Dashboards que te permiten entender el desempeño de tu negocio de un vistazo y decidir con confianza.</div>
-      </div>
-    </div>
- 
-    <div class="service-card">
-      <div class="service-img">
-        <img src="https://images.unsplash.com/photo-1531403009284-440f080d1e12?w=600&q=80" alt="Gestión de proyectos" />
-      </div>
-      <div class="service-body">
-        <div class="service-number">03</div>
-        <div class="service-title">Gestión de Proyectos</div>
-        <div class="service-title-en">Project Management Consulting</div>
-        <div class="service-desc">Te ayudamos a planificar, ejecutar y cerrar proyectos exitosamente. Estructuras de gestión que mantienen tu equipo alineado, en tiempo y dentro del presupuesto.</div>
-      </div>
-    </div>
- 
-  </div>
-</section>
- 
-<!-- PROCESS -->
-<section class="process" id="proceso">
-  <p class="section-tag">Nuestro Proceso · Our Process</p>
-  <h2>Cómo trabajamos</h2>
-  <p class="section-sub">Simple, structured, and focused on your results</p>
-  <div class="process-steps">
-    <div class="process-step">
-      <div class="step-num">01</div>
-      <div class="step-title">Diagnóstico</div>
-      <div class="step-title-en">Discovery</div>
-      <div class="step-desc">Escuchamos, analizamos y entendemos tu negocio a fondo antes de proponer cualquier solución.</div>
-    </div>
-    <div class="process-step">
-      <div class="step-num">02</div>
-      <div class="step-title">Plan de Acción</div>
-      <div class="step-title-en">Action Plan</div>
-      <div class="step-desc">Diseñamos una hoja de ruta clara, con prioridades, tiempos y métricas de éxito definidas desde el inicio.</div>
-    </div>
-    <div class="process-step">
-      <div class="step-num">03</div>
-      <div class="step-title">Implementación</div>
-      <div class="step-title-en">Implementation</div>
-      <div class="step-desc">Trabajamos junto a tu equipo para ejecutar los cambios, asegurándonos de que se adopten de forma sostenible.</div>
-    </div>
-    <div class="process-step">
-      <div class="step-num">04</div>
-      <div class="step-title">Seguimiento</div>
-      <div class="step-title-en">Follow-through</div>
-      <div class="step-desc">Medimos resultados, ajustamos lo necesario y te acompañamos para que los beneficios se mantengan en el tiempo.</div>
-    </div>
-  </div>
-</section>
- 
-<!-- GALLERY STRIP -->
-<div class="gallery-strip">
-  <p class="gallery-strip-label">Nuestro trabajo en acción · Our work in action</p>
-  <div class="gallery-track" id="galleryTrack">
-    <div class="gallery-item">
-      <img src="https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=500&q=80" alt="Análisis de datos empresariales" />
-      <div class="gallery-item-label">Análisis de datos</div>
-    </div>
-    <div class="gallery-item">
-      <img src="https://images.unsplash.com/photo-1504384308090-c894fdcc538d?w=500&q=80" alt="Trabajo en equipo" />
-      <div class="gallery-item-label">Trabajo colaborativo</div>
-    </div>
-    <div class="gallery-item">
-      <img src="https://images.unsplash.com/photo-1556761175-4b46a572b786?w=500&q=80" alt="Sesión de consultoría" />
-      <div class="gallery-item-label">Sesiones de consultoría</div>
-    </div>
-    <div class="gallery-item">
-      <img src="https://images.unsplash.com/photo-1519389950473-47ba0277781c?w=500&q=80" alt="Tecnología y procesos" />
-      <div class="gallery-item-label">Tecnología & procesos</div>
-    </div>
-    <div class="gallery-item">
-      <img src="https://images.unsplash.com/photo-1573164713988-8665fc963095?w=500&q=80" alt="Presentación de resultados" />
-      <div class="gallery-item-label">Presentación de resultados</div>
-    </div>
-  </div>
-</div>
- 
-<!-- WHY US -->
-<section class="why">
-  <div class="why-grid">
-    <div>
-      <p class="section-tag">¿Por Qué Nosotros? · Why Us</p>
-      <h2>Lo que nos hace diferentes</h2>
-      <ul class="why-list">
-        <li class="why-item">
-          <div class="why-icon">🎯</div>
-          <div>
-            <div class="why-item-title">Enfocados en PMEs</div>
-            <div class="why-item-title-en">Built for SMBs</div>
-            <div class="why-item-desc">No somos una gran firma que adapta sus modelos. Nuestro servicio está diseñado exclusivamente para la realidad de las pequeñas y medianas empresas.</div>
-          </div>
-        </li>
-        <li class="why-item">
-          <div class="why-icon">📊</div>
-          <div>
-            <div class="why-item-title">Resultados medibles desde el día uno</div>
-            <div class="why-item-title-en">Measurable results from day one</div>
-            <div class="why-item-desc">Establecemos indicadores claros antes de empezar. Sabrás exactamente qué mejoró, cuánto y por qué.</div>
-          </div>
-        </li>
-        <li class="why-item">
-          <div class="why-icon">🤝</div>
-          <div>
-            <div class="why-item-title">Acompañamiento real, no solo reportes</div>
-            <div class="why-item-title-en">Real partnership, not just reports</div>
-            <div class="why-item-desc">Trabajamos codo a codo con tu equipo. No entregamos un PDF y desaparecemos — nos involucramos hasta que los resultados son tangibles.</div>
-          </div>
-        </li>
-        <li class="why-item">
-          <div class="why-icon">🌐</div>
-          <div>
-            <div class="why-item-title">Bilingüe y multicultural</div>
-            <div class="why-item-title-en">Bilingual & multicultural</div>
-            <div class="why-item-desc">Trabajamos en español e inglés con igual fluidez, sirviendo a empresas en mercados hispanohablantes y angloparlantes.</div>
-          </div>
-        </li>
-      </ul>
-    </div>
-    <div>
-      <div class="why-photo">
-        <img src="https://images.unsplash.com/photo-1553877522-43269d4ea984?w=700&q=80" alt="Reunión de estrategia empresarial" />
-      </div>
-    </div>
-  </div>
-</section>
- 
-<!-- CONTACT -->
-<section class="contact" id="contacto">
-  <p class="section-tag">Contáctanos · Get in Touch</p>
-  <h2>Hablemos de tu negocio</h2>
-  <p class="contact-sub">Cuéntanos tu desafío. La primera conversación es gratuita.</p>
-  <p class="contact-sub-en">Tell us your challenge. The first conversation is on us.</p>
-  <a href="mailto:info@pmdynamicsconsulting.com" class="btn-primary">Escribenos hoy · Email us today</a>
-  <div class="contact-email">
-    O escríbenos directamente a <a href="mailto:info@pmdynamicsconsulting.com">info@pmdynamicsconsulting.com</a>
-  </div>
-</section>
- 
-<!-- FOOTER -->
-<footer>
-  <div class="footer-logo">PM <span>Dynamics</span> Consulting</div>
-  <div class="footer-copy">© 2025 PM Dynamics Consulting · Todos los derechos reservados</div>
-</footer>
- 
-<script>
-  // ── CAROUSEL ──
-  const track = document.getElementById('carouselTrack');
-  const slides = track.querySelectorAll('.carousel-slide');
-  const dotsContainer = document.getElementById('carouselDots');
-  let current = 0;
-  let autoTimer;
- 
-  // Build dots
-  slides.forEach((_, i) => {
-    const dot = document.createElement('button');
-    dot.className = 'carousel-dot' + (i === 0 ? ' active' : '');
-    dot.onclick = () => goTo(i);
-    dotsContainer.appendChild(dot);
-  });
- 
-  function goTo(n) {
-    current = (n + slides.length) % slides.length;
-    track.style.transform = `translateX(-${current * 100}%)`;
-    dotsContainer.querySelectorAll('.carousel-dot').forEach((d, i) => {
-      d.classList.toggle('active', i === current);
-    });
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+
+<style>
+  :root{
+    --sheet:#F2F4F3; --surface:#FFFFFF; --ink:#10161E; --muted:#6B7785;
+    --rule:#1B2430; --hair:#C9D0D6; --red:#C8342B; --amber:#F2B01E; --green:#1F7A4C; --bare:#FFFFFF;
+    --plan:#185FA5; --act:#D85A30; --burn:#0E7C5A; --fillplan:rgba(24,95,165,.10);
+    --disp:'Barlow Condensed','Arial Narrow',system-ui,sans-serif;    --body:'IBM Plex Sans',system-ui,-apple-system,sans-serif;
+    --mono:'IBM Plex Mono',ui-monospace,'SF Mono',Menlo,monospace;
   }
- 
-  document.getElementById('prevBtn').onclick = () => { goTo(current - 1); resetAuto(); };
-  document.getElementById('nextBtn').onclick = () => { goTo(current + 1); resetAuto(); };
- 
-  function resetAuto() { clearInterval(autoTimer); autoTimer = setInterval(() => goTo(current + 1), 4500); }
-  resetAuto();
+  *{box-sizing:border-box}
+  .chartwrap{background:var(--surface);border:1px solid var(--hair);padding:6px}
+  .axl{font-family:var(--mono);font-size:9px;fill:var(--muted)}
+  .sched{border:1px solid var(--hair);background:var(--sheet);padding:8px;margin-bottom:6px}
+  .sched .pnm{font-family:var(--disp);font-size:13px;font-weight:600;letter-spacing:.05em;text-transform:uppercase;margin-bottom:5px}
+  .mini{font-family:var(--disp);font-size:9px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);display:block;margin-bottom:2px}
+  .tbx{font-family:var(--body);color:var(--ink);background:var(--sheet);border:1px solid var(--rule);max-width:1100px;margin:0 auto}
+
+  .pbar{display:flex;gap:8px;align-items:center;padding:8px 10px;border-bottom:1px solid var(--rule);background:var(--ink)}
+  .psel{flex:1;min-width:0;font-family:var(--disp);font-size:15px;font-weight:600;letter-spacing:.04em;text-transform:uppercase;padding:7px 28px 7px 9px;border:1px solid var(--rule);background:var(--surface);color:var(--ink);appearance:none;background-image:linear-gradient(45deg,transparent 50%,var(--muted) 50%),linear-gradient(135deg,var(--muted) 50%,transparent 50%);background-position:calc(100% - 15px) 55%,calc(100% - 10px) 55%;background-size:5px 5px,5px 5px;background-repeat:no-repeat}
+  .psel:focus{outline:2px solid var(--red);outline-offset:1px}
+  .pbar .btn{background:var(--surface)}
+
+  .mlist{border:1px solid var(--hair);background:var(--surface);margin-bottom:10px}
+  .mrow{display:flex;align-items:center;gap:8px;padding:8px 10px;border-bottom:1px solid var(--hair)}
+  .mrow:last-child{border-bottom:none}
+  .mrow .mname{flex:1;font-family:var(--disp);font-size:14px;font-weight:600;letter-spacing:.03em;text-transform:uppercase;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .mrow .msub{font-family:var(--mono);font-size:10px;color:var(--muted)}
+  .mact{display:grid;gap:6px;margin-bottom:10px}
+
+  .tb-head{border-bottom:1px solid var(--rule)}
+  .tb-fields{display:flex;flex-wrap:wrap}
+  .tb-f{flex:1 1 120px;padding:8px 12px;border-right:1px solid var(--hair);min-width:0}
+  .tb-f:last-child{border-right:none}
+  .tb-f .k{font-family:var(--disp);font-size:10px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);display:block;margin-bottom:2px}
+  .tb-f .v{font-family:var(--disp);font-size:19px;font-weight:600;letter-spacing:.02em;text-transform:uppercase;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .tb-bar{display:flex;align-items:stretch;border-top:1px solid var(--rule);background:var(--surface)}
+  .tb-meter{flex:1;position:relative;background:#E4E8EA;min-height:44px}
+  .tb-fill{position:absolute;inset:0 auto 0 0;background:var(--red);transition:width .45s cubic-bezier(.4,0,.2,1)}
+  .tb-meter-lab{position:absolute;inset:0;display:flex;align-items:center;padding:0 12px;font-family:var(--disp);font-size:11px;font-weight:600;letter-spacing:.16em;text-transform:uppercase}
+  .tb-pct{display:flex;align-items:baseline;gap:2px;padding:6px 14px;border-left:1px solid var(--rule);background:var(--surface)}
+  .tb-pct b{font-family:var(--disp);font-size:34px;font-weight:700;line-height:1}
+  .tb-pct i{font-family:var(--disp);font-size:15px;font-style:normal;font-weight:600;color:var(--muted)}
+
+  .tabs{display:flex;border-bottom:1px solid var(--rule);background:var(--sheet)}
+  .tab{flex:1;padding:11px 6px;background:none;border:none;border-right:1px solid var(--hair);cursor:pointer;font-family:var(--disp);font-size:12px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
+  .tab:last-child{border-right:none}
+  .tab[aria-selected="true"]{background:var(--ink);color:var(--sheet)}
+  .tab:focus-visible{outline:2px solid var(--red);outline-offset:-3px}
+  .pane{padding:14px}
+
+  /* area pills */
+  .pills{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px}
+  .pill{padding:6px 11px;border:1px solid var(--hair);background:var(--surface);cursor:pointer;font-family:var(--disp);font-size:12px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;display:flex;gap:7px;align-items:baseline}
+  .pill b{font-family:var(--mono);font-size:10px;font-weight:600;color:var(--muted)}
+  .pill[aria-pressed="true"]{background:var(--ink);border-color:var(--ink);color:var(--sheet)}
+  .pill[aria-pressed="true"] b{color:var(--amber)}
+  .pill:focus-visible{outline:2px solid var(--red);outline-offset:1px}
+  .kindtag{font-family:var(--mono);font-size:9px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);padding:1px 4px;border:1px solid var(--hair)}
+
+  .area-h{display:flex;justify-content:space-between;align-items:baseline;gap:8px;margin-bottom:8px;padding-bottom:6px;border-bottom:1px solid var(--rule)}
+  .area-h h3{font-family:var(--disp);font-size:18px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;margin:0}
+  .area-h .ap{font-family:var(--mono);font-size:13px;font-weight:600}
+
+  .scroller{overflow-x:auto;-webkit-overflow-scrolling:touch}
+  .grid{border-collapse:separate;border-spacing:0;width:100%;min-width:420px}
+  .grid th,.grid td{padding:0;border-right:1px solid var(--hair);border-bottom:1px solid var(--hair)}
+  .grid thead th{background:var(--sheet);position:sticky;top:0;z-index:2;border-bottom:1px solid var(--rule);font-family:var(--disp);font-size:10px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);padding:7px 4px;text-align:center;line-height:1.15}
+  .grid thead th .w{display:block;font-family:var(--mono);font-size:9px;color:var(--hair);font-weight:400}
+  .lvl{position:sticky;left:0;z-index:1;background:var(--sheet);border-right:1px solid var(--rule)!important;font-family:var(--disp);font-size:14px;font-weight:600;letter-spacing:.05em;text-transform:uppercase;padding:0 10px!important;text-align:left;white-space:nowrap}
+  thead .lvl{z-index:3}
+  .cell{width:100%;height:38px;border:none;cursor:pointer;background:var(--bare);position:relative;display:block;font-family:var(--mono);font-size:10px;font-weight:500;color:var(--muted)}
+  .cell:focus-visible{outline:2px solid var(--red);outline-offset:-2px;z-index:4}
+  .cell .bar{position:absolute;inset:0 auto 0 0;opacity:.9}
+  .cell .txt{position:relative;z-index:1}
+  .cell[data-s="done"]{background:var(--green);color:#fff}
+  .cell[data-s="blocked"]{background:var(--red);color:#fff}
+  .cell[data-s="ip"] .bar{background:var(--amber)}
+  .cell[data-s="ip"]{color:var(--ink)}
+  .cell .flag{position:absolute;top:2px;right:3px;z-index:2;font-size:9px;line-height:1}
+  .rowpct{font-family:var(--mono);font-size:12px;font-weight:600;text-align:right;padding:0 8px!important;white-space:nowrap;background:var(--surface)}
+
+  .legend{display:flex;flex-wrap:wrap;gap:12px;margin-top:12px;align-items:center}
+  .lg{display:flex;align-items:center;gap:5px;font-size:11px;color:var(--muted)}
+  .sw{width:12px;height:12px;border:1px solid var(--hair)}
+
+  .hint{font-size:12px;color:var(--muted);line-height:1.5;margin:8px 0 0}
+  .sec{font-family:var(--disp);font-size:11px;font-weight:600;letter-spacing:.16em;text-transform:uppercase;color:var(--ink);margin:0 0 8px;padding-bottom:5px;border-bottom:1px solid var(--rule)}
+  .sec + .sec{margin-top:20px}
+  .btn{font-family:var(--disp);font-size:12px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;padding:8px 12px;cursor:pointer;background:var(--surface);border:1px solid var(--rule);color:var(--ink)}
+  .btn:hover{background:var(--ink);color:var(--sheet)}
+  .btn:focus-visible{outline:2px solid var(--red);outline-offset:1px}
+  .btn.dim{border-color:var(--hair);color:var(--muted)}
+  .btn.sm{padding:5px 8px;font-size:11px}
+  .btn.danger:hover{background:var(--red);border-color:var(--red);color:#fff}
+  .inp{font-family:var(--body);font-size:13px;padding:7px 8px;width:100%;border:1px solid var(--hair);background:var(--surface);color:var(--ink)}
+  .inp:focus{outline:2px solid var(--red);outline-offset:-1px;border-color:var(--rule)}
+  .inp.num{font-family:var(--mono);text-align:right}
+  .row{display:flex;gap:6px;align-items:center;margin-bottom:6px}
+  .lab{font-family:var(--disp);font-size:10px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);display:block;margin-bottom:3px}
+  .fgrid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px}
+  .tot{font-family:var(--mono);font-size:12px;color:var(--muted)}
+  .tot.bad{color:var(--red);font-weight:600}
+  select.inp{appearance:none;background-image:linear-gradient(45deg,transparent 50%,var(--muted) 50%),linear-gradient(135deg,var(--muted) 50%,transparent 50%);background-position:calc(100% - 15px) 55%,calc(100% - 10px) 55%;background-size:5px 5px,5px 5px;background-repeat:no-repeat;padding-right:28px}
+
+  /* area cards (setup accordion) */
+  .acard{border:1px solid var(--rule);background:var(--surface);margin-bottom:10px}
+  .acard-h{display:flex;align-items:center;gap:8px;padding:9px 11px;cursor:pointer;background:var(--sheet)}
+  .acard-h .nm{font-family:var(--disp);font-size:16px;font-weight:600;letter-spacing:.04em;text-transform:uppercase;flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .acard-h .car{font-family:var(--mono);font-size:12px;color:var(--muted)}
+  .acard-b{padding:11px;border-top:1px solid var(--hair)}
+  .acard-b[hidden]{display:none}
+
+  table.plain{width:100%;border-collapse:collapse;font-size:12px}
+  table.plain th{font-family:var(--disp);font-size:10px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);text-align:right;padding:5px 6px;border-bottom:1px solid var(--rule)}
+  table.plain th:first-child{text-align:left}
+  table.plain td{padding:5px 6px;border-bottom:1px solid var(--hair);text-align:right;font-family:var(--mono)}
+  table.plain td:first-child{text-align:left;font-family:var(--disp);font-size:13px;letter-spacing:.04em;text-transform:uppercase;font-weight:500}
+  table.plain tr.sum td{border-top:1px solid var(--rule);border-bottom:none;font-weight:700;background:var(--sheet)}
+  .billarea{font-family:var(--disp);font-size:16px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;margin:18px 0 6px;display:flex;justify-content:space-between;align-items:baseline}
+  .billarea:first-child{margin-top:0}
+  .billarea .k{font-family:var(--mono);font-size:11px;font-weight:600;color:var(--muted)}
+
+  .blk{border-left:3px solid var(--red);background:var(--surface);padding:8px 10px;margin-bottom:7px;border-bottom:1px solid var(--hair)}
+  .blk h4{font-family:var(--disp);font-size:14px;font-weight:600;letter-spacing:.05em;text-transform:uppercase;margin:0 0 2px}
+  .blk p{margin:0;font-size:12px;line-height:1.45}
+  .blk .who{font-family:var(--mono);font-size:10px;color:var(--muted);margin-top:3px}
+  .empty{padding:24px 14px;text-align:center;color:var(--muted);font-size:13px;border:1px dashed var(--hair)}
+
+  .scrim{position:fixed;inset:0;background:rgba(16,22,30,.55);display:flex;align-items:center;justify-content:center;padding:14px;z-index:50}
+  .modal{background:var(--sheet);border:1px solid var(--rule);width:100%;max-width:400px;max-height:90vh;overflow:auto}
+  .modal-h{padding:10px 12px;border-bottom:1px solid var(--rule);display:flex;justify-content:space-between;align-items:baseline;gap:8px}
+  .modal-h b{font-family:var(--disp);font-size:17px;font-weight:700;letter-spacing:.05em;text-transform:uppercase}
+  .modal-h span{font-family:var(--disp);font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);text-align:right}
+  .modal-b{padding:12px}
+  .stat{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:12px}
+  .sbtn{padding:12px 6px;border:1px solid var(--rule);background:var(--surface);cursor:pointer;font-family:var(--disp);font-size:12px;font-weight:600;letter-spacing:.1em;text-transform:uppercase}
+  .sbtn[aria-pressed="true"]{background:var(--ink);color:var(--sheet)}
+  .sbtn[data-s="done"][aria-pressed="true"]{background:var(--green);border-color:var(--green);color:#fff}
+  .sbtn[data-s="blocked"][aria-pressed="true"]{background:var(--red);border-color:var(--red);color:#fff}
+  .sbtn[data-s="ip"][aria-pressed="true"]{background:var(--amber);border-color:var(--amber);color:var(--ink)}
+  .sbtn:focus-visible{outline:2px solid var(--red);outline-offset:1px}
+  .chips{display:flex;gap:4px;margin:6px 0 10px}
+  .chip{flex:1;padding:6px 0;border:1px solid var(--hair);background:var(--surface);cursor:pointer;font-family:var(--mono);font-size:11px}
+  .chip:hover{border-color:var(--rule)}
+  input[type=range]{width:100%;accent-color:var(--red)}
+  .modal-f{display:flex;gap:6px;padding:10px 12px;border-top:1px solid var(--rule)}
+  .modal-f .btn{flex:1}
+  .toast{position:fixed;left:50%;bottom:18px;transform:translateX(-50%);background:var(--ink);color:var(--sheet);padding:9px 16px;z-index:60;font-family:var(--disp);font-size:12px;font-weight:600;letter-spacing:.12em;text-transform:uppercase}
+
+  .foot{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap;padding:8px 12px;border-top:1px solid var(--rule);background:var(--surface)}
+  .foot small{font-family:var(--mono);font-size:10px;color:var(--muted)}
+
+  @media (max-width:560px){.fgrid{grid-template-columns:1fr}.tb-f{flex:1 1 50%}.tb-pct b{font-size:27px}}
+  @media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+</style>
+
+<div class="tbx">
+  <div class="pbar">
+    <select class="psel" id="projsel" aria-label="Select project"></select>
+    <button class="btn dim" id="projbtn">Projects</button>
+  </div>
+  <div class="tb-head">
+    <div class="tb-fields" id="tbf"></div>
+    <div class="tb-bar">
+      <div class="tb-meter"><div class="tb-fill" id="fill"></div><div class="tb-meter-lab">Installed to date</div></div>
+      <div class="tb-pct"><b id="bigpct">0</b><i>%</i></div>
+    </div>
+  </div>
+
+  <div class="tabs" role="tablist">
+    <button class="tab" role="tab" data-v="grid">Progress</button>
+    <button class="tab" role="tab" data-v="curve">Curve</button>
+    <button class="tab" role="tab" data-v="bill">Billing</button>
+    <button class="tab" role="tab" data-v="blocked">Blockers</button>
+    <button class="tab" role="tab" data-v="setup">Setup</button>
+  </div>
+
+  <div class="pane" id="pane"></div>
+
+  <div class="foot">
+    <small id="stamp">Loading…</small>
+    <div style="display:flex;gap:6px">
+      <button class="btn" id="send">Send update</button>
+      <button class="btn dim" id="who">Sign in</button>
+      <button class="btn dim" id="refresh">Refresh</button>
+    </div>
+  </div>
+</div>
+<div id="layer"></div>
+
+<script>
+(function(){
+  const OLD='sprinkler-tracker-v2';              // legacy single-project key (for migration)
+  const PIDX='proj-index-v1', TIDX='tpl-index-v1', ME='tracker-identity-v1', ACTIVE='active-project-v1', FMODE='field-mode-v1';
+  const PKEY=id=>'proj:'+id, TKEY=id=>'tpl:'+id;
+  const S={NS:'ns',IP:'ip',DONE:'done',BLOCKED:'blocked'};
+  const SNAME={ns:'Not started',ip:'In progress',done:'Complete',blocked:'Blocked'};
+
+  // phase templates: [name, weight, cycle, span, mode, lag]
+  // cycle = working days between levels · span = working days the work actually takes on one level
+  // mode: 'area' starts with the area · 'follow' trails the previous phase by lag · 'own' has its own start date
+  const TPL={
+    woodframe:{label:'Woodframe',rowLabel:'Floors',rowNoun:'floor',dir:'desc',phases:[
+      ['Rough-in',45,5,5,'area',0],['Inspection',5,5,1,'follow',0],['Drops',20,10,1,'own',0],['Finishing',30,10,1,'own',0]]},
+    tower:    {label:'Tower',    rowLabel:'Floors',rowNoun:'floor',dir:'desc',phases:[
+      ['Rough-in',55,5,5,'area',0],['Inspection',10,5,1,'follow',0],['Finishing',35,10,1,'own',0]]},
+    parkade:  {label:'Parkade',  rowLabel:'Parkade levels',rowNoun:'level',dir:'asc',phases:[
+      ['Mains',35,5,5,'area',0],['Branch lines',35,5,5,'follow',0],['Inspection',10,5,1,'follow',0],['Dry test',20,5,1,'follow',0]]},
+    valveroom:{label:'Valve room',rowLabel:'Valve rooms',rowNoun:'valve room',dir:'asc',phases:[
+      ['Valve Header',20,1,5,'area',0],['Compressor',15,1,2,'follow',0],['Fire Pump',30,1,5,'follow',0],['Copper lines',15,1,3,'follow',0],['Commissioning',20,1,3,'follow',2]]}
+  };
+  const uid=p=>(p||'x')+Date.now().toString(36)+Math.random().toString(36).slice(2,5);
+  function makePhases(kind){
+    return TPL[kind].phases.map(([name,weight,cycle,span,mode,lag])=>({id:uid('p'),name,weight,cycle,span,mode,lag,start:''}));
+  }
+
+  function seedArea(kind,name,rows,weight){
+    return {id:uid('a'),name,kind,weight:weight==null?10:weight,totalHours:0,start:'',seq:defSeq(kind),
+      pace:defPace(kind),crew:2,spreadDays:0,phases:makePhases(kind),rows:rows.map(n=>({id:uid('r'),name:n,heads:0}))};
+  }
+  const defSeq=k=>(k==='woodframe'||k==='tower')?'up':'down';
+  const defPace=k=>(k==='woodframe'||k==='tower')?'cycle':'spread';
+  const seqPos=(area,ri)=>area.seq==='up'?(area.rows.length-1-ri):ri;
+  function seed(){
+    return {
+      project:{name:'Untitled project',number:'—',gc:'—',rev:'—'},
+      weightMode:'manual', hoursPerHead:1.5,
+      schedule:{daysPerWeek:5,hoursPerDay:8,weekEnds:5,holidays:'',baselineOn:null},
+      areas:[
+        seedArea('tower','Building A',['L06','L05','L04','L03','L02','L01'],60),
+        seedArea('parkade','Parkade',['P1','P2','P3'],25),
+        seedArea('valveroom','Valve Room',['Valve Room'],15)
+      ],
+      cells:{}, burned:[], updated:null, by:null
+    };
+  }
+
+  let doc=seed(), me='', view='grid', activeArea=null, setupOpen=null, busy=false, dirtyTimer=null;
+  let projIndex=[], tplIndex=[], activeId=null, fieldMode=false;
+
+  const $=s=>document.querySelector(s);
+  const pane=$('#pane'), layer=$('#layer');
+  const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  const ck=(a,r,p)=>a+':'+r+':'+p;
+  const cell=(a,r,p)=>doc.cells[ck(a,r,p)]||{status:S.NS,pct:0,note:'',by:'',at:''};
+  const r1=n=>Math.round(n*10)/10;
+  const areaById=id=>doc.areas.find(a=>a.id===id);
+
+  function pctOf(c){ return c.status===S.DONE?100 : c.status===S.IP?Math.max(0,Math.min(100,c.pct||0)) : 0; }
+  const labour=()=>doc.weightMode==='labour';
+
+  // hours of installed labour represented by a level / area
+  function rowHours(area,row){ return (+row.heads||0)*(+doc.hoursPerHead||0); }
+  function areaHours(area){
+    if(area.kind==='valveroom') return +area.totalHours||0;
+    return area.rows.reduce((s,r)=>s+rowHours(area,r),0);
+  }
+  // weight of a level within its area (drives area %)
+  function rowWeight(area,row){
+    if(labour() && area.kind!=='valveroom'){
+      const anyHeads=area.rows.some(r=>(+r.heads||0)>0);
+      return anyHeads ? (+row.heads||0) : 1;   // fall back to equal if no heads entered yet
+    }
+    return 1;                                   // manual mode & valve rooms: equal
+  }
+  // weight of an area within the project (drives project total)
+  function projWeight(area){ return labour() ? areaHours(area) : (+area.weight||0); }
+
+  function rowPct(area,row){
+    const tw=area.phases.reduce((s,p)=>s+(+p.weight||0),0);
+    if(!tw) return 0;
+    return area.phases.reduce((s,p)=>s+(+p.weight||0)*pctOf(cell(area.id,row.id,p.id)),0)/tw;
+  }
+  function areaPct(area){
+    let w=0,sum=0; area.rows.forEach(r=>{ const rw=rowWeight(area,r); w+=rw; sum+=rw*rowPct(area,r); });
+    return w? sum/w : 0;
+  }
+  function phasePct(area,p){
+    let w=0,sum=0; area.rows.forEach(r=>{ const rw=rowWeight(area,r); w+=rw; sum+=rw*pctOf(cell(area.id,r.id,p.id)); });
+    return w? sum/w : 0;
+  }
+  function totalWeight(){ return doc.areas.reduce((s,a)=>s+(a.rows.length&&projWeight(a)>0?projWeight(a):0),0); }
+  function projectPct(){
+    const w=totalWeight(); if(!w) return 0;
+    let sum=0; doc.areas.forEach(a=>{ if(a.rows.length&&projWeight(a)>0) sum+=areaPct(a)*projWeight(a); });
+    return sum/w;
+  }
+
+  // ---------- working-day calendar ----------
+  const DAY=86400000;
+  function parseD(s){ if(!s) return null; const m=/^(\d{4})-(\d{2})-(\d{2})$/.exec(s); if(!m) return null; return new Date(+m[1],+m[2]-1,+m[3]); }
+  function fmtD(d){ return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0'); }
+  function holidaySet(){
+    const out={}; (doc.schedule&&doc.schedule.holidays||'').split(/[\s,;]+/).forEach(t=>{ if(/^\d{4}-\d{2}-\d{2}$/.test(t)) out[t]=1; }); return out;
+  }
+  function isWork(d,hol,dpw){
+    const g=d.getDay();
+    if(g===0) return false;                 // Sunday never
+    if(g===6 && dpw<6) return false;        // Saturday only on 6-day weeks
+    return !hol[fmtD(d)];
+  }
+  // advance n working days from d (n=0 returns the first working day on or after d)
+  function addWork(d,n,hol,dpw){
+    let c=new Date(d.getTime());
+    while(!isWork(c,hol,dpw)) c=new Date(c.getTime()+DAY);
+    let left=n;
+    while(left>0){ c=new Date(c.getTime()+DAY); while(!isWork(c,hol,dpw)) c=new Date(c.getTime()+DAY); left--; }
+    return c;
+  }
+
+  // start date of a phase on a given row index
+  function phaseStart(area,pi,ri,hol,dpw,cache){
+    const key=pi+'|'+ri; if(cache[key]) return cache[key];
+    const p=area.phases[pi]; let base; const sp=seqPos(area,ri);
+    if(pi===0 || p.mode==='area'){
+      const s=parseD(area.start); if(!s) return null;
+      base=addWork(s, sp*Math.max(0,+p.cycle||0), hol, dpw);
+    } else if(p.mode==='own'){
+      const s=parseD(p.start)||parseD(area.start); if(!s) return null;
+      base=addWork(s, sp*Math.max(0,+p.cycle||0), hol, dpw);
+    } else {
+      const prev=area.phases[pi-1], pd=phaseStart(area,pi-1,ri,hol,dpw,cache); if(!pd) return null;
+      base=addWork(pd, Math.max(0,+prev.span||1)+Math.max(0,+p.lag||0), hol, dpw);
+    }
+    cache[key]=base; return base;
+  }
+
+  // hours attributable to one (row, phase) pair
+  function cellHours(area,row,p){
+    const tw=area.phases.reduce((s,x)=>s+(+x.weight||0),0); if(!tw) return 0;
+    const base = area.kind==='valveroom'
+      ? (areaHours(area)/Math.max(1,area.rows.length))
+      : rowHours(area,row);
+    return base*(+p.weight||0)/tw;
+  }
+
+  // duration in working days for a continuous (spread) area
+  function spreadDays(area){
+    if((+area.spreadDays||0)>0) return Math.round(+area.spreadDays);
+    const daily=Math.max(1,(+area.crew||1))*Math.max(1,(+(doc.schedule&&doc.schedule.hoursPerDay)||8));
+    return Math.max(1,Math.ceil(areaHours(area)/daily));
+  }
+  function phaseHoursTotal(area,p){ return area.rows.reduce((s,r)=>s+cellHours(area,r,p),0); }
+
+  // planned hours laid onto dates -> [{t:ms, h:hours}]
+  function plannedEvents(){
+    const hol=holidaySet(), dpw=(doc.schedule&&+doc.schedule.daysPerWeek)||5, out=[];
+    doc.areas.forEach(area=>{
+      const st0=parseD(area.start); if(!st0) return;
+
+      if(area.pace==='spread'){
+        const D=spreadDays(area), tw=area.phases.reduce((s,x)=>s+(+x.weight||0),0); if(!tw) return;
+        let cursor=0;
+        area.phases.forEach((p,pi)=>{
+          const share=(+p.weight||0)/tw;
+          const pd=(pi===area.phases.length-1)?Math.max(1,D-cursor):Math.max(1,Math.round(D*share));
+          const h=phaseHoursTotal(area,p);
+          if(h>0){ for(let k=0;k<pd;k++) out.push({t:addWork(st0,cursor+k,hol,dpw).getTime(),h:h/pd}); }
+          cursor+=pd;
+        });
+        return;
+      }
+
+      const cache={};
+      area.phases.forEach((p,pi)=>{
+        area.rows.forEach((row,ri)=>{
+          const h=cellHours(area,row,p); if(h<=0) return;
+          const st=phaseStart(area,pi,ri,hol,dpw,cache); if(!st) return;
+          const span=Math.max(1,Math.round(+p.span||1)), per=h/span;
+          for(let k=0;k<span;k++) out.push({t:addWork(st,k,hol,dpw).getTime(),h:per});
+        });
+      });
+    });
+    return out.sort((a,b)=>a.t-b.t);
+  }
+
+  // Friday (or configured day) of the ISO week containing d
+  function weekEnding(d,wd){
+    const g=d.getDay()||7;
+    const mon=new Date(d.getFullYear(),d.getMonth(),d.getDate()-(g-1));
+    return new Date(mon.getFullYear(),mon.getMonth(),mon.getDate()+(Math.max(1,Math.min(7,wd||5))-1));
+  }
+  const thisWeekEnd=()=>fmtD(weekEnding(new Date(),(doc.schedule&&doc.schedule.weekEnds)||5));
+
+  // actual earned hours — by the week the work was done, falling back to when it was logged
+  function actualEvents(){
+    const out=[];
+    doc.areas.forEach(area=>area.rows.forEach(row=>area.phases.forEach(p=>{
+      const c=cell(area.id,row.id,p.id);
+      const pc=pctOf(c); if(pc<=0) return;
+      let d=parseD(c.on); if(!d){ if(!c.at) return; const x=new Date(c.at); if(isNaN(x)) return; d=new Date(x.getFullYear(),x.getMonth(),x.getDate()); }
+      out.push({t:d.getTime(),h:cellHours(area,row,p)*pc/100});
+    })));
+    return out.sort((a,b)=>a.t-b.t);
+  }
+  // burned hours from the weekly timesheet log
+  function burnedEvents(){
+    return (doc.burned||[]).map(b=>{ const d=parseD(b.week); return d?{t:d.getTime(),h:+b.hours||0}:null; })
+      .filter(Boolean).sort((a,b)=>a.t-b.t);
+  }
+  const burnedTotal=()=>(doc.burned||[]).reduce((s,b)=>s+(+b.hours||0),0);
+
+  function totalPlannedHours(){ return doc.areas.reduce((s,a)=>s+(parseD(a.start)?areaHours(a):0),0); }
+
+  // weekly cumulative % series
+  function curveSeries(){
+    const pe=plannedEvents(); if(!pe.length) return null;
+    const ae=actualEvents(), be=burnedEvents();
+    const total=pe.reduce((s,e)=>s+e.h,0); if(total<=0) return null;
+    let lo=pe[0].t, hi=pe[pe.length-1].t;
+    [ae,be].forEach(arr=>{ if(arr.length){ lo=Math.min(lo,arr[0].t); hi=Math.max(hi,arr[arr.length-1].t); } });
+    const now=Date.now();
+    const start=new Date(lo); start.setDate(start.getDate()-start.getDay()+1);
+    const weeks=[]; for(let t=start.getTime(); t<=hi+7*DAY; t+=7*DAY) weeks.push(t);
+    if(weeks.length<2) weeks.push(weeks[0]+7*DAY);
+    const bucket=(ev)=>{ const out=weeks.map(()=>0);
+      ev.forEach(e=>{ let i=Math.floor((e.t-weeks[0])/(7*DAY)); if(i<0)i=0; if(i>=weeks.length)i=weeks.length-1; out[i]+=e.h; });
+      let run=0; return out.map(v=>{ run+=v; return run/total*100; }); };
+    return {weeks,planned:bucket(pe),actual:ae.length?bucket(ae):null,burned:be.length?bucket(be):null,
+      total,now,hasActual:ae.length>0,hasBurned:be.length>0};
+  }
+
+  function toast(t){ const el=document.createElement('div'); el.className='toast'; el.textContent=t; document.body.appendChild(el); setTimeout(()=>el.remove(),2200); }
+
+  // ---------- storage: low level ----------
+  // Local-first storage. Uses the device's own storage when available (running the file
+  // locally); falls back to Claude's shared storage if opened as an artifact.
+  const LOCAL=(function(){ try{ const k='__spk_probe'; window.localStorage.setItem(k,'1'); window.localStorage.removeItem(k); return true; }catch(e){ return false; } })();
+  const LK=k=>'spk:'+k;
+  async function sget(k,shared){
+    if(LOCAL){ try{ const v=window.localStorage.getItem(LK(k)); return v?JSON.parse(v):null; }catch(e){ return null; } }
+    try{ const r=await window.storage.get(k,shared); return r&&r.value?JSON.parse(r.value):null; }catch(e){ return null; }
+  }
+  async function sset(k,v,shared){
+    if(LOCAL){ try{ window.localStorage.setItem(LK(k),JSON.stringify(v)); return; }catch(e){ toast('Device storage full'); return; } }
+    try{ const r=await window.storage.set(k,JSON.stringify(v),shared); if(!r) toast('Save failed'); }catch(e){ toast('Save failed — check connection'); }
+  }
+  async function sdel(k,shared){
+    if(LOCAL){ try{ window.localStorage.removeItem(LK(k)); }catch(e){} return; }
+    try{ await window.storage.delete(k,shared); }catch(e){}
+  }
+
+  // ---------- file export / import ----------
+  function download(name,text,mime){
+    try{
+      const blob=new Blob([text],{type:mime||'application/json'});
+      const url=URL.createObjectURL(blob);
+      const a=document.createElement('a'); a.href=url; a.download=name;
+      document.body.appendChild(a); a.click();
+      setTimeout(()=>{ URL.revokeObjectURL(url); a.remove(); },200);
+      toast('Saved '+name);
+    }catch(e){ toast('Download blocked'); }
+  }
+  const safeName=s=>String(s||'project').replace(/[^A-Za-z0-9._-]+/g,'-').slice(0,40);
+  const stamp=()=>fmtD(new Date());
+
+  function exportProject(){
+    return JSON.stringify({kind:'sprinkler-tracker-project',version:2,exported:new Date().toISOString(),by:me||'',doc},null,1);
+  }
+  async function exportAll(){
+    const projs=[]; for(const p of projIndex){ const d=await sget(PKEY(p.id),true); if(d) projs.push({id:p.id,doc:d}); }
+    const tpls=[]; for(const t of tplIndex){ const d=await sget(TKEY(t.id),true); if(d) tpls.push({id:t.id,name:t.name,tpl:d}); }
+    return JSON.stringify({kind:'sprinkler-tracker-backup',version:2,exported:new Date().toISOString(),by:me||'',projIndex,tplIndex,projs,tpls},null,1);
+  }
+  // Take THEIR structure and settings, keep MY progress. Used when the PM changes
+  // the setup and pushes a fresh file down to a foreman who has unsent work.
+  function adoptSetup(local,incoming){
+    const out=JSON.parse(JSON.stringify(incoming));
+    out.cells={};
+    Object.keys(local.cells||{}).forEach(k=>{ out.cells[k]=local.cells[k]; });
+    const at=x=>x&&x.at?new Date(x.at).getTime():0;
+    let taken=0;
+    Object.keys(incoming.cells||{}).forEach(k=>{
+      const a=out.cells[k], b=incoming.cells[k];
+      if(!a||at(b)>at(a)){ out.cells[k]=b; taken++; }
+    });
+    // drop progress whose level or phase no longer exists in the new structure
+    const valid={};
+    out.areas.forEach(a=>a.rows.forEach(r=>a.phases.forEach(p=>{ valid[ck(a.id,r.id,p.id)]=1; })));
+    let dropped=0;
+    Object.keys(out.cells).forEach(k=>{ if(!valid[k]){ delete out.cells[k]; dropped++; } });
+    const byWeek={}; (local.burned||[]).forEach(x=>byWeek[x.week]=x);
+    (incoming.burned||[]).forEach(x=>{ byWeek[x.week]=x; });
+    out.burned=Object.keys(byWeek).map(w=>byWeek[w]);
+    return {doc:out,taken,dropped,kept:Object.keys(out.cells).length};
+  }
+
+  // structure stays local; progress merges newest-wins per cell
+  function mergeDoc(local,incoming){
+    const out=JSON.parse(JSON.stringify(local));
+    let cells=0,weeks=0;
+    Object.keys(incoming.cells||{}).forEach(k=>{
+      const a=out.cells[k], b=incoming.cells[k];
+      const at=x=>x&&x.at?new Date(x.at).getTime():0;
+      if(!a || at(b)>at(a)){ out.cells[k]=b; cells++; }
+    });
+    const byWeek={}; (out.burned||[]).forEach(x=>byWeek[x.week]=x);
+    (incoming.burned||[]).forEach(x=>{ if(!byWeek[x.week]) weeks++; byWeek[x.week]=x; });
+    out.burned=Object.keys(byWeek).map(w=>byWeek[w]);
+    return {doc:out,cells,weeks};
+  }
+
+  const metaOf=d=>({id:activeId,name:d.project.name,number:d.project.number,gc:d.project.gc});
+  function upsertIndexEntry(){
+    const m={id:activeId,name:doc.project.name,number:doc.project.number,gc:doc.project.gc};
+    const i=projIndex.findIndex(p=>p.id===activeId);
+    if(i<0) projIndex.push(m); else projIndex[i]=m;
+  }
+  function cloneAreasFresh(areas){
+    return areas.map(a=>({id:uid('a'),name:a.name,kind:a.kind,weight:a.weight,totalHours:a.totalHours||0,start:'',seq:a.seq||defSeq(a.kind),pace:a.pace||defPace(a.kind),crew:a.crew||2,spreadDays:a.spreadDays||0,
+      phases:a.phases.map(p=>({id:uid('p'),name:p.name,weight:p.weight,cycle:p.cycle,span:p.span,mode:p.mode,lag:p.lag,start:''})),
+      rows:a.rows.map(r=>({id:uid('r'),name:r.name,heads:r.heads||0}))}));
+  }
+  function normalize(d){
+    d={...seed(),...d};
+    if(d.weightMode==null) d.weightMode='manual';
+    if(d.hoursPerHead==null) d.hoursPerHead=1.5;
+    if(d.schedule==null) d.schedule={daysPerWeek:5,holidays:'',baselineOn:null};
+    if(d.schedule.daysPerWeek==null) d.schedule.daysPerWeek=5;
+    if(d.schedule.holidays==null) d.schedule.holidays=''; if(d.schedule.hoursPerDay==null) d.schedule.hoursPerDay=8; if(d.schedule.weekEnds==null) d.schedule.weekEnds=5; if(!Array.isArray(d.burned)) d.burned=[];
+    d.areas.forEach(a=>{
+      if(a.weight==null) a.weight=Math.max(1,a.rows.length);
+      if(a.totalHours==null) a.totalHours=0;
+      if(a.start==null) a.start=''; if(a.seq==null) a.seq=defSeq(a.kind); if(a.pace==null) a.pace=defPace(a.kind); if(a.crew==null) a.crew=2; if(a.spreadDays==null) a.spreadDays=0;
+      const def=TPL[a.kind]?TPL[a.kind].phases:[];
+      a.phases.forEach((p,i)=>{
+        const dd=def[i]||[];
+        if(p.cycle==null) p.cycle=dd[2]!=null?dd[2]:5;
+        if(p.span==null) p.span=dd[3]!=null?dd[3]:1;
+        if(p.mode==null) p.mode=i===0?'area':(dd[4]||'follow');
+        if(p.lag==null) p.lag=dd[5]!=null?dd[5]:0;
+        if(p.start==null) p.start='';
+      });
+      a.rows.forEach(r=>{ if(r.heads==null) r.heads=0; });
+    });
+    return d;
+  }
+
+  // ---------- storage: orchestration ----------
+  async function boot(){
+    const idn=await sget(ME,false); if(idn) me=idn.name||''; const fm=await sget(FMODE,false); fieldMode=!!(fm&&fm.on);
+    activeId=await sget(ACTIVE,false);
+    projIndex=await sget(PIDX,true)||[];
+    tplIndex=await sget(TIDX,true)||[];
+
+    if(!projIndex.length){
+      // migrate a legacy single project, or start fresh
+      const old=await sget(OLD,true);
+      const d= old? normalize(old) : seed();
+      activeId=uid('proj');
+      doc=d; upsertIndexEntry();
+      await sset(PIDX,projIndex,true); await sset(PKEY(activeId),doc,true); await sset(ACTIVE,activeId,false);
+    }
+    if(!activeId || !projIndex.some(p=>p.id===activeId)){ activeId=projIndex[0].id; await sset(ACTIVE,activeId,false); }
+    doc=normalize(await sget(PKEY(activeId),true)||seed());
+    if(!doc.areas.some(a=>a.id===activeArea)) activeArea=doc.areas[0]?doc.areas[0].id:null;
+    render();
+  }
+  async function reloadDoc(){
+    projIndex=await sget(PIDX,true)||projIndex;
+    tplIndex=await sget(TIDX,true)||tplIndex;
+    const d=await sget(PKEY(activeId),true); if(d){ doc=normalize(d); if(!doc.areas.some(a=>a.id===activeArea)) activeArea=doc.areas[0]?doc.areas[0].id:null; }
+    render();
+  }
+  async function save(stamp){
+    if(stamp!==false){ doc.updated=new Date().toISOString(); doc.by=me||''; }
+    upsertIndexEntry();
+    await sset(PKEY(activeId),doc,true);
+    await sset(PIDX,projIndex,true);
+    render();
+  }
+  async function saveCell(aid,rid,pid,patch){
+    busy=true; let latest=doc;
+    const d=await sget(PKEY(activeId),true); if(d) latest=normalize(d);
+    latest.cells[ck(aid,rid,pid)]={...patch,by:me||'',at:new Date().toISOString()};
+    latest.updated=new Date().toISOString(); latest.by=me||'';
+    doc=latest;
+    await sset(PKEY(activeId),doc,true);
+    busy=false; render();
+  }
+  function pruneArea(aid){ Object.keys(doc.cells).forEach(k=>{ if(k.indexOf(aid+':')===0) delete doc.cells[k]; }); }
+
+  // ---------- project / template actions ----------
+  async function switchProject(id){
+    if(id===activeId) return;
+    activeId=id; await sset(ACTIVE,id,false);
+    doc=normalize(await sget(PKEY(id),true)||seed());
+    activeArea=doc.areas[0]?doc.areas[0].id:null; setupOpen=null; view='grid';
+    render();
+  }
+  async function createProject(name,fromTplId){
+    let areas, mode='manual', hph=1.5, sch={daysPerWeek:5,hoursPerDay:8,weekEnds:5,holidays:'',baselineOn:null};
+    if(fromTplId){ const t=await sget(TKEY(fromTplId),true); areas=cloneAreasFresh((t&&t.areas)||[]); if(t&&t.weightMode) mode=t.weightMode; if(t&&t.hoursPerHead!=null) hph=t.hoursPerHead; if(t&&t.schedule) sch={daysPerWeek:t.schedule.daysPerWeek||5,hoursPerDay:t.schedule.hoursPerDay||8,weekEnds:t.schedule.weekEnds||5,holidays:t.schedule.holidays||'',baselineOn:null}; }
+    else areas=[ {id:uid('a'),name:'Building A',kind:'woodframe',weight:100,totalHours:0,start:'',seq:'up',pace:'cycle',crew:2,spreadDays:0,phases:makePhases('woodframe'),rows:['L04','L03','L02','L01'].map(n=>({id:uid('r'),name:n,heads:0}))} ];
+    const d={project:{name:name||'New project',number:'—',gc:'—',rev:'—'},weightMode:mode,hoursPerHead:hph,schedule:sch,areas,cells:{},burned:[],updated:null,by:me||''};
+    activeId=uid('proj'); doc=d; upsertIndexEntry();
+    await sset(PKEY(activeId),doc,true); await sset(PIDX,projIndex,true); await sset(ACTIVE,activeId,false);
+    activeArea=doc.areas[0]?doc.areas[0].id:null; setupOpen=null; view='setup';
+    render(); toast('Project created');
+  }
+  async function duplicateProject(){
+    const d=JSON.parse(JSON.stringify(doc)); d.project.name=doc.project.name+' (copy)';
+    activeId=uid('proj'); doc=d; upsertIndexEntry();
+    await sset(PKEY(activeId),doc,true); await sset(PIDX,projIndex,true); await sset(ACTIVE,activeId,false);
+    render(); toast('Duplicated');
+  }
+  async function deleteProject(id){
+    await sdel(PKEY(id),true);
+    projIndex=projIndex.filter(p=>p.id!==id);
+    await sset(PIDX,projIndex,true);
+    if(id===activeId){
+      if(projIndex.length){ activeId=projIndex[0].id; await sset(ACTIVE,activeId,false); doc=normalize(await sget(PKEY(activeId),true)||seed()); }
+      else { await createProject('New project'); return; }
+      activeArea=doc.areas[0]?doc.areas[0].id:null;
+    }
+    render(); toast('Project deleted');
+  }
+  async function saveTemplate(name){
+    const t={id:uid('tpl'),name:name||(doc.project.name+' template')};
+    tplIndex.push({id:t.id,name:t.name});
+    await sset(TKEY(t.id),{weightMode:doc.weightMode,hoursPerHead:doc.hoursPerHead,schedule:{daysPerWeek:doc.schedule.daysPerWeek,hoursPerDay:doc.schedule.hoursPerDay,weekEnds:doc.schedule.weekEnds,holidays:doc.schedule.holidays,baselineOn:null},areas:JSON.parse(JSON.stringify(doc.areas))},true);
+    await sset(TIDX,tplIndex,true);
+    render(); toast('Template saved');
+  }
+  async function deleteTemplate(id){
+    await sdel(TKEY(id),true);
+    tplIndex=tplIndex.filter(t=>t.id!==id);
+    await sset(TIDX,tplIndex,true);
+    render();
+  }
+
+  // ---------- head ----------
+  function paintHead(){
+    const p=projectPct();
+    $('#fill').style.width=p+'%'; $('#bigpct').textContent=Math.round(p);
+    const f=[['Project',doc.project.name],['Job no.',doc.project.number],['General contractor',doc.project.gc],['Rev',doc.project.rev]];
+    $('#tbf').innerHTML=f.map(([k,v])=>`<div class="tb-f"><span class="k">${esc(k)}</span><span class="v" title="${esc(v)}">${esc(v||'—')}</span></div>`).join('');
+    $('#stamp').textContent = doc.updated ? 'Last update '+new Date(doc.updated).toLocaleString([], {month:'short',day:'numeric',hour:'numeric',minute:'2-digit'})+(doc.by?' · '+doc.by:'') : 'No updates logged yet';
+    $('#who').textContent = me ? me : 'Sign in';
+    const setupTab=document.querySelector('.tab[data-v="setup"]');
+    if(setupTab) setupTab.style.display = fieldMode?'none':'';
+    const pb=$('#projbtn'), ps=$('#projsel');
+    if(pb) pb.style.display = fieldMode?'none':'';
+    if(ps) ps.disabled = fieldMode;
+    const sel=$('#projsel');
+    if(sel){
+      sel.innerHTML=projIndex.map(p=>`<option value="${esc(p.id)}" ${p.id===activeId?'selected':''}>${esc(p.name)}${p.number&&p.number!=='—'?' · '+esc(p.number):''}</option>`).join('') || '<option>—</option>';
+    }
+    document.querySelectorAll('.tab').forEach(t=>t.setAttribute('aria-selected',String(t.dataset.v===view)));
+  }
+
+  // ---------- progress ----------
+  function areaGrid(area){
+    if(!area.rows.length) return `<div class="empty">No rows in ${esc(area.name)} yet. Add ${esc(TPL[area.kind].rowLabel.toLowerCase())} in Setup.</div>`;
+    let h='<div class="scroller"><table class="grid"><thead><tr><th class="lvl">'+esc(TPL[area.kind].rowNoun)+'</th>';
+    area.phases.forEach(p=>{ h+=`<th>${esc(p.name)}<span class="w">${esc(p.weight)}</span></th>`; });
+    h+='<th style="text-align:right">%</th></tr></thead><tbody>';
+    area.rows.forEach(r=>{
+      h+=`<tr><th class="lvl" scope="row">${esc(r.name)}</th>`;
+      area.phases.forEach(p=>{
+        const c=cell(area.id,r.id,p.id), pc=pctOf(c);
+        h+=`<td><button class="cell" data-s="${c.status}" data-a="${esc(area.id)}" data-r="${esc(r.id)}" data-p="${esc(p.id)}"
+            aria-label="${esc(r.name)} ${esc(p.name)}: ${SNAME[c.status]}${c.status===S.IP?' '+pc+'%':''}">
+            ${c.status===S.IP?`<span class="bar" style="width:${pc}%"></span>`:''}
+            <span class="txt">${c.status===S.IP?pc+'%':''}</span>
+            ${c.note?'<span class="flag">●</span>':''}</button></td>`;
+      });
+      h+=`<td class="rowpct">${r1(rowPct(area,r))}</td></tr>`;
+    });
+    return h+'</tbody></table></div>';
+  }
+  function viewGrid(){
+    if(!doc.areas.length) return `<div class="empty">No buildings yet. Open <b>Setup</b> to add your first building, parkade, or valve room.</div>`;
+    let h='<div class="pills">';
+    doc.areas.forEach(a=>{ h+=`<button class="pill" data-area="${esc(a.id)}" aria-pressed="${a.id===activeArea}">${esc(a.name)} <b>${Math.round(areaPct(a))}%</b></button>`; });
+    h+='</div>';
+    const area=areaById(activeArea)||doc.areas[0];
+    h+=`<div class="area-h"><h3>${esc(area.name)} <span class="kindtag">${esc(TPL[area.kind].label)}</span></h3><span class="ap">${r1(areaPct(area))}% complete</span></div>`;
+    h+=areaGrid(area);
+    h+=`<div class="legend">
+      <span class="lg"><span class="sw" style="background:var(--bare)"></span>Not started</span>
+      <span class="lg"><span class="sw" style="background:var(--amber);border-color:var(--amber)"></span>In progress</span>
+      <span class="lg"><span class="sw" style="background:var(--green);border-color:var(--green)"></span>Complete</span>
+      <span class="lg"><span class="sw" style="background:var(--red);border-color:var(--red)"></span>Blocked</span>
+      <span class="lg">● note</span></div>
+      <p class="hint">Tap a cell to set status. Column headers show each phase's weight toward that ${esc(TPL[area.kind].rowNoun)}'s percent.</p>`;
+    return h;
+  }
+
+  // ---------- billing ----------
+  function viewBill(){
+    if(!doc.areas.length) return `<div class="empty">Nothing to bill yet — add areas in Setup.</div>`;
+    let h='';
+    doc.areas.forEach(area=>{
+      const tw=area.phases.reduce((s,p)=>s+(+p.weight||0),0);
+      h+=`<div class="billarea"><span>${esc(area.name)} <span class="k">${esc(TPL[area.kind].label)}</span></span><span>${r1(areaPct(area))}%</span></div>`;
+      h+=`<table class="plain"><thead><tr><th>Phase</th><th>Weight</th><th>Complete</th><th>Earned</th></tr></thead><tbody>`;
+      area.phases.forEach(p=>{ const pc=phasePct(area,p), earned=tw?(+p.weight||0)*pc/tw:0; h+=`<tr><td>${esc(p.name)}</td><td>${esc(p.weight)}</td><td>${r1(pc)}%</td><td>${r1(earned)}%</td></tr>`; });
+      h+=`<tr class="sum"><td>${esc(TPL[area.kind].label)}</td><td>${tw}</td><td></td><td>${r1(areaPct(area))}%</td></tr></tbody></table>`;
+    });
+    const totW=totalWeight(), lab=labour(), basis=lab?'Hours':'Weight';
+    h+=`<div class="billarea" style="border-top:1px solid var(--rule);padding-top:10px;margin-top:20px"><span>Project rollup</span><span>${r1(projectPct())}%</span></div>`;
+    h+=`<table class="plain"><thead><tr><th>Area</th><th>${basis}</th><th>Share</th><th>Complete</th><th>Contribution</th></tr></thead><tbody>`;
+    doc.areas.forEach(a=>{
+      const w=projWeight(a), active=a.rows.length&&w>0, share=active&&totW?w/totW*100:0, contrib=active&&totW?areaPct(a)*w/totW:0;
+      h+=`<tr><td>${esc(a.name)}</td><td>${lab?r1(w):esc(a.weight)}</td><td>${active?r1(share)+'%':'—'}</td><td>${r1(areaPct(a))}%</td><td>${active?r1(contrib)+'%':'—'}</td></tr>`;
+    });
+    h+=`<tr class="sum"><td>Project</td><td>${lab?r1(totW):totW}</td><td>100%</td><td></td><td>${r1(projectPct())}%</td></tr></tbody></table>`;
+    h+=`<div class="row" style="margin-top:12px"><button class="btn" id="cpsum">Copy draw summary</button><button class="btn" id="cpcsv">Copy CSV</button></div>`;
+    h+=lab
+      ? `<p class="hint">Each area's share comes from its labour hours — heads × hours per head for buildings and parkades, and the entered total for the valve room. Levels inside a building are weighted by their own head count, so a heavy floor moves the number more than a light one. Areas with no hours sit out of the rollup.</p>`
+      : `<p class="hint">Each area's weight sets its share of the project percentage, regardless of row count. Switch to labour weighting in Setup to derive these from heads and hours instead.</p>`;
+    return h;
+  }
+
+  // ---------- curve ----------
+  function viewCurve(){
+    const noStart=doc.areas.filter(a=>!parseD(a.start));
+    const s=curveSeries();
+    if(!s) return `<div class="empty">No baseline yet. Set a <b>start date</b> for at least one area in Setup — the curve is built from your hours and that schedule.</div>`;
+    const W=680,H=290,L=42,R=12,T=14,B=34, iw=W-L-R, ih=H-T-B;
+    const n=s.weeks.length, x=i=>L+(n<2?iw/2:i*iw/(n-1)), y=v=>T+ih-(v/100*ih);
+    const path=arr=>arr.map((v,i)=>(i?'L':'M')+r1(x(i))+' '+r1(y(v))).join(' ');
+    let ti=Math.floor((s.now-s.weeks[0])/(7*DAY)); ti=Math.max(0,Math.min(n-1,ti));
+    const pNow=s.planned[ti], aNow=s.hasActual?s.actual[ti]:null, bNow=s.hasBurned?s.burned[ti]:null;
+    const schV=aNow==null?null:aNow-pNow;
+    const prodV=(aNow==null||bNow==null)?null:aNow-bNow;
+    const col=v=>v==null?'inherit':(v<0?'var(--red)':'var(--green)');
+    let g='';
+    for(let v=0;v<=100;v+=25) g+=`<line x1="${L}" y1="${r1(y(v))}" x2="${W-R}" y2="${r1(y(v))}" stroke="var(--hair)" stroke-width="1"/><text x="${L-6}" y="${r1(y(v))+4}" text-anchor="end" class="axl">${v}%</text>`;
+    const step=Math.max(1,Math.ceil(n/8));
+    for(let i=0;i<n;i+=step){ const d=new Date(s.weeks[i]);
+      g+=`<text x="${r1(x(i))}" y="${H-12}" text-anchor="middle" class="axl">${d.toLocaleDateString([], {month:'short',day:'numeric'})}</text>`; }
+    const areaPath=`M${L} ${r1(y(0))} `+s.planned.map((v,i)=>'L'+r1(x(i))+' '+r1(y(v))).join(' ')+` L${r1(x(n-1))} ${r1(y(0))} Z`;
+
+    let h=`<div class="sec" style="margin-top:0">Planned vs actual — ${r1(s.total)} budgeted hours</div>
+    <div class="chartwrap"><svg viewBox="0 0 ${W} ${H}" width="100%" role="img" aria-label="Cumulative progress curves: planned baseline, earned actual, and burned timesheet hours">
+      ${g}
+      <path d="${areaPath}" fill="var(--fillplan)"/>
+      <path d="${path(s.planned)}" fill="none" stroke="var(--plan)" stroke-width="2" stroke-linejoin="round"/>
+      ${s.hasBurned?`<path d="${path(s.burned)}" fill="none" stroke="var(--burn)" stroke-width="2" stroke-dasharray="2 3" stroke-linejoin="round"/>`:''}
+      ${s.hasActual?`<path d="${path(s.actual)}" fill="none" stroke="var(--act)" stroke-width="2" stroke-dasharray="6 4" stroke-linejoin="round"/>`:''}
+      <line x1="${r1(x(ti))}" y1="${T}" x2="${r1(x(ti))}" y2="${T+ih}" stroke="var(--muted)" stroke-width="1" stroke-dasharray="3 3"/>
+      <text x="${r1(x(ti))+4}" y="${T+10}" class="axl">today</text>
+      <line x1="${L}" y1="${T+ih}" x2="${W-R}" y2="${T+ih}" stroke="var(--rule)" stroke-width="1"/>
+    </svg></div>
+    <div class="legend" style="margin-top:8px">
+      <span class="lg"><span class="sw" style="background:var(--plan);border-color:var(--plan)"></span>Planned</span>
+      <span class="lg"><span class="sw" style="background:var(--act);border-color:var(--act)"></span>Earned${s.hasActual?'':' — none logged'}</span>
+      <span class="lg"><span class="sw" style="background:var(--burn);border-color:var(--burn)"></span>Burned${s.hasBurned?'':' — none entered'}</span>
+    </div>`;
+
+    h+=`<div class="sec">Position today</div><table class="plain"><tbody>
+      <tr><td>Planned</td><td>${r1(pNow)}%</td><td>${r1(pNow/100*s.total)} h</td></tr>
+      <tr><td>Earned</td><td>${aNow==null?'—':r1(aNow)+'%'}</td><td>${aNow==null?'—':r1(aNow/100*s.total)+' h'}</td></tr>
+      <tr><td>Burned</td><td>${bNow==null?'—':r1(bNow)+'%'}</td><td>${bNow==null?'—':r1(bNow/100*s.total)+' h'}</td></tr>
+      <tr class="sum"><td>Schedule</td><td style="color:${col(schV)}">${schV==null?'—':(schV>0?'+':'')+r1(schV)+'%'}</td><td style="color:${col(schV)}">${schV==null?'—':(schV>0?'+':'')+r1(schV/100*s.total)+' h'}</td></tr>
+      <tr class="sum"><td>Productivity</td><td style="color:${col(prodV)}">${prodV==null?'—':(prodV>0?'+':'')+r1(prodV)+'%'}</td><td style="color:${col(prodV)}">${prodV==null?'—':(prodV>0?'+':'')+r1(prodV/100*s.total)+' h'}</td></tr>
+    </tbody></table>
+    <p class="hint"><b>Schedule</b> is earned minus planned — are you keeping up. <b>Productivity</b> is earned minus burned — are the hours you spent producing the work you estimated. Negative is behind or over.</p>
+    <div class="row" style="margin-top:12px"><button class="btn" id="cpcurve">Copy curve data</button></div>`;
+
+    h+=`<div class="sec">Weekly burned hours</div>
+    <div class="row" style="flex-wrap:wrap">
+      <div style="flex:0 0 150px"><label class="mini">Week ending</label><input class="inp" type="date" id="bw" value="${esc(thisWeekEnd())}"></div>
+      <div style="flex:0 0 100px"><label class="mini">Hours</label><input class="inp num" id="bh" inputmode="decimal" placeholder="0"></div>
+      <div style="flex:0 0 auto;align-self:flex-end"><button class="btn" id="baddb">Add</button></div>
+    </div>`;
+    const bl=(doc.burned||[]).slice().sort((x,z)=>(x.week<z.week?1:-1));
+    if(bl.length){
+      h+=`<div class="mlist" style="margin-top:8px">${bl.map(b=>`<div class="mrow">
+        <span class="mname">${esc(b.week)}</span>
+        <span class="msub">${r1(+b.hours||0)} h</span>
+        <button class="btn dim danger sm" data-bdel="${esc(b.id)}" aria-label="Delete entry">×</button></div>`).join('')}</div>
+        <p class="hint">Total burned to date: <b>${r1(burnedTotal())} h</b> of ${r1(s.total)} budgeted.</p>`;
+    } else {
+      h+=`<p class="hint">Nothing entered yet. Add your weekly timesheet total each week and the burned line appears on the chart.</p>`;
+    }
+
+    if(noStart.length) h+=`<p class="hint"><b>Not in the baseline:</b> ${noStart.map(a=>esc(a.name)).join(', ')} — no start date set, so those hours are excluded from the curve and totals above.</p>`;
+    return h;
+  }
+
+  // ---------- blockers ----------
+  function viewBlocked(){
+    const out=[];
+    doc.areas.forEach(a=>a.rows.forEach(r=>a.phases.forEach(p=>{ const c=cell(a.id,r.id,p.id); if(c.status===S.BLOCKED) out.push({a,r,p,c}); })));
+    let h=`<div class="sec">Blocked — ${out.length} item${out.length===1?'':'s'}</div>`;
+    if(!out.length) return h+`<div class="empty">Nothing blocked. Mark a cell <b>Blocked</b> and it lands here for your look-ahead.</div>`;
+    out.forEach(({a,r,p,c})=>{
+      h+=`<div class="blk"><h4>${esc(a.name)} · ${esc(r.name)} · ${esc(p.name)}</h4>
+        <p>${c.note?esc(c.note):'<span style="color:var(--muted)">No reason logged.</span>'}</p>
+        ${c.by||c.at?`<div class="who">${esc(c.by||'—')}${c.at?' · '+new Date(c.at).toLocaleDateString([], {month:'short',day:'numeric'}):''}</div>`:''}</div>`;
+    });
+    return h+`<div class="row" style="margin-top:12px"><button class="btn" id="cpblk">Copy blocker list</button></div>`;
+  }
+
+  // ---------- setup ----------
+  function nextBuildingLetter(){
+    const n=doc.areas.filter(a=>a.kind==='woodframe'||a.kind==='tower').length;
+    return n<26 ? String.fromCharCode(65+n) : String(n+1);
+  }
+  function viewSetup(){
+    let h=`<div class="sec">Title block</div>
+    <div class="fgrid">
+      <div><label class="lab" for="f-name">Project</label><input class="inp" id="f-name" value="${esc(doc.project.name)}"></div>
+      <div><label class="lab" for="f-num">Job no.</label><input class="inp" id="f-num" value="${esc(doc.project.number)}"></div>
+      <div><label class="lab" for="f-gc">General contractor</label><input class="inp" id="f-gc" value="${esc(doc.project.gc)}"></div>
+      <div><label class="lab" for="f-rev">Rev</label><input class="inp" id="f-rev" value="${esc(doc.project.rev)}"></div>
+    </div>
+    <div class="sec">Weighting basis</div>
+    <div class="row">
+      <button class="btn ${doc.weightMode==='manual'?'':'dim'}" id="wm-manual">Manual</button>
+      <button class="btn ${doc.weightMode==='labour'?'':'dim'}" id="wm-labour">By labour · heads × hours</button>
+    </div>
+    ${doc.weightMode==='labour'?`
+    <div class="row" style="margin-top:8px">
+      <label class="lab" for="hph" style="margin:0 4px 0 0;flex:0 0 auto">Hours per head</label>
+      <input class="inp num" id="hph" value="${esc(doc.hoursPerHead)}" style="flex:0 0 90px" inputmode="decimal">
+      <span class="hint" style="margin:0">Installed labour hours for one head, applied across every building and parkade.</span>
+    </div>
+    <p class="hint">Enter heads per level inside each area below; the valve room takes a total-hours figure instead. Levels and areas are then weighted by their share of total labour hours — no manual weights to guess.</p>`:`
+    <p class="hint">Manual mode: you type each area's relative weight by hand. Switch to <b>By labour</b> to derive weights from heads per level and hours per head.</p>`}
+    <div class="sec">Calendar</div>
+    <div class="row">
+      <button class="btn ${(doc.schedule.daysPerWeek||5)==5?'':'dim'}" id="dpw-5">5-day week</button>
+      <button class="btn ${(doc.schedule.daysPerWeek||5)==6?'':'dim'}" id="dpw-6">6-day week</button>
+    </div>
+    <div style="margin-top:8px" class="row">
+      <div style="flex:0 0 120px"><label class="lab" for="hpd">Hours per day</label>
+        <input class="inp num" id="hpd" value="${esc(doc.schedule.hoursPerDay||8)}" inputmode="decimal"></div>
+      <span class="hint" style="margin:0">Per fitter. Used to convert an area's hours into a duration.</span>
+    </div>
+    <div style="margin-top:8px"><label class="lab" for="hols">Shutdown &amp; stat days</label>
+      <input class="inp" id="hols" value="${esc(doc.schedule.holidays||'')}" placeholder="2026-12-24 2026-12-25 2026-12-26"></div>
+    <p class="hint">Space-separated dates in YYYY-MM-DD. Sundays are always excluded; Saturdays too on a 5-day week.</p>
+    <div class="sec">Areas</div>
+    <div id="areas"></div>
+    <div class="row" style="flex-wrap:wrap;margin-top:10px">
+      <button class="btn" id="add-building">Add building</button>
+      <button class="btn dim" id="add-parkade">Add parkade</button>
+      <button class="btn dim" id="add-valve">Add valve room</button>
+    </div>
+    <div class="sec">Data &amp; backup</div>
+    <p class="hint" style="margin-top:0">${LOCAL?'Everything is stored <b>on this device only</b>. Nothing leaves it until you export. If this device is wiped or the browser data cleared, the data is gone — export weekly.':'Running from a shared link — data is stored online and visible to everyone with the link.'}</p>
+    <div class="row" style="flex-wrap:wrap;margin-top:8px">
+      <button class="btn" id="exp1">Export this project</button>
+      <button class="btn dim" id="expall">Backup everything</button>
+      <button class="btn dim" id="expcsv">Export CSV</button>
+    </div>
+    <div class="row" style="flex-wrap:wrap">
+      <button class="btn dim" id="impbtn">Import a file…</button>
+      <input type="file" id="impfile" style="display:none">
+    </div>
+    <p class="hint">Import offers <b>Merge</b> (keeps your setup, takes the newest progress per cell — this is how you fold in a foreman's file) or <b>Replace</b>. Merging only works between copies that came from the same original export, since the levels and phases have to match up.</p>
+
+    <div class="sec">Reuse on the next job</div>
+    <div class="row" style="flex-wrap:wrap">
+      <button class="btn danger" id="clr">Clear progress, keep structure</button>
+      <button class="btn danger" id="reset">Reset to defaults</button>
+    </div>
+    <p class="hint">“Clear progress” keeps every area, its phases and rows so you can carry the same structure to the next project.</p>`;
+    return h;
+  }
+  function paintAreas(){
+    const box=$('#areas'); if(!box) return;
+    box.innerHTML = doc.areas.map(a=>{
+      const open=a.id===setupOpen, t=TPL[a.kind], tw=a.phases.reduce((s,p)=>s+(+p.weight||0),0);
+      let b='';
+      if(open){
+        b=`<div class="acard-b">
+          <div class="fgrid">
+            <div><label class="lab">Area name</label><input class="inp" data-an="${a.id}" value="${esc(a.name)}"></div>
+            <div><label class="lab">Type</label>
+              <select class="inp" data-ak="${a.id}">
+                <option value="woodframe" ${a.kind==='woodframe'?'selected':''}>Woodframe</option>
+                <option value="tower" ${a.kind==='tower'?'selected':''}>Tower</option>
+                <option value="parkade" ${a.kind==='parkade'?'selected':''}>Parkade</option>
+                <option value="valveroom" ${a.kind==='valveroom'?'selected':''}>Valve room</option>
+              </select>
+            </div>
+          </div>
+          ${doc.weightMode==='labour' ? (
+            a.kind==='valveroom'
+              ? `<label class="lab" for="th-${a.id}">Total labour hours (valve room)</label>
+                 <div class="row"><input class="inp num" id="th-${a.id}" data-th="${a.id}" value="${esc(a.totalHours)}" style="flex:0 0 110px" inputmode="decimal">
+                   <span class="hint" style="margin:0">Enter the valve room's total install hours directly — no head count.</span></div>`
+              : `<label class="lab">Labour</label>
+                 <div class="row"><span class="hint" style="margin:0">${a.rows.reduce((s,r)=>s+(+r.heads||0),0)} heads × ${esc(doc.hoursPerHead)} h = <b>${r1(areaHours(a))} h</b>. Set heads per ${esc(t.rowNoun)} below.</span></div>`
+          ) : `<label class="lab" for="aw-${a.id}">Weight in project total</label>
+          <div class="row"><input class="inp num" id="aw-${a.id}" data-aw="${a.id}" value="${esc(a.weight)}" style="flex:0 0 90px" inputmode="numeric">
+            <span class="hint" style="margin:0">Relative share of the project percentage — set these to contract value or labour so bigger areas count for more.</span></div>`}
+          <label class="lab" style="margin-top:12px">Phases <span class="tot ${tw!==100?'bad':''}">weights total ${tw}</span></label>
+          ${a.phases.map((p,i)=>`<div class="row">
+            <input class="inp" data-pn="${a.id}|${i}" value="${esc(p.name)}" aria-label="Phase name">
+            <input class="inp num" data-pw="${a.id}|${i}" value="${esc(p.weight)}" style="flex:0 0 66px" inputmode="numeric" aria-label="Weight">
+            <button class="btn dim danger sm" data-pd="${a.id}|${i}" aria-label="Delete phase">×</button></div>`).join('')}
+          <div class="row"><button class="btn dim sm" data-addp="${a.id}">Add phase</button>
+            <button class="btn dim sm" data-defp="${a.id}">Reset phases to ${esc(t.label)} default</button></div>
+
+          <label class="lab" style="margin-top:12px">${esc(t.rowLabel)}${doc.weightMode==='labour'&&a.kind!=='valveroom'?' · heads':''}</label>
+          ${a.rows.map((r,i)=>`<div class="row">
+            <button class="btn dim sm" data-up="${a.id}|${i}" aria-label="Move up" ${i===0?'disabled style="opacity:.3"':''}>↑</button>
+            <button class="btn dim sm" data-down="${a.id}|${i}" aria-label="Move down" ${i===a.rows.length-1?'disabled style="opacity:.3"':''}>↓</button>
+            <input class="inp" data-rn="${a.id}|${i}" value="${esc(r.name)}" aria-label="Row name">
+            ${doc.weightMode==='labour'&&a.kind!=='valveroom'?`<input class="inp num" data-rh="${a.id}|${i}" value="${esc(r.heads)}" style="flex:0 0 70px" inputmode="numeric" aria-label="Heads on ${esc(r.name)}" placeholder="heads">`:''}
+            <button class="btn dim danger sm" data-rd="${a.id}|${i}" aria-label="Delete row">×</button></div>`).join('')}
+          <div class="row" style="margin-top:6px">
+            <input class="inp" data-genp="${a.id}" placeholder="Prefix" value="${a.kind==='parkade'?'P':(a.kind==='valveroom'?'':'L')}" style="flex:0 0 80px">
+            <input class="inp num" data-gena="${a.id}" placeholder="1" style="flex:0 0 56px" inputmode="numeric">
+            <input class="inp num" data-genb="${a.id}" placeholder="6" style="flex:0 0 56px" inputmode="numeric">
+            <button class="btn dim sm" data-gen="${a.id}">Generate</button>
+            <button class="btn dim sm" data-addr="${a.id}">Add one</button>
+          </div>
+          <p class="hint">Generate replaces the list. “Add one” appends a blank you can rename — useful for P1 North / P1 South.</p>
+
+          <label class="lab" style="margin-top:14px">Schedule</label>
+          <div class="row"><span class="mini" style="margin:0 6px 0 0;flex:0 0 auto">Pacing</span>
+            <select class="inp" data-ap="${a.id}" style="flex:0 0 210px">
+              <option value="cycle" ${a.pace!=='spread'?'selected':''}>Level by level — floor cycle</option>
+              <option value="spread" ${a.pace==='spread'?'selected':''}>Continuous — hours over a window</option>
+            </select></div>
+          <div class="row"><span class="mini" style="margin:0 6px 0 0;flex:0 0 auto">Start</span>
+            <input class="inp" type="date" data-as="${a.id}" value="${esc(a.start||'')}" style="flex:0 0 150px"></div>
+          ${a.pace==='spread' ? `
+          <div class="row" style="flex-wrap:wrap">
+            <div style="flex:0 0 84px"><label class="mini">Crew</label><input class="inp num" data-ac="${a.id}" value="${esc(a.crew)}" inputmode="numeric"></div>
+            <div style="flex:0 0 110px"><label class="mini">Force days</label><input class="inp num" data-ad2="${a.id}" value="${esc(a.spreadDays||'')}" placeholder="auto" inputmode="numeric"></div>
+            <div style="flex:1 1 auto"><span class="mini">Duration</span><span class="tot">${r1(areaHours(a))} h ÷ ${esc(a.crew||1)} × ${esc((doc.schedule.hoursPerDay||8))} h = <b>${spreadDays(a)} working days</b></span></div>
+          </div>
+          <p class="hint">No floor cycle here — the hours spread evenly from the start date across a window sized by your crew. Phases take slices of that window in order, proportional to their weights. Leave <b>Force days</b> blank to derive it, or type a number when the GC hands you a fixed window.</p>
+          ` : `
+          <div class="row"><span class="mini" style="margin:0 6px 0 0;flex:0 0 auto">Work sequence</span>
+            <select class="inp" data-aq="${a.id}" style="flex:0 0 190px">
+              <option value="up" ${a.seq==='up'?'selected':''}>Bottom up — ${esc(a.rows.length?a.rows[a.rows.length-1].name:'last')} first</option>
+              <option value="down" ${a.seq!=='up'?'selected':''}>Top down — ${esc(a.rows.length?a.rows[0].name:'first')} first</option>
+            </select></div>
+          ${a.phases.map((p,i)=>`<div class="sched">
+            <div class="pnm">${esc(p.name)}</div>
+            <div class="row" style="flex-wrap:wrap;margin:0">
+              ${i===0?`<div style="flex:0 0 auto"><span class="mini">Timing</span><span class="tot">starts with area</span></div>`
+                :`<div style="flex:0 0 130px"><label class="mini">Timing</label>
+                  <select class="inp" data-pm="${a.id}|${i}">
+                    <option value="follow" ${p.mode!=='own'?'selected':''}>Follows previous</option>
+                    <option value="own" ${p.mode==='own'?'selected':''}>Own start date</option>
+                  </select></div>`}
+              ${i>0&&p.mode==='own'
+                ?`<div style="flex:0 0 150px"><label class="mini">Start (first level)</label><input class="inp" type="date" data-ps="${a.id}|${i}" value="${esc(p.start||'')}"></div>`
+                :(i>0?`<div style="flex:0 0 74px"><label class="mini">Lag days</label><input class="inp num" data-pl="${a.id}|${i}" value="${esc(p.lag)}" inputmode="numeric"></div>`:'')}
+              <div style="flex:0 0 84px"><label class="mini">Cycle days</label><input class="inp num" data-pc="${a.id}|${i}" value="${esc(p.cycle)}" inputmode="numeric"></div>
+              <div style="flex:0 0 84px"><label class="mini">Work days</label><input class="inp num" data-psp="${a.id}|${i}" value="${esc(p.span)}" inputmode="numeric"></div>
+            </div>
+          </div>`).join('')}
+          <p class="hint"><b>Cycle</b> is how often you move to the next level. <b>Work days</b> is how long the work actually takes on one level — finishing at a 10-day cycle with 1 work day makes the hours land in lumps, which is what really happens.</p>
+          `}
+          <div class="row" style="margin-top:10px"><button class="btn danger sm" data-ad="${a.id}">Delete this area</button></div>
+        </div>`;
+      }
+      return `<div class="acard"><div class="acard-h" data-atoggle="${a.id}">
+          <span class="nm">${esc(a.name)}</span>
+          <span class="kindtag">${esc(t.label)}</span>
+          <span class="kindtag wtag" data-wtag="${a.id}">${labour()?r1(areaHours(a))+' h':'W '+esc(a.weight)}</span>
+          <span class="tot">${Math.round(areaPct(a))}%</span>
+          <span class="car">${open?'▾':'▸'}</span>
+        </div>${b}</div>`;
+    }).join('');
+  }
+
+  function render(){
+    paintHead();
+    pane.innerHTML = view==='grid'?viewGrid() : view==='curve'?viewCurve() : view==='bill'?viewBill() : view==='blocked'?viewBlocked() : (fieldMode?viewGrid():viewSetup());
+    if(view==='setup' && !fieldMode) paintAreas();
+  }
+
+  // ---------- cell modal ----------
+  function openCell(aid,rid,pid){
+    const a=areaById(aid); if(!a) return;
+    const r=a.rows.find(x=>x.id===rid), p=a.phases.find(x=>x.id===pid); if(!r||!p) return;
+    const c=cell(aid,rid,pid);
+    let st=c.status, pc=c.status===S.IP?(c.pct||50):(c.status===S.DONE?100:0);
+    layer.innerHTML=`<div class="scrim" id="scrim"><div class="modal" role="dialog" aria-modal="true" aria-label="${esc(r.name)} ${esc(p.name)}">
+      <div class="modal-h"><b>${esc(r.name)}</b><span>${esc(a.name)}<br>${esc(p.name)}</span></div>
+      <div class="modal-b">
+        <div class="stat">
+          <button class="sbtn" data-s="ns">Not started</button>
+          <button class="sbtn" data-s="ip">In progress</button>
+          <button class="sbtn" data-s="done">Complete</button>
+          <button class="sbtn" data-s="blocked">Blocked</button>
+        </div>
+        <div id="pctwrap" hidden>
+          <label class="lab" for="rng">Percent complete — <span id="pv" class="tot">${pc}%</span></label>
+          <input type="range" id="rng" min="0" max="100" step="5" value="${pc}">
+          <div class="chips">${[10,25,50,75,90].map(v=>`<button class="chip" data-c="${v}">${v}</button>`).join('')}</div>
+        </div>
+        <label class="lab" id="ntl" for="nt">Note</label>
+        <input class="inp" id="nt" value="${esc(c.note||'')}" placeholder="Optional">
+        <label class="lab" for="onw" style="margin-top:10px">Week the work was done</label>
+        <input class="inp" type="date" id="onw" value="${esc(c.on||thisWeekEnd())}">
+        <p class="hint" style="margin-top:4px">Defaults to this week. Change it if you're catching up on an earlier week — the curve plots by this date.</p>
+        ${c.by?`<p class="hint">Last set by ${esc(c.by)}${c.at?' · '+new Date(c.at).toLocaleString([], {month:'short',day:'numeric',hour:'numeric',minute:'2-digit'}):''}</p>`:''}
+      </div>
+      <div class="modal-f"><button class="btn dim" id="x">Cancel</button><button class="btn" id="ok">Save</button></div>
+    </div></div>`;
+    const wrap=$('#pctwrap'), rng=$('#rng'), pv=$('#pv'), ntl=$('#ntl');
+    function sync(){ layer.querySelectorAll('.sbtn').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.s===st))); wrap.hidden=st!==S.IP; ntl.textContent=st===S.BLOCKED?'Why is it blocked?':'Note'; }
+    sync();
+    layer.querySelectorAll('.sbtn').forEach(b=>b.onclick=()=>{ st=b.dataset.s; if(st===S.IP&&!pc){pc=50;rng.value=50;pv.textContent='50%';} sync(); });
+    rng.oninput=()=>{ pc=+rng.value; pv.textContent=pc+'%'; };
+    layer.querySelectorAll('.chip').forEach(b=>b.onclick=()=>{ pc=+b.dataset.c; rng.value=pc; pv.textContent=pc+'%'; });
+    const close=()=>layer.innerHTML='';
+    $('#x').onclick=close;
+    $('#scrim').onclick=e=>{ if(e.target.id==='scrim') close(); };
+    document.addEventListener('keydown',function k(e){ if(e.key==='Escape'){ close(); document.removeEventListener('keydown',k);} });
+    $('#ok').onclick=async()=>{ if(st===S.IP&&pc>=100)st=S.DONE; if(st===S.IP&&pc<=0)st=S.NS; const note=$('#nt').value.trim(); const on=$('#onw')?$('#onw').value:''; close(); await saveCell(aid,rid,pid,{status:st,pct:st===S.IP?pc:(st===S.DONE?100:0),note,on}); };
+    setTimeout(()=>{ const f=layer.querySelector('.sbtn[aria-pressed="true"]')||layer.querySelector('.sbtn'); f&&f.focus(); },0);
+  }
+
+  function promptModal(title,label,value,onok){
+    layer.innerHTML=`<div class="scrim" id="scrimp"><div class="modal" style="max-width:340px" role="dialog" aria-modal="true" aria-label="${esc(title)}">
+      <div class="modal-h"><b>${esc(title)}</b></div>
+      <div class="modal-b"><label class="lab" for="pm">${esc(label)}</label><input class="inp" id="pm" value="${esc(value||'')}"></div>
+      <div class="modal-f"><button class="btn dim" id="pmx">Cancel</button><button class="btn" id="pmok">Save</button></div></div></div>`;
+    const close=()=>layer.innerHTML='';
+    $('#pmx').onclick=close; $('#scrimp').onclick=e=>{ if(e.target.id==='scrimp') close(); };
+    const go=()=>{ const v=$('#pm').value.trim(); close(); onok(v); };
+    $('#pmok').onclick=go;
+    $('#pm').addEventListener('keydown',e=>{ if(e.key==='Enter') go(); });
+    setTimeout(()=>{ $('#pm').focus(); $('#pm').select(); },0);
+  }
+
+  function openProjects(){
+    const tpls = tplIndex.length
+      ? `<div class="mlist">${tplIndex.map(t=>`<div class="mrow"><span class="mname">${esc(t.name)}</span>
+          <button class="btn dim sm" data-usetpl="${t.id}">New from this</button>
+          <button class="btn dim danger sm" data-deltpl="${t.id}" aria-label="Delete template">×</button></div>`).join('')}</div>`
+      : `<p class="hint" style="margin-top:0">No templates yet. Set up a project the way you like it, then “Save current setup as template” — every new project can start from it.</p>`;
+    layer.innerHTML=`<div class="scrim" id="scrimP"><div class="modal" role="dialog" aria-modal="true" aria-label="Projects">
+      <div class="modal-h"><b>Projects</b><span>${projIndex.length} active</span></div>
+      <div class="modal-b">
+        <div class="sec" style="margin-top:0">Start a new project</div>
+        <div class="mact">
+          <button class="btn" id="pimp">Import a project file…</button>
+          <button class="btn dim" id="pnew">Blank project</button>
+          <input type="file" id="pimpfile" style="display:none">
+        </div>
+        <div class="sec">Templates</div>
+        ${tpls}
+        <div class="sec">This project — ${esc(doc.project.name)}</div>
+        <div class="mact">
+          <button class="btn dim" id="psavetpl">Save current setup as template</button>
+          <button class="btn dim" id="pdup">Duplicate this project</button>
+          <button class="btn dim danger" id="pdel">Delete this project</button>
+        </div>
+        <p class="hint" style="margin-top:0">Templates copy structure only — areas, phases, rows and weights — never progress. Everyone on the shared link sees the same list of projects; each device remembers which one it's viewing.</p>
+      </div>
+      <div class="modal-f"><button class="btn" id="pclose">Close</button></div>
+    </div></div>`;
+    const close=()=>layer.innerHTML='';
+    $('#pclose').onclick=close; $('#scrimP').onclick=e=>{ if(e.target.id==='scrimP') close(); };
+    $('#pnew').onclick=()=>{ close(); promptModal('New blank project','Project name','', n=>createProject(n)); };
+    $('#pimp').onclick=()=>{ const f=$('#pimpfile'); if(f) f.click(); };
+    $('#pimpfile').onchange=e=>{
+      const f=e.target.files&&e.target.files[0]; if(!f) return;
+      const rd=new FileReader();
+      rd.onload=()=>{
+        let data; try{ data=JSON.parse(rd.result); }catch(err){ toast('Not a valid tracker file'); return; }
+        close();
+        if(data.kind==='sprinkler-tracker-backup') return importBackup(data);
+        if(data.kind==='sprinkler-tracker-project'&&data.doc) return importProject(data.doc);
+        toast('Unrecognised file');
+      };
+      rd.onerror=()=>toast('Could not read file');
+      rd.readAsText(f);
+    };
+    $('#pdup').onclick=()=>{ close(); duplicateProject(); };
+    $('#psavetpl').onclick=()=>{ close(); promptModal('Save as template','Template name',doc.project.name+' template', n=>saveTemplate(n)); };
+    $('#pdel').onclick=()=>{ if(confirm('Delete “'+doc.project.name+'” and all its progress? This cannot be undone.')){ const id=activeId; close(); deleteProject(id); } };
+    layer.querySelectorAll('[data-usetpl]').forEach(b=>b.onclick=()=>{ const tid=b.dataset.usetpl; close(); promptModal('New project from template','Project name','', n=>createProject(n,tid)); });
+    layer.querySelectorAll('[data-deltpl]').forEach(b=>b.onclick=()=>{ if(confirm('Delete this template? Projects already created from it are unaffected.')) deleteTemplate(b.dataset.deltpl); });
+    setTimeout(()=>$('#pnew').focus(),0);
+  }
+
+  // do these two documents descend from the same export? compares structural IDs
+  function kinship(local,incoming){
+    const mine={}; local.areas.forEach(a=>mine[a.id]=1);
+    let shared=0; incoming.areas.forEach(a=>{ if(mine[a.id]) shared++; });
+    return {shared,total:incoming.areas.length,related:shared>0};
+  }
+
+  function importProject(incoming){
+    const inc=normalize(incoming);
+    const kin=kinship(doc,inc);
+    const warn=kin.related?'':`<div class="blk" style="border-left-color:var(--red);margin-bottom:10px">
+        <h4>Different project</h4>
+        <p>This file doesn't share any structure with “${esc(doc.project.name)}”. Merging would discard its progress rather than combining it. Use <b>Add as a new project</b> instead, unless you're deliberately replacing.</p></div>`;
+    layer.innerHTML=`<div class="scrim" id="scrimI"><div class="modal" style="max-width:360px" role="dialog" aria-modal="true" aria-label="Import">
+      <div class="modal-h"><b>Import</b><span>${esc(inc.project.name||'project')}</span></div>
+      <div class="modal-b">
+        ${warn}
+        <p class="hint" style="margin-top:0">${Object.keys(inc.cells||{}).length} logged cells · ${(inc.burned||[]).length} burned-hour weeks</p>
+        <div class="mact">
+          <button class="btn" id="irep">Replace everything</button>
+          <button class="btn dim" id="inew">Add as a new project</button>
+          <button class="btn dim" id="imerge" ${kin.related?'':'disabled style="opacity:.4"'}>Their progress, my setup</button>
+          <button class="btn dim" id="iadopt" ${kin.related?'':'disabled style="opacity:.4"'}>Their setup, my progress</button>
+        </div>
+        <p class="hint"><b>Replace</b> — setting this device up for the first time.<br>
+        <b>Their progress, my setup</b> — folding in a foreman's weekly file.<br>
+        <b>Their setup, my progress</b> — receiving a revised schedule.</p>
+      </div>
+      <div class="modal-f"><button class="btn dim" id="ix">Cancel</button></div></div></div>`;
+    const close=()=>layer.innerHTML='';
+    $('#ix').onclick=close; $('#scrimI').onclick=e=>{ if(e.target.id==='scrimI') close(); };
+    $('#imerge').onclick=async()=>{ if(!kin.related) return; const m=mergeDoc(doc,inc); doc=m.doc; close(); await save(); toast('Merged '+m.cells+' cells, '+m.weeks+' weeks'); };
+    $('#iadopt').onclick=async()=>{
+      if(!kin.related) return;
+      const m=adoptSetup(doc,inc); doc=m.doc; activeArea=doc.areas[0]?doc.areas[0].id:null; close(); await save();
+      toast('Setup updated · '+m.kept+' entries kept'+(m.dropped?' · '+m.dropped+' dropped':''));
+    };
+    $('#irep').onclick=async()=>{ if(!confirm('Replace this project entirely?')) return; doc=inc; close(); await save(); toast('Replaced'); };
+    $('#inew').onclick=async()=>{
+      activeId=uid('proj'); doc=inc; upsertIndexEntry();
+      await sset(PKEY(activeId),doc,true); await sset(PIDX,projIndex,true); await sset(ACTIVE,activeId,false);
+      activeArea=doc.areas[0]?doc.areas[0].id:null; close(); render(); toast('Added as new project');
+    };
+  }
+  async function importBackup(data){
+    if(!confirm('Restore a full backup? This replaces every project and template on this device.')) return;
+    for(const p of (data.projs||[])) await sset(PKEY(p.id),normalize(p.doc),true);
+    for(const t of (data.tpls||[])) await sset(TKEY(t.id),t.tpl,true);
+    projIndex=data.projIndex||[]; tplIndex=data.tplIndex||[];
+    await sset(PIDX,projIndex,true); await sset(TIDX,tplIndex,true);
+    if(projIndex.length){ activeId=projIndex[0].id; await sset(ACTIVE,activeId,false); doc=normalize(await sget(PKEY(activeId),true)||seed()); activeArea=doc.areas[0]?doc.areas[0].id:null; }
+    render(); toast('Backup restored');
+  }
+
+  async function sendUpdate(){
+    const text=exportProject();
+    const name=safeName(doc.project.name)+'-'+stamp()+'.json';
+    try{
+      if(typeof File!=='undefined' && navigator.canShare && navigator.share){
+        const file=new File([text],name,{type:'application/json'});
+        if(navigator.canShare({files:[file]})){
+          await navigator.share({files:[file],title:doc.project.name,
+            text:doc.project.name+' — progress to week ending '+thisWeekEnd()+(me?' — '+me:'')});
+          return;
+        }
+      }
+    }catch(e){ if(e && e.name==='AbortError') return; }
+    download(name,text);
+  }
+
+  function askName(){
+    layer.innerHTML=`<div class="scrim" id="scrim2"><div class="modal" style="max-width:320px" role="dialog" aria-modal="true" aria-label="Your name">
+      <div class="modal-h"><b>Who's updating?</b></div>
+      <div class="modal-b"><label class="lab" for="nm">Name or initials</label>
+        <input class="inp" id="nm" value="${esc(me)}" placeholder="e.g. D. Singh">
+        <p class="hint">Stamped on every cell you change. Stored on this device only.</p>
+        <label class="lab" style="margin-top:12px">Mode on this device</label>
+        <div class="row">
+          <button class="btn ${fieldMode?'dim':''}" id="mode-admin">Full access</button>
+          <button class="btn ${fieldMode?'':'dim'}" id="mode-field">Field only</button>
+        </div>
+        <p class="hint">Field mode hides Setup and the project switcher so the crew can only log progress. It's a guardrail against accidents, not a lock — anyone can switch it back here.</p></div>
+      <div class="modal-f"><button class="btn dim" id="x2">Cancel</button><button class="btn" id="ok2">Save</button></div></div></div>`;
+    const close=()=>layer.innerHTML='';
+    $('#x2').onclick=close; $('#scrim2').onclick=e=>{ if(e.target.id==='scrim2') close(); };
+    $('#mode-admin').onclick=async()=>{ fieldMode=false; await sset(FMODE,{on:false},false); close(); if(view==='setup') view='grid'; render(); };
+    $('#mode-field').onclick=async()=>{ fieldMode=true; await sset(FMODE,{on:true},false); close(); if(view==='setup') view='grid'; render(); };
+    $('#ok2').onclick=async()=>{ me=$('#nm').value.trim(); await sset(ME,{name:me},false); close(); paintHead(); };
+    setTimeout(()=>$('#nm').focus(),0);
+  }
+
+  // ---------- export ----------
+  function drawSummary(){
+    const L=[doc.project.name+'  |  Job '+doc.project.number+'  |  '+doc.project.gc, 'Percent complete as of '+new Date().toLocaleDateString(),''];
+    doc.areas.forEach(a=>{
+      L.push(a.name.toUpperCase()+'  ('+TPL[a.kind].label+')');
+      a.phases.forEach(p=>L.push('  '+p.name.padEnd(16)+String(r1(phasePct(a,p))).padStart(6)+'%'));
+      L.push('  '+'— area —'.padEnd(16)+String(r1(areaPct(a))).padStart(6)+'%'); L.push('');
+    });
+    L.push('PROJECT TOTAL'.padEnd(18)+String(r1(projectPct())).padStart(6)+'%');
+    return L.join('\n');
+  }
+  function csv(){
+    const rows=[['Area','Type','Row','Phase','Percent']];
+    doc.areas.forEach(a=>a.rows.forEach(r=>a.phases.forEach(p=>rows.push([a.name,TPL[a.kind].label,r.name,p.name,r1(pctOf(cell(a.id,r.id,p.id)))]))));
+    return rows.map(r=>r.map(v=>/[",\n]/.test(String(v))?'"'+String(v).replace(/"/g,'""')+'"':v).join(',')).join('\n');
+  }
+  function blockerText(){
+    const L=[doc.project.name+' — blockers as of '+new Date().toLocaleDateString(),'']; let n=0;
+    doc.areas.forEach(a=>a.rows.forEach(r=>a.phases.forEach(p=>{ const c=cell(a.id,r.id,p.id); if(c.status===S.BLOCKED){ n++; L.push(n+'. '+a.name+' · '+r.name+' · '+p.name+' — '+(c.note||'no reason logged')+(c.by?' ('+c.by+')':'')); } })));
+    if(!n) L.push('None.'); return L.join('\n');
+  }
+  function curveText(){
+    const s=curveSeries(); if(!s) return 'No baseline set.';
+    const rows=[['Week ending','Planned %','Planned hours','Earned %','Earned hours','Burned %','Burned hours']];
+    s.weeks.forEach((t,i)=>{
+      const d=new Date(t+6*DAY);
+      rows.push([fmtD(d),r1(s.planned[i]),r1(s.planned[i]/100*s.total),
+        s.actual?r1(s.actual[i]):'',s.actual?r1(s.actual[i]/100*s.total):'',
+        s.burned?r1(s.burned[i]):'',s.burned?r1(s.burned[i]/100*s.total):'']);
+    });
+    return rows.map(r=>r.join(',')).join('\n');
+  }
+  async function copy(t){
+    try{ await navigator.clipboard.writeText(t); toast('Copied'); }
+    catch(e){ const ta=document.createElement('textarea'); ta.value=t; document.body.appendChild(ta); ta.select(); try{ document.execCommand('copy'); toast('Copied'); }catch(_){ toast('Copy failed'); } ta.remove(); }
+  }
+
+  // ---------- events ----------
+  document.querySelectorAll('.tab').forEach(t=>t.onclick=()=>{ view=t.dataset.v; render(); });
+  $('#refresh').onclick=async()=>{ await reloadDoc(); toast('Refreshed'); };
+  $('#who').onclick=askName;
+  $('#projbtn').onclick=openProjects;
+  $('#send').onclick=sendUpdate;
+  $('#projsel').onchange=e=>switchProject(e.target.value);
+  const commit=()=>{ clearTimeout(dirtyTimer); dirtyTimer=setTimeout(()=>save(),400); };
+  const parse=v=>{ const [id,i]=v.split('|'); return [id, i===undefined?undefined:+i]; };
+  function refreshHourTags(){
+    if(!labour()) return;
+    doc.areas.forEach(a=>{ const wt=document.querySelector('[data-wtag="'+a.id+'"]'); if(wt) wt.textContent=r1(areaHours(a))+' h'; });
+  }
+
+  pane.addEventListener('click',e=>{
+    const c=e.target.closest('.cell'); if(c){ if(!busy) openCell(c.dataset.a,c.dataset.r,c.dataset.p); return; }
+    const pill=e.target.closest('.pill'); if(pill){ activeArea=pill.dataset.area; render(); return; }
+    const tog=e.target.closest('[data-atoggle]'); if(tog){ const id=tog.dataset.atoggle; setupOpen = setupOpen===id?null:id; paintAreas(); return; }
+    const b=e.target.closest('button'); if(!b) return; const id=b.id;
+
+    if(id==='cpsum') return copy(drawSummary());
+    if(id==='cpcsv') return copy(csv());
+    if(id==='cpblk') return copy(blockerText());
+
+    if(id==='add-building'){ const a=seedArea('woodframe','Building '+nextBuildingLetter(),['L04','L03','L02','L01']); doc.areas.push(a); setupOpen=a.id; return save(false); }
+    if(id==='add-parkade'){ const a=seedArea('parkade','Parkade',['P1','P2']); doc.areas.push(a); setupOpen=a.id; return save(false); }
+    if(id==='add-valve'){ const a=seedArea('valveroom','Valve Room',['Valve Room']); doc.areas.push(a); setupOpen=a.id; return save(false); }
+    if(id==='clr'){ if(!confirm('Clear all progress? Areas, phases and rows stay.')) return; doc.cells={}; doc.burned=[]; doc.updated=null; doc.by=null; return save(false); }
+    if(id==='reset'){ if(!confirm('Reset THIS project back to the default structure? Wipes its areas and progress. Other projects are untouched.')) return; doc=seed(); activeArea=doc.areas[0].id; setupOpen=null; return save(false); }
+    if(id==='wm-manual'){ doc.weightMode='manual'; return save(false); }
+    if(id==='wm-labour'){ doc.weightMode='labour'; return save(false); }
+    if(id==='dpw-5'){ doc.schedule.daysPerWeek=5; return save(false); }
+    if(id==='dpw-6'){ doc.schedule.daysPerWeek=6; return save(false); }
+    if(id==='cpcurve') return copy(curveText());
+    if(id==='exp1'){ return download(safeName(doc.project.name)+'-'+stamp()+'.json',exportProject()); }
+    if(id==='expall'){ return exportAll().then(t=>download('sprinkler-tracker-backup-'+stamp()+'.json',t)); }
+    if(id==='expcsv'){ return download(safeName(doc.project.name)+'-curve-'+stamp()+'.csv',curveText(),'text/csv'); }
+    if(id==='impbtn'){ const f=$('#impfile'); if(f) f.click(); return; }
+    if(id==='baddb'){
+      const w=$('#bw').value, hh=+$('#bh').value||0;
+      if(!/^\d{4}-\d{2}-\d{2}$/.test(w)){ toast('Pick a week ending date'); return; }
+      if(hh<=0){ toast('Enter hours'); return; }
+      if(!doc.burned) doc.burned=[];
+      const ex=doc.burned.find(b=>b.week===w);
+      if(ex){ if(!confirm('An entry for '+w+' already exists ('+ex.hours+' h). Replace it?')) return; ex.hours=hh; ex.by=me||''; }
+      else doc.burned.push({id:uid('b'),week:w,hours:hh,by:me||''});
+      return save();
+    }
+    if(b.dataset.bdel!==undefined){ const bid=b.dataset.bdel; doc.burned=(doc.burned||[]).filter(x=>x.id!==bid); return save(); }
+
+    // per-area dataset buttons
+    let d;
+    if((d=b.dataset.addp)!==undefined){ areaById(d).phases.push({id:uid('p'),name:'New phase',weight:10}); return save(false); }
+    if((d=b.dataset.defp)!==undefined){ const a=areaById(d); a.phases=makePhases(a.kind); pruneArea(a.id); return save(false); }
+    if((d=b.dataset.addr)!==undefined){ areaById(d).rows.push({id:uid('r'),name:'New',heads:0}); return save(false); }
+    if((d=b.dataset.ad)!==undefined){ if(!confirm('Delete this area and its progress?')) return; pruneArea(d); doc.areas=doc.areas.filter(a=>a.id!==d); if(activeArea===d) activeArea=doc.areas[0]?doc.areas[0].id:null; setupOpen=null; return save(false); }
+    if((d=b.dataset.gen)!==undefined){
+      const a=areaById(d);
+      const pre=($('[data-genp="'+d+'"]').value||'').trim();
+      const x=parseInt($('[data-gena="'+d+'"]').value,10), y=parseInt($('[data-genb="'+d+'"]').value,10);
+      if(isNaN(x)||isNaN(y)||y<x){ toast('Check the range'); return; }
+      if(y-x>199){ toast('Too many rows'); return; }
+      const out=[]; const desc=TPL[a.kind].dir==='desc';
+      const seq=[]; for(let i=x;i<=y;i++) seq.push(i); if(desc) seq.reverse();
+      seq.forEach(i=>out.push({id:uid('r'),name:pre+String(i).padStart(pre?2:0,'0'),heads:0}));
+      pruneArea(a.id); a.rows=out; return save(false);
+    }
+    if((d=b.dataset.pd)!==undefined){ const [id2,i]=parse(d); areaById(id2).phases.splice(i,1); return save(false); }
+    if((d=b.dataset.rd)!==undefined){ const [id2,i]=parse(d); areaById(id2).rows.splice(i,1); return save(false); }
+    if((d=b.dataset.up)!==undefined){ const [id2,i]=parse(d); const a=areaById(id2); if(i>0){ [a.rows[i-1],a.rows[i]]=[a.rows[i],a.rows[i-1]]; } return save(false); }
+    if((d=b.dataset.down)!==undefined){ const [id2,i]=parse(d); const a=areaById(id2); if(i<a.rows.length-1){ [a.rows[i+1],a.rows[i]]=[a.rows[i],a.rows[i+1]]; } return save(false); }
+  });
+
+  pane.addEventListener('change',e=>{
+    const t=e.target; let d;
+    if(t.id==='impfile'){
+      const f=t.files&&t.files[0]; if(!f) return;
+      const rd=new FileReader();
+      rd.onload=()=>{
+        let data; try{ data=JSON.parse(rd.result); }catch(err){ toast('Not a valid file'); return; }
+        t.value='';
+        if(data.kind==='sprinkler-tracker-backup') return importBackup(data);
+        if(data.kind==='sprinkler-tracker-project'&&data.doc) return importProject(data.doc);
+        toast('Unrecognised file');
+      };
+      rd.onerror=()=>toast('Could not read file');
+      rd.readAsText(f); return;
+    }
+    if((d=t.dataset.ak)!==undefined){ const a=areaById(d); a.kind=t.value; a.phases=makePhases(t.value); a.seq=defSeq(t.value); a.pace=defPace(t.value); pruneArea(a.id); return save(false); }
+    if((d=t.dataset.pm)!==undefined){ const [id,i]=parse(d); areaById(id).phases[i].mode=t.value; return save(false); }
+    if((d=t.dataset.as)!==undefined){ areaById(d).start=t.value; return save(false); }
+    if((d=t.dataset.aq)!==undefined){ areaById(d).seq=t.value; return save(false); }
+    if((d=t.dataset.ap)!==undefined){ areaById(d).pace=t.value; return save(false); }
+    if((d=t.dataset.ps)!==undefined){ const [id,i]=parse(d); areaById(id).phases[i].start=t.value; return save(false); }
+  });
+
+  pane.addEventListener('input',e=>{
+    const t=e.target; let d;
+    if(t.id==='f-name') doc.project.name=t.value;
+    else if(t.id==='f-num') doc.project.number=t.value;
+    else if(t.id==='f-gc') doc.project.gc=t.value;
+    else if(t.id==='f-rev') doc.project.rev=t.value;
+    else if((d=t.dataset.an)!==undefined){ areaById(d).name=t.value; const nm=document.querySelector('[data-atoggle="'+d+'"] .nm'); if(nm) nm.textContent=t.value; }
+    else if((d=t.dataset.aw)!==undefined){ areaById(d).weight=Math.max(0,+t.value||0); const wt=document.querySelector('[data-wtag="'+d+'"]'); if(wt) wt.textContent='W '+areaById(d).weight; }
+    else if(t.id==='hph'){ doc.hoursPerHead=Math.max(0,+t.value||0); refreshHourTags(); }
+    else if((d=t.dataset.th)!==undefined){ areaById(d).totalHours=Math.max(0,+t.value||0); refreshHourTags(); }
+    else if((d=t.dataset.rh)!==undefined){ const [id,i]=parse(d); areaById(id).rows[i].heads=Math.max(0,+t.value||0); refreshHourTags(); }
+    else if((d=t.dataset.pn)!==undefined){ const [id,i]=parse(d); areaById(id).phases[i].name=t.value; }
+    else if((d=t.dataset.pw)!==undefined){ const [id,i]=parse(d); areaById(id).phases[i].weight=Math.max(0,+t.value||0); }
+    else if(t.id==='hols'){ doc.schedule.holidays=t.value; }
+    else if(t.id==='hpd'){ doc.schedule.hoursPerDay=Math.max(1,+t.value||8); }
+    else if((d=t.dataset.ac)!==undefined){ areaById(d).crew=Math.max(1,+t.value||1); }
+    else if((d=t.dataset.ad2)!==undefined){ areaById(d).spreadDays=Math.max(0,+t.value||0); }
+    else if((d=t.dataset.pc)!==undefined){ const [id,i]=parse(d); areaById(id).phases[i].cycle=Math.max(0,+t.value||0); }
+    else if((d=t.dataset.psp)!==undefined){ const [id,i]=parse(d); areaById(id).phases[i].span=Math.max(1,+t.value||1); }
+    else if((d=t.dataset.pl)!==undefined){ const [id,i]=parse(d); areaById(id).phases[i].lag=Math.max(0,+t.value||0); }
+    else if((d=t.dataset.rn)!==undefined){ const [id,i]=parse(d); areaById(id).rows[i].name=t.value; }
+    else return;
+    paintHead(); commit();
+  });
+
+  document.addEventListener('visibilitychange',()=>{ if(!document.hidden && !busy && !layer.innerHTML) reloadDoc(); });
+  boot();
+})();
+</script>
+
+<script>
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', function () {
+    navigator.serviceWorker.register('sw.js').catch(function(){});
+  });
+}
 </script>
 </body>
 </html>
