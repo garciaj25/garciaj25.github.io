@@ -874,7 +874,7 @@
     </div>
     <div class="row" style="flex-wrap:wrap">
       <button class="btn dim" id="impbtn">Import a file…</button>
-      <input type="file" id="impfile" accept=".json,application/json" style="display:none">
+      <input type="file" id="impfile" style="display:none">
     </div>
     <p class="hint">Import offers <b>Merge</b> (keeps your setup, takes the newest progress per cell — this is how you fold in a foreman's file) or <b>Replace</b>. Merging only works between copies that came from the same original export, since the levels and phases have to match up.</p>
 
@@ -1063,7 +1063,9 @@
       <div class="modal-b">
         <div class="sec" style="margin-top:0">Start a new project</div>
         <div class="mact">
-          <button class="btn" id="pnew">Blank project</button>
+          <button class="btn" id="pimp">Import a project file…</button>
+          <button class="btn dim" id="pnew">Blank project</button>
+          <input type="file" id="pimpfile" style="display:none">
         </div>
         <div class="sec">Templates</div>
         ${tpls}
@@ -1080,6 +1082,20 @@
     const close=()=>layer.innerHTML='';
     $('#pclose').onclick=close; $('#scrimP').onclick=e=>{ if(e.target.id==='scrimP') close(); };
     $('#pnew').onclick=()=>{ close(); promptModal('New blank project','Project name','', n=>createProject(n)); };
+    $('#pimp').onclick=()=>{ const f=$('#pimpfile'); if(f) f.click(); };
+    $('#pimpfile').onchange=e=>{
+      const f=e.target.files&&e.target.files[0]; if(!f) return;
+      const rd=new FileReader();
+      rd.onload=()=>{
+        let data; try{ data=JSON.parse(rd.result); }catch(err){ toast('Not a valid tracker file'); return; }
+        close();
+        if(data.kind==='sprinkler-tracker-backup') return importBackup(data);
+        if(data.kind==='sprinkler-tracker-project'&&data.doc) return importProject(data.doc);
+        toast('Unrecognised file');
+      };
+      rd.onerror=()=>toast('Could not read file');
+      rd.readAsText(f);
+    };
     $('#pdup').onclick=()=>{ close(); duplicateProject(); };
     $('#psavetpl').onclick=()=>{ close(); promptModal('Save as template','Template name',doc.project.name+' template', n=>saveTemplate(n)); };
     $('#pdel').onclick=()=>{ if(confirm('Delete “'+doc.project.name+'” and all its progress? This cannot be undone.')){ const id=activeId; close(); deleteProject(id); } };
@@ -1105,16 +1121,16 @@
       <div class="modal-h"><b>Import</b><span>${esc(inc.project.name||'project')}</span></div>
       <div class="modal-b">
         ${warn}
-        <p class="hint" style="margin-top:0">Incoming file has ${Object.keys(inc.cells||{}).length} logged cells and ${(inc.burned||[]).length} burned-hour weeks.</p>
+        <p class="hint" style="margin-top:0">${Object.keys(inc.cells||{}).length} logged cells · ${(inc.burned||[]).length} burned-hour weeks</p>
         <div class="mact">
-          <button class="btn" id="imerge" ${kin.related?'':'disabled style="opacity:.4"'}>Take their progress, keep my setup</button>
-          <button class="btn" id="iadopt" ${kin.related?'':'disabled style="opacity:.4"'}>Take their setup, keep my progress</button>
+          <button class="btn" id="irep">Replace everything</button>
           <button class="btn dim" id="inew">Add as a new project</button>
-          <button class="btn dim danger" id="irep">Replace everything</button>
+          <button class="btn dim" id="imerge" ${kin.related?'':'disabled style="opacity:.4"'}>Their progress, my setup</button>
+          <button class="btn dim" id="iadopt" ${kin.related?'':'disabled style="opacity:.4"'}>Their setup, my progress</button>
         </div>
-        <p class="hint"><b>Their progress, my setup</b> — the PM folding in a foreman's weekly file.<br>
-        <b>Their setup, my progress</b> — a foreman receiving a revised schedule without losing work he hasn't sent yet.<br>
-        <b>Replace</b> wipes everything including unsent progress.</p>
+        <p class="hint"><b>Replace</b> — setting this device up for the first time.<br>
+        <b>Their progress, my setup</b> — folding in a foreman's weekly file.<br>
+        <b>Their setup, my progress</b> — receiving a revised schedule.</p>
       </div>
       <div class="modal-f"><button class="btn dim" id="ix">Cancel</button></div></div></div>`;
     const close=()=>layer.innerHTML='';
