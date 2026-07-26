@@ -273,11 +273,20 @@
   function pctOf(c){ return c.status===S.DONE?100 : c.status===S.IP?Math.max(0,Math.min(100,c.pct||0)) : 0; }
   const labour=()=>doc.weightMode==='labour';
 
-  // hours of installed labour represented by a level / area
-  function rowHours(area,row){ return (+row.heads||0)*(+doc.hoursPerHead||0); }
+  // hours of installed labour represented by a level / area.
+  // In labour mode this is real: heads x hours/head. In manual mode nobody enters
+  // heads, so we synthesise a size from the area's manual weight spread evenly across
+  // its rows — enough for the schedule/curve to have something to distribute.
+  function rowHours(area,row){
+    if(labour()) return (+row.heads||0)*(+doc.hoursPerHead||0);
+    return (+area.weight||0)/Math.max(1,area.rows.length);
+  }
   function areaHours(area){
-    if(area.kind==='valveroom') return +area.totalHours||0;
-    return area.rows.reduce((s,r)=>s+rowHours(area,r),0);
+    if(labour()){
+      if(area.kind==='valveroom') return +area.totalHours||0;
+      return area.rows.reduce((s,r)=>s+rowHours(area,r),0);
+    }
+    return +area.weight||0;   // manual: the area's own weight is its size
   }
   // weight of a level within its area (drives area %)
   function rowWeight(area,row){
@@ -760,7 +769,7 @@
       g+=`<text x="${r1(x(i))}" y="${H-12}" text-anchor="middle" class="axl">${d.toLocaleDateString([], {month:'short',day:'numeric'})}</text>`; }
     const areaPath=`M${L} ${r1(y(0))} `+s.planned.map((v,i)=>'L'+r1(x(i))+' '+r1(y(v))).join(' ')+` L${r1(x(n-1))} ${r1(y(0))} Z`;
 
-    let h=`<div class="sec" style="margin-top:0">Planned vs actual — ${r1(s.total)} budgeted hours</div>
+    let h=`<div class="sec" style="margin-top:0">Planned vs actual${labour()?' — '+r1(s.total)+' budgeted hours':''}</div>
     <div class="chartwrap"><svg viewBox="0 0 ${W} ${H}" width="100%" role="img" aria-label="Cumulative progress curves: planned baseline, earned actual, and burned timesheet hours">
       ${g}
       <path d="${areaPath}" fill="var(--fillplan)"/>
@@ -778,11 +787,11 @@
     </div>`;
 
     h+=`<div class="sec">Position today</div><table class="plain"><tbody>
-      <tr><td>Planned</td><td>${r1(pNow)}%</td><td>${r1(pNow/100*s.total)} h</td></tr>
-      <tr><td>Earned</td><td>${aNow==null?'—':r1(aNow)+'%'}</td><td>${aNow==null?'—':r1(aNow/100*s.total)+' h'}</td></tr>
-      <tr><td>Burned</td><td>${bNow==null?'—':r1(bNow)+'%'}</td><td>${bNow==null?'—':r1(bNow/100*s.total)+' h'}</td></tr>
-      <tr class="sum"><td>Schedule</td><td style="color:${col(schV)}">${schV==null?'—':(schV>0?'+':'')+r1(schV)+'%'}</td><td style="color:${col(schV)}">${schV==null?'—':(schV>0?'+':'')+r1(schV/100*s.total)+' h'}</td></tr>
-      <tr class="sum"><td>Productivity</td><td style="color:${col(prodV)}">${prodV==null?'—':(prodV>0?'+':'')+r1(prodV)+'%'}</td><td style="color:${col(prodV)}">${prodV==null?'—':(prodV>0?'+':'')+r1(prodV/100*s.total)+' h'}</td></tr>
+      <tr><td>Planned</td><td>${r1(pNow)}%</td>${labour()?`<td>${r1(pNow/100*s.total)} h</td>`:''}</tr>
+      <tr><td>Earned</td><td>${aNow==null?'—':r1(aNow)+'%'}</td>${labour()?`<td>${aNow==null?'—':r1(aNow/100*s.total)+' h'}</td>`:''}</tr>
+      <tr><td>Burned</td><td>${bNow==null?'—':r1(bNow)+'%'}</td>${labour()?`<td>${bNow==null?'—':r1(bNow/100*s.total)+' h'}</td>`:''}</tr>
+      <tr class="sum"><td>Schedule</td><td style="color:${col(schV)}">${schV==null?'—':(schV>0?'+':'')+r1(schV)+'%'}</td>${labour()?`<td style="color:${col(schV)}">${schV==null?'—':(schV>0?'+':'')+r1(schV/100*s.total)+' h'}</td>`:''}</tr>
+      <tr class="sum"><td>Productivity</td><td style="color:${col(prodV)}">${prodV==null?'—':(prodV>0?'+':'')+r1(prodV)+'%'}</td>${labour()?`<td style="color:${col(prodV)}">${prodV==null?'—':(prodV>0?'+':'')+r1(prodV/100*s.total)+' h'}</td>`:''}</tr>
     </tbody></table>
     ${s.now < s.firstWork ? `<p class="hint"><b>Not started yet.</b> First planned work is ${new Date(s.firstWork).toLocaleDateString([], {month:'short',day:'numeric',year:'numeric'})}, so planned, earned and burned are all zero until then. Variance only becomes meaningful once the job is underway.</p>` : ''}
     <p class="hint"><b>Schedule</b> is earned minus planned — are you keeping up. <b>Productivity</b> is earned minus burned — are the hours you spent producing the work you estimated. Negative is behind or over.</p>
