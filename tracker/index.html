@@ -1012,7 +1012,7 @@
               <div style="flex:0 0 84px"><label class="mini">Cycle days</label><input class="inp num" data-pc="${a.id}|${i}" value="${esc(p.cycle)}" inputmode="numeric"></div>
               <div style="flex:0 0 84px"><label class="mini">Work days</label><input class="inp num" data-psp="${a.id}|${i}" value="${esc(p.span)}" inputmode="numeric"></div>
             </div>
-            ${i>0&&p.mode==='own'&&!p.start?`<p class="hint" style="margin:6px 0 0;color:var(--red)">No start date set — this phase is trailing ${esc(area.phases[i-1].name)} for now. Set a date to place it where it really happens (finishing often weeks or months later).</p>`:''}
+            ${i>0&&p.mode==='own'&&!p.start?`<p class="hint" style="margin:6px 0 0;color:var(--red)">No start date set — this phase is trailing ${esc(a.phases[i-1].name)} for now. Set a date to place it where it really happens (finishing often weeks or months later).</p>`:''}
           </div>`).join('')}
           <p class="hint"><b>Timing:</b> “Follows previous” runs right after the phase above. “Own start date” is for work that trails far behind — like finishing, which waits on ceilings and paint. <b>Cycle</b> is how often you move to the next level; <b>Work days</b> is how long the work takes on one level.</p>
           `}
