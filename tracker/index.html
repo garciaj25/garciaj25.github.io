@@ -466,7 +466,12 @@
     const bucket=(ev)=>{ const out=weeks.map(()=>0);
       ev.forEach(e=>{ let i=Math.floor((e.t-weeks[0])/(7*DAY)); if(i<0)i=0; if(i>=weeks.length)i=weeks.length-1; out[i]+=e.h; });
       let run=0; return out.map(v=>{ run+=v; return run/total*100; }); };
+    // exact cumulative % as of end-of-today, summed from raw events rather than read off
+    // the weekly buckets — so a job that starts tomorrow reads 0 now, not a week ahead
+    const endToday=new Date(now); endToday.setHours(23,59,59,999);
+    const asOf=(ev)=>{ let s=0; ev.forEach(e=>{ if(e.t<=endToday.getTime()) s+=e.h; }); return s/total*100; };
     return {weeks,planned:bucket(pe),actual:ae.length?bucket(ae):null,burned:be.length?bucket(be):null,
+      plannedNow:asOf(pe), actualNow:ae.length?asOf(ae):null, burnedNow:be.length?asOf(be):null,
       total,now,firstWork:pe[0].t,lastWork:pe[pe.length-1].t,hasActual:ae.length>0,hasBurned:be.length>0};
   }
 
@@ -772,7 +777,7 @@
     const n=s.weeks.length, x=i=>L+(n<2?iw/2:i*iw/(n-1)), y=v=>T+ih-(v/100*ih);
     const path=arr=>arr.map((v,i)=>(i?'L':'M')+r1(x(i))+' '+r1(y(v))).join(' ');
     let ti=Math.floor((s.now-s.weeks[0])/(7*DAY)); ti=Math.max(0,Math.min(n-1,ti));
-    const pNow=s.planned[ti], aNow=s.hasActual?s.actual[ti]:null, bNow=s.hasBurned?s.burned[ti]:null;
+    const pNow=s.plannedNow, aNow=s.hasActual?s.actualNow:null, bNow=s.hasBurned?s.burnedNow:null;
     const schV=aNow==null?null:aNow-pNow;
     const prodV=(aNow==null||bNow==null)?null:aNow-bNow;
     const col=v=>v==null?'inherit':(v<0?'var(--red)':'var(--green)');
