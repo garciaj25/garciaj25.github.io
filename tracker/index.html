@@ -573,6 +573,10 @@
     if(d.schedule==null) d.schedule={daysPerWeek:5,holidays:'',baselineOn:null};
     if(d.schedule.daysPerWeek==null) d.schedule.daysPerWeek=5;
     if(d.schedule.holidays==null) d.schedule.holidays=''; if(d.schedule.hoursPerDay==null) d.schedule.hoursPerDay=8; if(d.schedule.weekEnds==null) d.schedule.weekEnds=5; if(!Array.isArray(d.burned)) d.burned=[];
+    // completed work can't have a future date — earlier builds defaulted the date to the end
+    // of the week, which pushed completions ahead of today. Snap any future date back to today.
+    (function(){ const todayS=fmtD(new Date()); const t=new Date(); t.setHours(23,59,59,999);
+      Object.keys(d.cells||{}).forEach(k=>{ const c=d.cells[k]; if(c&&c.on){ const dd=parseD(c.on); if(dd&&dd.getTime()>t.getTime()) c.on=todayS; } }); })();
     d.areas.forEach(a=>{
       if(a.weight==null) a.weight=Math.max(1,a.rows.length);
       if(a.totalHours==null) a.totalHours=0;
@@ -781,7 +785,10 @@
     const t0=s.weeks[0], t1=s.weeks[n-1]+7*DAY, span=Math.max(1,t1-t0);
     const xt=t=>L+(t-t0)/span*iw, y=v=>T+ih-(v/100*ih);
     const pts=arr=>{ const p=[[t0,0]]; arr.forEach((v,i)=>p.push([s.weeks[i]+7*DAY,v])); return p; };
+    // earned/burned are actuals — they should stop at today, not run flat into the future
+    const ptsToNow=(arr,endVal)=>{ const p=[[t0,0]]; arr.forEach((v,i)=>{ const we=s.weeks[i]+7*DAY; if(we<=s.now) p.push([we,v]); }); p.push([Math.min(Math.max(s.now,t0),t1),endVal]); return p; };
     const path=arr=>pts(arr).map((pt,i)=>(i?'L':'M')+r1(xt(pt[0]))+' '+r1(y(pt[1]))).join(' ');
+    const pathNow=(arr,endVal)=>ptsToNow(arr,endVal).map((pt,i)=>(i?'L':'M')+r1(xt(pt[0]))+' '+r1(y(pt[1]))).join(' ');
     const nowX=r1(xt(Math.min(Math.max(s.now,t0),t1)));
     const nowLate=(s.now-t0)/span>0.75;
     const pNow=s.plannedNow, aNow=s.hasActual?s.actualNow:null, bNow=s.hasBurned?s.burnedNow:null;
@@ -800,8 +807,8 @@
       ${g}
       <path d="${areaPath}" fill="var(--fillplan)"/>
       <path d="${path(s.planned)}" fill="none" stroke="var(--plan)" stroke-width="2" stroke-linejoin="round"/>
-      ${s.hasBurned?`<path d="${path(s.burned)}" fill="none" stroke="var(--burn)" stroke-width="2" stroke-dasharray="2 3" stroke-linejoin="round"/>`:''}
-      ${s.hasActual?`<path d="${path(s.actual)}" fill="none" stroke="var(--act)" stroke-width="2" stroke-dasharray="6 4" stroke-linejoin="round"/>`:''}
+      ${s.hasBurned?`<path d="${pathNow(s.burned,s.burnedNow)}" fill="none" stroke="var(--burn)" stroke-width="2" stroke-dasharray="2 3" stroke-linejoin="round"/>`:''}
+      ${s.hasActual?`<path d="${pathNow(s.actual,s.actualNow)}" fill="none" stroke="var(--act)" stroke-width="2" stroke-dasharray="6 4" stroke-linejoin="round"/>`:''}
       <line x1="${nowX}" y1="${T}" x2="${nowX}" y2="${T+ih}" stroke="var(--muted)" stroke-width="1" stroke-dasharray="3 3"/>
       <text x="${nowX+(nowLate?-4:4)}" y="${T+10}" class="axl" text-anchor="${nowLate?'end':'start'}">today</text>
       <line x1="${L}" y1="${T+ih}" x2="${W-R}" y2="${T+ih}" stroke="var(--rule)" stroke-width="1"/>
@@ -1069,9 +1076,9 @@
         </div>
         <label class="lab" id="ntl" for="nt">Note</label>
         <input class="inp" id="nt" value="${esc(c.note||'')}" placeholder="Optional">
-        <label class="lab" for="onw" style="margin-top:10px">Week the work was done</label>
-        <input class="inp" type="date" id="onw" value="${esc(c.on||thisWeekEnd())}">
-        <p class="hint" style="margin-top:4px">Defaults to this week. Change it if you're catching up on an earlier week — the curve plots by this date.</p>
+        <label class="lab" for="onw" style="margin-top:10px">Date completed</label>
+        <input class="inp" type="date" id="onw" value="${esc(c.on||fmtD(new Date()))}">
+        <p class="hint" style="margin-top:4px">Defaults to today. Change it only if the work was actually done on an earlier date — the curve plots it here.</p>
         ${c.by?`<p class="hint">Last set by ${esc(c.by)}${c.at?' · '+new Date(c.at).toLocaleString([], {month:'short',day:'numeric',hour:'numeric',minute:'2-digit'}):''}</p>`:''}
       </div>
       <div class="modal-f"><button class="btn dim" id="x">Cancel</button><button class="btn" id="ok">Save</button></div>

@@ -1,6 +1,6 @@
 /* Sprinkler Tracker service worker.
    Bump CACHE when you upload a new index.html, or devices keep serving the old page. */
-const CACHE = 'sprinkler-tracker-v11';
+const CACHE = 'sprinkler-tracker-v12';
 
 const SHELL = [
   './',
@@ -34,15 +34,11 @@ self.addEventListener('activate', function (e) {
 
 self.addEventListener('fetch', function (e) {
   if (e.request.method !== 'GET') return;
-
   var url;
   try { url = new URL(e.request.url); } catch (err) { return; }
-
   var isDoc = e.request.mode === 'navigate' ||
               url.pathname.endsWith('/') ||
               url.pathname.endsWith('index.html');
-
-  // The page itself: network first so updates land, cache fallback so it opens with no signal.
   if (isDoc && url.origin === self.location.origin) {
     e.respondWith(
       fetch(e.request)
@@ -60,8 +56,6 @@ self.addEventListener('fetch', function (e) {
     );
     return;
   }
-
-  // Everything else (icons, fonts): cache first, then network, caching what succeeds.
   e.respondWith(
     caches.match(e.request).then(function (hit) {
       if (hit) return hit;
@@ -69,9 +63,7 @@ self.addEventListener('fetch', function (e) {
         var copy = resp.clone();
         caches.open(CACHE).then(function (c) { c.put(e.request, copy); }).catch(function () {});
         return resp;
-      }).catch(function () {
-        return hit || Response.error();
-      });
+      }).catch(function () { return hit || Response.error(); });
     })
   );
 });
