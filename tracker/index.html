@@ -800,13 +800,18 @@
     const step=Math.max(1,Math.ceil(n/8));
     for(let i=0;i<n;i+=step){ const d=new Date(s.weeks[i]);
       g+=`<text x="${r1(xt(s.weeks[i]))}" y="${H-12}" text-anchor="middle" class="axl">${d.toLocaleDateString([], {month:'short',day:'numeric'})}</text>`; }
-    const areaPath=`M${r1(xt(t0))} ${r1(y(0))} `+pts(s.planned).map(pt=>'L'+r1(xt(pt[0]))+' '+r1(y(pt[1]))).join(' ')+` L${r1(xt(t1))} ${r1(y(0))} Z`;
+    // planned continues past today, but must pass through its true as-of-today value at the
+    // marker so it lines up with the earned line (which ends there). Insert a today point.
+    const clampNow=Math.min(Math.max(s.now,t0),t1);
+    const plannedP=(()=>{ const p=[[t0,0]]; s.planned.forEach((v,i)=>p.push([s.weeks[i]+7*DAY,v])); p.push([clampNow,s.plannedNow]); p.sort((a,b)=>a[0]-b[0]); return p; })();
+    const plannedPath=plannedP.map((pt,i)=>(i?'L':'M')+r1(xt(pt[0]))+' '+r1(y(pt[1]))).join(' ');
+    const areaPath=`M${r1(xt(t0))} ${r1(y(0))} `+plannedP.map(pt=>'L'+r1(xt(pt[0]))+' '+r1(y(pt[1]))).join(' ')+` L${r1(xt(t1))} ${r1(y(0))} Z`;
 
     let h=`<div class="sec" style="margin-top:0">Planned vs actual${labour()?' — '+r1(s.total)+' budgeted hours':''}</div>
     <div class="chartwrap"><svg viewBox="0 0 ${W} ${H}" width="100%" role="img" aria-label="Cumulative progress curves: planned baseline, earned actual, and burned timesheet hours">
       ${g}
       <path d="${areaPath}" fill="var(--fillplan)"/>
-      <path d="${path(s.planned)}" fill="none" stroke="var(--plan)" stroke-width="2" stroke-linejoin="round"/>
+      <path d="${plannedPath}" fill="none" stroke="var(--plan)" stroke-width="2" stroke-linejoin="round"/>
       ${s.hasBurned?`<path d="${pathNow(s.burned,s.burnedNow)}" fill="none" stroke="var(--burn)" stroke-width="2" stroke-dasharray="2 3" stroke-linejoin="round"/>`:''}
       ${s.hasActual?`<path d="${pathNow(s.actual,s.actualNow)}" fill="none" stroke="var(--act)" stroke-width="2" stroke-dasharray="6 4" stroke-linejoin="round"/>`:''}
       <line x1="${nowX}" y1="${T}" x2="${nowX}" y2="${T+ih}" stroke="var(--muted)" stroke-width="1" stroke-dasharray="3 3"/>

@@ -1,6 +1,6 @@
 /* Sprinkler Tracker service worker.
    Bump CACHE when you upload a new index.html, or devices keep serving the old page. */
-const CACHE = 'sprinkler-tracker-v12';
+const CACHE = 'sprinkler-tracker-v13';
 
 const SHELL = [
   './',
