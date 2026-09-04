@@ -385,7 +385,7 @@
   function spreadDays(area){
     if((+area.spreadDays||0)>0) return Math.round(+area.spreadDays);
     const daily=Math.max(1,(+area.crew||1))*Math.max(1,(+(doc.schedule&&doc.schedule.hoursPerDay)||8));
-    return Math.max(1,Math.ceil(areaHours(area)/daily));
+    return Math.max(1,Math.ceil(infoAreaHours(area)/daily));   // always real labour hours, not the weight
   }
   function phaseHoursTotal(area,p){ return area.rows.reduce((s,r)=>s+cellHours(area,r,p),0); }
 
@@ -1012,7 +1012,7 @@
           <div class="row" style="flex-wrap:wrap">
             <div style="flex:0 0 84px"><label class="mini">Crew</label><input class="inp num" data-ac="${a.id}" value="${esc(a.crew)}" inputmode="numeric"></div>
             <div style="flex:0 0 110px"><label class="mini">Force days</label><input class="inp num" data-ad2="${a.id}" value="${esc(a.spreadDays||'')}" placeholder="auto" inputmode="numeric"></div>
-            <div style="flex:1 1 auto"><span class="mini">Duration</span><span class="tot">${r1(areaHours(a))} h ÷ ${esc(a.crew||1)} × ${esc((doc.schedule.hoursPerDay||8))} h = <b>${spreadDays(a)} working days</b></span></div>
+            <div style="flex:1 1 auto"><span class="mini">Duration</span><span class="tot">${r1(infoAreaHours(a))} h ÷ ${esc(a.crew||1)} × ${esc((doc.schedule.hoursPerDay||8))} h = <b>${spreadDays(a)} working days</b></span></div>
           </div>
           <p class="hint">No floor cycle here — the hours spread evenly from the start date across a window sized by your crew. Phases take slices of that window in order, proportional to their weights. Leave <b>Force days</b> blank to derive it, or type a number when the GC hands you a fixed window.</p>
           ` : `
@@ -1428,9 +1428,7 @@
 
 <script>
 if ('serviceWorker' in navigator) {
-  window.addEventListener('load', function () {
-    navigator.serviceWorker.register('sw.js').catch(function(){});
-  });
+  window.addEventListener('load', function () { navigator.serviceWorker.register('sw.js').catch(function(){}); });
 }
 </script>
 </body>
