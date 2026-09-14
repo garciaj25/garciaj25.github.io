@@ -12,10 +12,7 @@
 <meta name="apple-mobile-web-app-title" content="Tracker">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <meta name="robots" content="noindex, nofollow">
-<style>
-  html,body{margin:0;padding:0;background:#F2F4F3;-webkit-text-size-adjust:100%}
-  body{padding:env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left)}
-</style>
+<style>html,body{margin:0;padding:0;background:#F2F4F3;-webkit-text-size-adjust:100%}body{padding:env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left)}</style>
 </head>
 <body>
 
@@ -37,6 +34,38 @@
   .sched{border:1px solid var(--hair);background:var(--sheet);padding:8px;margin-bottom:6px}
   .sched .pnm{font-family:var(--disp);font-size:13px;font-weight:600;letter-spacing:.05em;text-transform:uppercase;margin-bottom:5px}
   .mini{font-family:var(--disp);font-size:9px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);display:block;margin-bottom:2px}
+
+  /* ---------- report ---------- */
+  #report{position:fixed;inset:0;background:#fff;z-index:80;overflow:auto;padding:0}
+  .rpt{max-width:820px;margin:0 auto;padding:28px 34px;color:#10161E;font-family:var(--body)}
+  .rpt h1{font-family:var(--disp);font-size:26px;font-weight:700;letter-spacing:.02em;text-transform:uppercase;margin:0 0 2px}
+  .rpt .sub{font-family:var(--mono);font-size:12px;color:var(--muted);margin-bottom:16px}
+  .rpt h2{font-family:var(--disp);font-size:13px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;margin:22px 0 8px;padding-bottom:5px;border-bottom:1px solid var(--rule)}
+  .rpt .kpis{display:flex;flex-wrap:wrap;gap:10px;margin:6px 0 4px}
+  .rpt .kpi{flex:1 1 130px;border:1px solid var(--hair);padding:9px 11px}
+  .rpt .kpi .k{font-family:var(--disp);font-size:9px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+  .rpt .kpi .v{font-family:var(--disp);font-size:24px;font-weight:700;line-height:1.1}
+  .rpt .kpi .v.pos{color:var(--green)} .rpt .kpi .v.neg{color:var(--red)}
+  .rpt table{width:100%;border-collapse:collapse;font-size:12px;margin-top:4px}
+  .rpt th{font-family:var(--disp);font-size:9px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);text-align:right;padding:5px 6px;border-bottom:1px solid var(--rule)}
+  .rpt th:first-child{text-align:left}
+  .rpt td{padding:5px 6px;border-bottom:1px solid var(--hair);text-align:right;font-family:var(--mono)}
+  .rpt td:first-child{text-align:left;font-family:var(--disp);font-size:13px;letter-spacing:.03em;text-transform:uppercase;font-weight:500}
+  .rpt tr.sum td{border-top:1px solid var(--rule);font-weight:700;background:var(--sheet)}
+  .rpt .blkitem{border-left:3px solid var(--red);padding:6px 9px;margin-bottom:5px;font-size:12px;background:var(--sheet)}
+  .rpt .blkitem b{font-family:var(--disp);letter-spacing:.03em;text-transform:uppercase}
+  .rpt .foot{margin-top:22px;padding-top:8px;border-top:1px solid var(--hair);font-family:var(--mono);font-size:10px;color:var(--muted)}
+  .rpt .axl{font-family:var(--mono);font-size:9px;fill:var(--muted)}
+  .rbar{position:sticky;top:0;background:var(--ink);display:flex;gap:8px;justify-content:flex-end;padding:8px 12px;z-index:2}
+  .rbar .btn{background:var(--surface)}
+  @media print{
+    .tbx,#layer{display:none!important}
+    #report{position:static;overflow:visible}
+    .rbar{display:none!important}
+    .rpt{max-width:none;padding:0}
+    .rpt h2{page-break-after:avoid}
+    .rpt table,.rpt .blkitem,.rpt svg{page-break-inside:avoid}
+  }
   .tbx{font-family:var(--body);color:var(--ink);background:var(--sheet);border:1px solid var(--rule);max-width:1100px;margin:0 auto}
 
   .pbar{display:flex;gap:8px;align-items:center;padding:8px 10px;border-bottom:1px solid var(--rule);background:var(--ink)}
@@ -211,6 +240,7 @@
   </div>
 </div>
 <div id="layer"></div>
+<div id="report" style="display:none"></div>
 
 <script>
 (function(){
@@ -266,7 +296,7 @@
   const pane=$('#pane'), layer=$('#layer');
   const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
   const ck=(a,r,p)=>a+':'+r+':'+p;
-  const cell=(a,r,p)=>doc.cells[ck(a,r,p)]||{status:S.NS,pct:0,note:'',by:'',at:''};
+  const cell=(a,r,p)=>{ const c=doc.cells[ck(a,r,p)]||{status:S.NS,pct:0,note:'',by:'',at:''}; if(!Array.isArray(c.notes)) c.notes=c.note?[{id:'legacy',text:c.note,blocker:c.status===S.BLOCKED,by:c.by||'',at:c.at||''}]:[]; return c; };
   const r1=n=>Math.round(n*10)/10;
   const areaById=id=>doc.areas.find(a=>a.id===id);
 
@@ -577,6 +607,12 @@
     // of the week, which pushed completions ahead of today. Snap any future date back to today.
     (function(){ const todayS=fmtD(new Date()); const t=new Date(); t.setHours(23,59,59,999);
       Object.keys(d.cells||{}).forEach(k=>{ const c=d.cells[k]; if(c&&c.on){ const dd=parseD(c.on); if(dd&&dd.getTime()>t.getTime()) c.on=todayS; } }); })();
+    // one note per cell -> a list of notes, any of which can be a blocker
+    Object.keys(d.cells||{}).forEach(k=>{ const c=d.cells[k];
+      if(c && !Array.isArray(c.notes)){
+        c.notes = c.note ? [{id:uid('n'),text:c.note,blocker:(c.status==='blocked'),by:c.by||'',at:c.at||''}] : [];
+      }
+    });
     d.areas.forEach(a=>{
       if(a.weight==null) a.weight=Math.max(1,a.rows.length);
       if(a.totalHours==null) a.totalHours=0;
@@ -722,7 +758,7 @@
             aria-label="${esc(r.name)} ${esc(p.name)}: ${SNAME[c.status]}${c.status===S.IP?' '+pc+'%':''}">
             ${c.status===S.IP?`<span class="bar" style="width:${pc}%"></span>`:''}
             <span class="txt">${c.status===S.IP?pc+'%':''}</span>
-            ${c.note?'<span class="flag">●</span>':''}</button></td>`;
+            ${(c.notes&&c.notes.length)?(c.notes.some(nt=>nt.blocker)?'<span class="flag" style="color:var(--red)">⚑</span>':'<span class="flag">●</span>'):(c.note?'<span class="flag">●</span>':'')}</button></td>`;
       });
       h+=`<td class="rowpct">${r1(rowPct(area,r))}</td></tr>`;
     });
@@ -859,13 +895,18 @@
   // ---------- blockers ----------
   function viewBlocked(){
     const out=[];
-    doc.areas.forEach(a=>a.rows.forEach(r=>a.phases.forEach(p=>{ const c=cell(a.id,r.id,p.id); if(c.status===S.BLOCKED) out.push({a,r,p,c}); })));
-    let h=`<div class="sec">Blocked — ${out.length} item${out.length===1?'':'s'}</div>`;
-    if(!out.length) return h+`<div class="empty">Nothing blocked. Mark a cell <b>Blocked</b> and it lands here for your look-ahead.</div>`;
-    out.forEach(({a,r,p,c})=>{
+    doc.areas.forEach(a=>a.rows.forEach(r=>a.phases.forEach(p=>{
+      const c=cell(a.id,r.id,p.id);
+      const blk=(c.notes||[]).filter(nt=>nt.blocker);
+      if(blk.length){ blk.forEach(nt=>out.push({a,r,p,text:nt.text,by:nt.by,at:nt.at})); }
+      else if(c.status===S.BLOCKED){ out.push({a,r,p,text:c.note||'',by:c.by,at:c.at}); }
+    })));
+    let h=`<div class="sec">Open blockers — ${out.length} item${out.length===1?'':'s'}</div>`;
+    if(!out.length) return h+`<div class="empty">No blockers. Open any cell, type a note and tap ⚑ to flag it as a blocker — it lands here for your look-ahead.</div>`;
+    out.forEach(({a,r,p,text,by,at})=>{
       h+=`<div class="blk"><h4>${esc(a.name)} · ${esc(r.name)} · ${esc(p.name)}</h4>
-        <p>${c.note?esc(c.note):'<span style="color:var(--muted)">No reason logged.</span>'}</p>
-        ${c.by||c.at?`<div class="who">${esc(c.by||'—')}${c.at?' · '+new Date(c.at).toLocaleDateString([], {month:'short',day:'numeric'}):''}</div>`:''}</div>`;
+        <p>${text?esc(text):'<span style="color:var(--muted)">No reason logged.</span>'}</p>
+        ${by||at?`<div class="who">${esc(by||'—')}${at?' · '+new Date(at).toLocaleDateString([], {month:'short',day:'numeric'}):''}</div>`:''}</div>`;
     });
     return h+`<div class="row" style="margin-top:12px"><button class="btn" id="cpblk">Copy blocker list</button></div>`;
   }
@@ -1065,6 +1106,7 @@
     const r=a.rows.find(x=>x.id===rid), p=a.phases.find(x=>x.id===pid); if(!r||!p) return;
     const c=cell(aid,rid,pid);
     let st=c.status, pc=c.status===S.IP?(c.pct||50):(c.status===S.DONE?100:0);
+    let notes=(c.notes||[]).map(x=>({...x}));   // working copy
     layer.innerHTML=`<div class="scrim" id="scrim"><div class="modal" role="dialog" aria-modal="true" aria-label="${esc(r.name)} ${esc(p.name)}">
       <div class="modal-h"><b>${esc(r.name)}</b><span>${esc(a.name)}<br>${esc(p.name)}</span></div>
       <div class="modal-b">
@@ -1079,17 +1121,52 @@
           <input type="range" id="rng" min="0" max="100" step="5" value="${pc}">
           <div class="chips">${[10,25,50,75,90].map(v=>`<button class="chip" data-c="${v}">${v}</button>`).join('')}</div>
         </div>
-        <label class="lab" id="ntl" for="nt">Note</label>
-        <input class="inp" id="nt" value="${esc(c.note||'')}" placeholder="Optional">
-        <label class="lab" for="onw" style="margin-top:10px">Date completed</label>
+
+        <label class="lab" style="margin-top:12px">Notes &amp; blockers</label>
+        <div id="notelist"></div>
+        <div class="row" style="margin-top:6px;align-items:stretch">
+          <input class="inp" id="ntnew" placeholder="Add a note…" style="flex:1 1 auto">
+          <button class="btn dim" id="ntblk" type="button" title="Flag as blocker" style="flex:0 0 auto">⚑</button>
+          <button class="btn" id="ntadd" type="button" style="flex:0 0 auto">Add</button>
+        </div>
+        <p class="hint" style="margin-top:4px">Add as many as you like. Tap ⚑ before Add to mark one a blocker — blockers show on the Blockers tab.</p>
+
+        <label class="lab" for="onw" style="margin-top:12px">Date completed</label>
         <input class="inp" type="date" id="onw" value="${esc(c.on||fmtD(new Date()))}">
-        <p class="hint" style="margin-top:4px">Defaults to today. Change it only if the work was actually done on an earlier date — the curve plots it here.</p>
+        <p class="hint" style="margin-top:4px">Defaults to today. Change it only if the work was actually done on an earlier date.</p>
         ${c.by?`<p class="hint">Last set by ${esc(c.by)}${c.at?' · '+new Date(c.at).toLocaleString([], {month:'short',day:'numeric',hour:'numeric',minute:'2-digit'}):''}</p>`:''}
       </div>
       <div class="modal-f"><button class="btn dim" id="x">Cancel</button><button class="btn" id="ok">Save</button></div>
     </div></div>`;
-    const wrap=$('#pctwrap'), rng=$('#rng'), pv=$('#pv'), ntl=$('#ntl');
-    function sync(){ layer.querySelectorAll('.sbtn').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.s===st))); wrap.hidden=st!==S.IP; ntl.textContent=st===S.BLOCKED?'Why is it blocked?':'Note'; }
+    const wrap=$('#pctwrap'), rng=$('#rng'), pv=$('#pv');
+    let newIsBlocker=false;
+    function drawNotes(){
+      const box=$('#notelist'); if(!box) return;
+      box.innerHTML = notes.length
+        ? notes.map((nt,i)=>`<div class="mrow" style="align-items:flex-start">
+            <span class="mname" style="white-space:normal;font-family:var(--body);font-size:13px;font-weight:400;text-transform:none;letter-spacing:0">
+              ${nt.blocker?'<b style="color:var(--red)">⚑ </b>':''}${esc(nt.text)}
+              ${nt.by||nt.at?`<span class="msub" style="display:block">${esc(nt.by||'')}${nt.at?' · '+new Date(nt.at).toLocaleDateString([], {month:'short',day:'numeric'}):''}</span>`:''}
+            </span>
+            <button class="btn dim sm" data-ntblk="${i}" title="Toggle blocker" type="button">${nt.blocker?'⚑':'⚐'}</button>
+            <button class="btn dim danger sm" data-ntdel="${i}" title="Delete" type="button">×</button>
+          </div>`).join('')
+        : `<p class="hint" style="margin:0">No notes yet.</p>`;
+      box.querySelectorAll('[data-ntdel]').forEach(b=>b.onclick=()=>{ notes.splice(+b.dataset.ntdel,1); drawNotes(); });
+      box.querySelectorAll('[data-ntblk]').forEach(b=>b.onclick=()=>{ const i=+b.dataset.ntblk; notes[i].blocker=!notes[i].blocker; drawNotes(); });
+    }
+    drawNotes();
+    function addNote(){
+      const v=$('#ntnew').value.trim(); if(!v) return;
+      notes.push({id:uid('n'),text:v,blocker:newIsBlocker,by:me||'',at:new Date().toISOString()});
+      $('#ntnew').value=''; newIsBlocker=false; $('#ntblk').classList.remove('on'); $('#ntblk').style.background='';
+      drawNotes(); $('#ntnew').focus();
+    }
+    $('#ntadd').onclick=addNote;
+    $('#ntnew').addEventListener('keydown',e=>{ if(e.key==='Enter'){ e.preventDefault(); addNote(); } });
+    $('#ntblk').onclick=()=>{ newIsBlocker=!newIsBlocker; $('#ntblk').style.background=newIsBlocker?'var(--red)':''; $('#ntblk').style.color=newIsBlocker?'#fff':''; };
+
+    function sync(){ layer.querySelectorAll('.sbtn').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.s===st))); wrap.hidden=st!==S.IP; }
     sync();
     layer.querySelectorAll('.sbtn').forEach(b=>b.onclick=()=>{ st=b.dataset.s; if(st===S.IP&&!pc){pc=50;rng.value=50;pv.textContent='50%';} sync(); });
     rng.oninput=()=>{ pc=+rng.value; pv.textContent=pc+'%'; };
@@ -1098,7 +1175,13 @@
     $('#x').onclick=close;
     $('#scrim').onclick=e=>{ if(e.target.id==='scrim') close(); };
     document.addEventListener('keydown',function k(e){ if(e.key==='Escape'){ close(); document.removeEventListener('keydown',k);} });
-    $('#ok').onclick=async()=>{ if(st===S.IP&&pc>=100)st=S.DONE; if(st===S.IP&&pc<=0)st=S.NS; const note=$('#nt').value.trim(); const on=$('#onw')?$('#onw').value:''; close(); await saveCell(aid,rid,pid,{status:st,pct:st===S.IP?pc:(st===S.DONE?100:0),note,on}); };
+    $('#ok').onclick=async()=>{
+      if(st===S.IP&&pc>=100)st=S.DONE; if(st===S.IP&&pc<=0)st=S.NS;
+      const on=$('#onw')?$('#onw').value:'';
+      const note=notes.length?notes[notes.length-1].text:'';   // keep legacy field roughly in sync
+      close();
+      await saveCell(aid,rid,pid,{status:st,pct:st===S.IP?pc:(st===S.DONE?100:0),note,notes,on});
+    };
     setTimeout(()=>{ const f=layer.querySelector('.sbtn[aria-pressed="true"]')||layer.querySelector('.sbtn'); f&&f.focus(); },0);
   }
 
@@ -1132,6 +1215,11 @@
         </div>
         <div class="sec">Templates</div>
         ${tpls}
+        <div class="sec">Reports</div>
+        <div class="mact">
+          <button class="btn" id="rpt1">Print this project</button>
+          <button class="btn dim" id="rptall">Print portfolio summary</button>
+        </div>
         <div class="sec">This project — ${esc(doc.project.name)}</div>
         <div class="mact">
           <button class="btn dim" id="psavetpl">Save current setup as template</button>
@@ -1145,6 +1233,8 @@
     const close=()=>layer.innerHTML='';
     $('#pclose').onclick=close; $('#scrimP').onclick=e=>{ if(e.target.id==='scrimP') close(); };
     $('#pnew').onclick=()=>{ close(); promptModal('New blank project','Project name','', n=>createProject(n)); };
+    $('#rpt1').onclick=()=>{ close(); showReport(reportProjectHTML(projectMetrics())); };
+    $('#rptall').onclick=async()=>{ close(); showReport('<div class="rpt"><p>Building portfolio report…</p></div>'); showReport(await reportPortfolioHTML()); };
     $('#pimp').onclick=()=>{ const f=$('#pimpfile'); if(f) f.click(); };
     $('#pimpfile').onchange=e=>{
       const f=e.target.files&&e.target.files[0]; if(!f) return;
@@ -1237,6 +1327,139 @@
     download(name,text);
   }
 
+  // ---------- reports ----------
+  function reportCurveSVG(s){
+    if(!s) return '<p class="hint">No baseline — set start dates to generate the curve.</p>';
+    const W=760,H=300,L=44,R=14,T=16,B=40,iw=W-L-R,ih=H-T-B,DAYc=86400000;
+    const n=s.weeks.length, t0=s.weeks[0], t1=s.weeks[n-1]+7*DAYc, span=Math.max(1,t1-t0);
+    const xt=t=>L+(t-t0)/span*iw, y=v=>T+ih-(v/100*ih), r1n=x=>Math.round(x*10)/10;
+    const clampNow=Math.min(Math.max(s.now,t0),t1);
+    const plannedP=(()=>{const p=[[t0,0]];s.planned.forEach((v,i)=>p.push([s.weeks[i]+7*DAYc,v]));p.push([clampNow,s.plannedNow]);p.sort((a,b)=>a[0]-b[0]);return p;})();
+    const toNow=(arr,ev)=>{const p=[[t0,0]];arr.forEach((v,i)=>{const we=s.weeks[i]+7*DAYc;if(we<=s.now)p.push([we,v]);});p.push([clampNow,ev]);return p;};
+    const P=pp=>pp.map((pt,i)=>(i?'L':'M')+r1n(xt(pt[0]))+' '+r1n(y(pt[1]))).join(' ');
+    let g='';
+    for(let v=0;v<=100;v+=25) g+=`<line x1="${L}" y1="${r1n(y(v))}" x2="${W-R}" y2="${r1n(y(v))}" stroke="#C9D0D6" stroke-width="1"/><text x="${L-6}" y="${r1n(y(v))+4}" text-anchor="end" class="axl">${v}%</text>`;
+    const step=Math.max(1,Math.ceil(n/9));
+    for(let i=0;i<n;i+=step){const d=new Date(s.weeks[i]);g+=`<text x="${r1n(xt(s.weeks[i]))}" y="${H-14}" text-anchor="middle" class="axl">${d.toLocaleDateString([],{month:'short',day:'numeric'})}</text>`;}
+    const nowX=r1n(xt(clampNow)), late=(s.now-t0)/span>0.7;
+    const area=`M${r1n(xt(t0))} ${r1n(y(0))} `+plannedP.map(pt=>'L'+r1n(xt(pt[0]))+' '+r1n(y(pt[1]))).join(' ')+` L${r1n(xt(t1))} ${r1n(y(0))} Z`;
+    return `<svg viewBox="0 0 ${W} ${H}" width="100%" role="img" aria-label="Planned vs actual progress curve">
+      ${g}
+      <path d="${area}" fill="rgba(24,95,165,.08)"/>
+      <path d="${P(plannedP)}" fill="none" stroke="#185FA5" stroke-width="2.5" stroke-linejoin="round"/>
+      ${s.hasBurned?`<path d="${P(toNow(s.burned,s.burnedNow))}" fill="none" stroke="#0E7C5A" stroke-width="2" stroke-dasharray="2 3"/>`:''}
+      ${s.hasActual?`<path d="${P(toNow(s.actual,s.actualNow))}" fill="none" stroke="#D85A30" stroke-width="2.5" stroke-dasharray="6 4"/>`:''}
+      <line x1="${nowX}" y1="${T}" x2="${nowX}" y2="${T+ih}" stroke="#6B7785" stroke-width="1" stroke-dasharray="3 3"/>
+      <text x="${nowX+(late?-4:4)}" y="${T+9}" class="axl" text-anchor="${late?'end':'start'}">today</text>
+      <line x1="${L}" y1="${T+ih}" x2="${W-R}" y2="${T+ih}" stroke="#1B2430" stroke-width="1"/>
+    </svg>
+    <div style="display:flex;gap:16px;flex-wrap:wrap;font-size:11px;color:#6B7785;margin-top:4px">
+      <span><span style="display:inline-block;width:14px;height:3px;background:#185FA5;vertical-align:middle"></span> Planned</span>
+      <span><span style="display:inline-block;width:14px;height:0;border-top:3px dashed #D85A30;vertical-align:middle"></span> Earned${s.hasActual?'':' — none logged'}</span>
+      <span><span style="display:inline-block;width:14px;height:0;border-top:3px dotted #0E7C5A;vertical-align:middle"></span> Burned${s.hasBurned?'':' — none entered'}</span>
+    </div>`;
+  }
+
+  function blockersList(){
+    const out=[];
+    doc.areas.forEach(a=>a.rows.forEach(r=>a.phases.forEach(p=>{
+      const c=cell(a.id,r.id,p.id);
+      const blk=(c.notes||[]).filter(nt=>nt.blocker);
+      if(blk.length) blk.forEach(nt=>out.push({loc:a.name+' · '+r.name+' · '+p.name,text:nt.text,by:nt.by,at:nt.at}));
+      else if(c.status===S.BLOCKED) out.push({loc:a.name+' · '+r.name+' · '+p.name,text:c.note||'',by:c.by,at:c.at});
+    })));
+    return out;
+  }
+
+  // metrics for the CURRENT doc
+  function projectMetrics(){
+    const s=curveSeries();
+    const lab=labour();
+    const totW=totalWeight();
+    return {
+      project:doc.project, pctInstalled:projectPct(),
+      plannedNow:s?s.plannedNow:0, earnedNow:s&&s.hasActual?s.actualNow:null, burnedNow:s&&s.hasBurned?s.burnedNow:null,
+      schedule:(s&&s.hasActual)?s.actualNow-s.plannedNow:null,
+      prod:(s&&s.hasActual&&s.hasBurned)?s.actualNow-s.burnedNow:null,
+      totalHours:infoProjectHours(), burnedHours:burnedTotal(), lab, s,
+      areas:doc.areas.map(a=>({name:a.name,kind:a.kind,pct:areaPct(a),w:projWeight(a),share:totW?projWeight(a)/totW*100:0,hours:infoAreaHours(a)})),
+      blockers:blockersList()
+    };
+  }
+
+  function reportProjectHTML(m){
+    const pc=v=>v==null?'—':(v>0?'+':'')+r1(v)+'%';
+    const cls=v=>v==null?'':(v<0?'neg':'pos');
+    let h=`<div class="rpt">
+      <h1>${esc(m.project.name)}</h1>
+      <div class="sub">Job ${esc(m.project.number)} · GC ${esc(m.project.gc)} · Rev ${esc(m.project.rev)} · as of ${new Date().toLocaleDateString([], {year:'numeric',month:'long',day:'numeric'})}</div>
+      <h2>Status at a glance</h2>
+      <div class="kpis">
+        <div class="kpi"><div class="k">Installed to date</div><div class="v">${Math.round(m.pctInstalled)}%</div></div>
+        <div class="kpi"><div class="k">Planned to date</div><div class="v">${r1(m.plannedNow)}%</div></div>
+        <div class="kpi"><div class="k">Schedule</div><div class="v ${cls(m.schedule)}">${pc(m.schedule)}</div></div>
+        ${m.lab?`<div class="kpi"><div class="k">Budget hours</div><div class="v">${r1(m.totalHours)}</div></div>`:''}
+        ${m.burnedHours?`<div class="kpi"><div class="k">Productivity</div><div class="v ${cls(m.prod)}">${pc(m.prod)}</div></div>`:''}
+      </div>
+      <h2>Planned vs actual</h2>
+      ${reportCurveSVG(m.s)}
+      <h2>By area</h2>
+      <table><thead><tr><th>Area</th><th>Type</th><th>${m.lab?'Hours':'Weight'}</th><th>Share</th><th>Complete</th></tr></thead><tbody>
+        ${m.areas.map(a=>`<tr><td>${esc(a.name)}</td><td>${esc(TPL[a.kind]?TPL[a.kind].label:a.kind)}</td><td>${m.lab?r1(a.hours):r1(a.w)}</td><td>${r1(a.share)}%</td><td>${r1(a.pct)}%</td></tr>`).join('')}
+        <tr class="sum"><td>Project</td><td></td><td>${m.lab?r1(m.totalHours):''}</td><td>100%</td><td>${r1(m.pctInstalled)}%</td></tr>
+      </tbody></table>`;
+    if(m.burnedHours || m.earnedNow!=null){
+      h+=`<h2>Hours</h2><table><tbody>
+        <tr><td>Budget</td><td>${m.lab?r1(m.totalHours)+' h':'—'}</td></tr>
+        <tr><td>Earned to date</td><td>${m.earnedNow==null?'—':(m.lab?r1(m.earnedNow/100*m.totalHours)+' h':r1(m.earnedNow)+'%')}</td></tr>
+        <tr><td>Burned to date</td><td>${m.burnedHours?r1(m.burnedHours)+' h':'—'}</td></tr>
+      </tbody></table>`;
+    }
+    h+=`<h2>Open blockers${m.blockers.length?' ('+m.blockers.length+')':''}</h2>`;
+    h+= m.blockers.length
+      ? m.blockers.map(b=>`<div class="blkitem"><b>${esc(b.loc)}</b><br>${b.text?esc(b.text):'No reason logged.'}${b.by?' — '+esc(b.by):''}</div>`).join('')
+      : `<p style="font-size:12px;color:#6B7785">None.</p>`;
+    h+=`<div class="foot">Generated ${new Date().toLocaleString()} · Sprinkler Progress Tracker</div></div>`;
+    return h;
+  }
+
+  async function reportPortfolioHTML(){
+    const rows=[];
+    const savedId=activeId, savedDoc=doc;
+    for(const p of projIndex){
+      const pd=await sget(PKEY(p.id),true); if(!pd) continue;
+      doc=normalize(pd);   // swap so metric fns compute for this project
+      rows.push({m:projectMetrics()});
+    }
+    doc=savedDoc; activeId=savedId;
+    const tot=rows.reduce((acc,r)=>{ acc.hours+=r.m.totalHours; acc.burned+=r.m.burnedHours; return acc; },{hours:0,burned:0});
+    let h=`<div class="rpt">
+      <h1>Portfolio summary</h1>
+      <div class="sub">${rows.length} project${rows.length===1?'':'s'} · as of ${new Date().toLocaleDateString([], {year:'numeric',month:'long',day:'numeric'})}</div>
+      <h2>All projects</h2>
+      <table><thead><tr><th>Project</th><th>Job</th><th>Complete</th><th>Sched</th><th>Budget h</th><th>Burned h</th><th>Blockers</th></tr></thead><tbody>
+      ${rows.map(({m})=>{ const sv=m.schedule; const svTxt=sv==null?'—':(sv>0?'+':'')+r1(sv)+'%'; const svc=sv==null?'#10161E':(sv<0?'#C8342B':'#1F7A4C');
+        return `<tr><td>${esc(m.project.name)}</td><td>${esc(m.project.number)}</td><td>${Math.round(m.pctInstalled)}%</td><td style="color:${svc}">${svTxt}</td><td>${m.lab?r1(m.totalHours):'—'}</td><td>${m.burnedHours?r1(m.burnedHours):'—'}</td><td>${m.blockers.length||'—'}</td></tr>`;
+      }).join('')}
+      <tr class="sum"><td>Total</td><td></td><td></td><td></td><td>${r1(tot.hours)}</td><td>${r1(tot.burned)}</td><td></td></tr>
+      </tbody></table>
+      <p style="font-size:11px;color:#6B7785;margin-top:8px">Schedule = earned minus planned as of today. Negative (red) is behind baseline.</p>`;
+    // brief per-project blocker roll-up
+    const allBlk=rows.flatMap(({m})=>m.blockers.map(b=>({proj:m.project.name,...b})));
+    h+=`<h2>Open blockers across portfolio${allBlk.length?' ('+allBlk.length+')':''}</h2>`;
+    h+= allBlk.length ? allBlk.map(b=>`<div class="blkitem"><b>${esc(b.proj)} — ${esc(b.loc)}</b><br>${b.text?esc(b.text):'No reason logged.'}</div>`).join('') : `<p style="font-size:12px;color:#6B7785">None.</p>`;
+    h+=`<div class="foot">Generated ${new Date().toLocaleString()} · Sprinkler Progress Tracker</div></div>`;
+    return h;
+  }
+
+  function showReport(inner){
+    const rep=document.getElementById('report');
+    rep.innerHTML=`<div class="rbar"><button class="btn" id="rprint">Print / Save PDF</button><button class="btn dim" id="rclose">Close</button></div>${inner}`;
+    rep.style.display='block';
+    document.getElementById('rprint').onclick=()=>window.print();
+    document.getElementById('rclose').onclick=()=>{ rep.style.display='none'; rep.innerHTML=''; };
+  }
+
   function askName(){
     layer.innerHTML=`<div class="scrim" id="scrim2"><div class="modal" style="max-width:320px" role="dialog" aria-modal="true" aria-label="Your name">
       <div class="modal-h"><b>Who's updating?</b></div>
@@ -1276,7 +1499,11 @@
   }
   function blockerText(){
     const L=[doc.project.name+' — blockers as of '+new Date().toLocaleDateString(),'']; let n=0;
-    doc.areas.forEach(a=>a.rows.forEach(r=>a.phases.forEach(p=>{ const c=cell(a.id,r.id,p.id); if(c.status===S.BLOCKED){ n++; L.push(n+'. '+a.name+' · '+r.name+' · '+p.name+' — '+(c.note||'no reason logged')+(c.by?' ('+c.by+')':'')); } })));
+    doc.areas.forEach(a=>a.rows.forEach(r=>a.phases.forEach(p=>{ const c=cell(a.id,r.id,p.id);
+      const blk=(c.notes||[]).filter(nt=>nt.blocker);
+      if(blk.length){ blk.forEach(nt=>{ n++; L.push(n+'. '+a.name+' · '+r.name+' · '+p.name+' — '+(nt.text||'no reason logged')+(nt.by?' ('+nt.by+')':'')); }); }
+      else if(c.status===S.BLOCKED){ n++; L.push(n+'. '+a.name+' · '+r.name+' · '+p.name+' — '+(c.note||'no reason logged')+(c.by?' ('+c.by+')':'')); }
+    })));
     if(!n) L.push('None.'); return L.join('\n');
   }
   function curveText(){
@@ -1427,9 +1654,7 @@
 </script>
 
 <script>
-if ('serviceWorker' in navigator) {
-  window.addEventListener('load', function () { navigator.serviceWorker.register('sw.js').catch(function(){}); });
-}
+if('serviceWorker' in navigator){window.addEventListener('load',function(){navigator.serviceWorker.register('sw.js').catch(function(){});});}
 </script>
 </body>
 </html>
