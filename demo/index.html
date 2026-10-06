@@ -1,0 +1,791 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Rastreador de Cotizaciones | PM Dynamics Consulting</title>
+<meta name="description" content="Demo de PM Dynamics Consulting: embudo de cotizaciones, recordatorios de seguimiento y dashboard con Pareto de ingresos por tipo de obra.">
+<meta property="og:title" content="Rastreador de Cotizaciones | PM Dynamics Consulting">
+<meta property="og:description" content="Convertí una hoja de cotizaciones en una herramienta: embudo, seguimientos y dashboard.">
+<meta property="og:type" content="website">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: identidad PM Dynamics — banda azul marino arriba, fondo crema, teal como acento, dorado como detalle; KPIs, tres paneles y tabla */
+:root {
+  --bg: #F7F3EC;
+  --surface: #FFFFFF;
+  --surface-2: #FBF8F3;
+  --ink: #0A1628;
+  --muted: #5C6573;
+  --line: #E5DED1;
+  --accent: #0D7377;
+  --accent-soft: #D7EDEC;
+  --gold: #C9A84C;
+  --gold-ink: #8A6D1F;
+  --hero: #0A1628;
+  --bar: #0A1628;
+  --on-hero: #FFFFFF;
+  --good: #1E7A4C;
+  --good-soft: #DDF1E6;
+  --warn: #A86300;
+  --warn-soft: #FBEBD3;
+  --bad: #B4232A;
+  --bad-soft: #F9DEDF;
+  --shadow: 0 1px 2px rgba(10,22,40,.06), 0 8px 24px rgba(10,22,40,.08);
+  --f-display: "Fraunces", Georgia, "Times New Roman", serif;
+  --f-body: "DM Sans", "Segoe UI", system-ui, sans-serif;
+  --f-mono: "IBM Plex Mono", ui-monospace, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0A1628; --surface: #112038; --surface-2: #16284A; --ink: #EEF1F5; --muted: #9AA6B8; --line: #24375A;
+    --accent: #3FB5B9; --accent-soft: #0F3A40; --gold: #D9BC6A; --gold-ink: #D9BC6A; --hero: #06101F; --on-hero: #FFFFFF; --bar: #2E4D7E;
+    --good: #4CC38A; --good-soft: #15342A; --warn: #E3A548; --warn-soft: #3A2C14; --bad: #F06A5F; --bad-soft: #3D1C1C;
+    --shadow: 0 1px 2px rgba(0,0,0,.3), 0 8px 24px rgba(0,0,0,.25);
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0A1628; --surface: #112038; --surface-2: #16284A; --ink: #EEF1F5; --muted: #9AA6B8; --line: #24375A;
+  --accent: #3FB5B9; --accent-soft: #0F3A40; --gold: #D9BC6A; --gold-ink: #D9BC6A; --hero: #06101F; --on-hero: #FFFFFF; --bar: #2E4D7E;
+  --good: #4CC38A; --good-soft: #15342A; --warn: #E3A548; --warn-soft: #3A2C14; --bad: #F06A5F; --bad-soft: #3D1C1C;
+  --shadow: 0 1px 2px rgba(0,0,0,.3), 0 8px 24px rgba(0,0,0,.25);
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }
+body { background: var(--bg); color: var(--ink); font-family: var(--f-body); font-size: 15px; line-height: 1.45; }
+.wrap { max-width: 1280px; margin: 0 auto; padding-inline: 24px; padding-block: 22px 40px; display: grid; gap: 18px; }
+@media (max-width: 600px) { .wrap { padding-inline: 16px; } }
+.num { font-family: var(--f-mono); font-variant-numeric: tabular-nums; }
+
+/* Encabezado */
+header { display: flex; flex-wrap: wrap; align-items: center; gap: 14px 20px; justify-content: space-between; background: var(--hero); color: var(--on-hero); border-radius: 12px; padding: 18px 22px; border-bottom: 3px solid var(--gold); }
+.brand { display: grid; gap: 2px; min-width: 0; }
+.eyebrow { font-size: 11.5px; text-transform: uppercase; letter-spacing: .16em; font-weight: 600; color: var(--gold); }
+h1 { font-family: var(--f-display); font-weight: 600; font-size: 30px; letter-spacing: -.2px; margin: 0; line-height: 1.1; text-wrap: balance; }
+.sub { color: var(--on-hero); opacity: .72; font-size: 13.5px; display: flex; flex-wrap: wrap; gap: 6px 10px; align-items: center; }
+.tag { font-size: 11px; text-transform: uppercase; letter-spacing: .08em; font-weight: 600; padding: 2px 8px; border-radius: 99px; border: 1px solid var(--gold); color: var(--gold); }
+header .btn { background: transparent; color: var(--on-hero); border-color: rgba(255,255,255,.3); }
+header .btn:hover { border-color: var(--on-hero); }
+header .btn.primary { background: var(--accent); border-color: var(--accent); color: #FFFFFF; }
+.actions { display: flex; gap: 8px; flex-wrap: wrap; }
+button { font: inherit; cursor: pointer; }
+.btn { border: 1px solid var(--line); background: var(--surface); color: var(--ink); padding: 8px 14px; border-radius: 8px; font-weight: 600; font-size: 14px; }
+.btn:hover { border-color: var(--muted); }
+.btn.primary { background: var(--accent); border-color: var(--accent); color: #FFFFFF; }
+.btn.primary:hover { filter: brightness(1.08); }
+.btn:focus-visible, select:focus-visible, input:focus-visible, .chip:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+/* KPIs */
+.kpis { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; }
+@media (max-width: 900px) { .kpis { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+.kpi { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 14px 16px; display: grid; gap: 4px; }
+.kpi { border-top: 3px solid var(--gold); }
+.kpi .label { font-size: 12px; text-transform: uppercase; letter-spacing: .07em; color: var(--muted); font-weight: 600; }
+.kpi .value { font-family: var(--f-display); font-weight: 600; font-size: 34px; line-height: 1.05; font-variant-numeric: tabular-nums; }
+.kpi .hint { font-size: 13px; color: var(--muted); }
+.kpi.alert { border-color: var(--bad); background: linear-gradient(var(--bad-soft), var(--bad-soft)) padding-box; }
+.kpi.alert .value { color: var(--bad); }
+
+/* Paneles */
+.row3 { display: grid; grid-template-columns: minmax(0,1.05fr) minmax(0,1fr) minmax(0,1.15fr); gap: 12px; align-items: start; }
+@media (max-width: 1050px) { .row3 { grid-template-columns: minmax(0,1fr); } }
+.panel { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 16px; display: grid; gap: 12px; min-width: 0; }
+.panel h2 { font-family: var(--f-display); font-weight: 600; font-size: 20px; margin: 0; letter-spacing: -.1px; }
+.panel-head { display: flex; justify-content: space-between; align-items: baseline; gap: 10px; flex-wrap: wrap; }
+.panel-head small { color: var(--muted); font-size: 12.5px; }
+
+/* Embudo */
+.funnel { display: grid; gap: 4px; }
+.f-row { display: grid; grid-template-columns: 112px minmax(0,1fr); gap: 10px; align-items: center; }
+.f-label { font-size: 13.5px; font-weight: 600; }
+.f-track { position: relative; height: 34px; }
+.f-bar { height: 100%; border-radius: 6px; background: var(--bar); display: flex; align-items: center; justify-content: space-between; padding: 0 10px; color: var(--surface); font-size: 13px; min-width: 118px; gap: 10px; white-space: nowrap; transition: width .5s ease; }
+.f-bar.won { background: var(--accent); }
+.f-bar { color: #FFFFFF; }
+.f-bar b { font-family: var(--f-mono); font-weight: 500; }
+.f-conv { grid-column: 2; font-size: 12px; color: var(--muted); padding-left: 4px; line-height: 1.2; }
+.f-conv .num { color: var(--ink); }
+.f-lost { margin-top: 6px; padding-top: 10px; border-top: 1px dashed var(--line); font-size: 13px; color: var(--muted); display: flex; justify-content: space-between; gap: 10px; flex-wrap: wrap; }
+.f-lost strong { color: var(--bad); font-weight: 600; }
+
+/* Tasa de éxito */
+.wr { display: grid; gap: 11px; }
+.wr-row { display: grid; gap: 4px; }
+.wr-top { display: flex; justify-content: space-between; gap: 8px; font-size: 13.5px; }
+.wr-top span:first-child { font-weight: 600; min-width: 0; }
+.wr-top .num { color: var(--muted); font-size: 12.5px; white-space: nowrap; }
+.wr-track { height: 10px; border-radius: 99px; background: var(--surface-2); border: 1px solid var(--line); overflow: hidden; }
+.wr-fill { height: 100%; background: var(--accent); border-radius: 99px; transition: width .5s ease; }
+.wr-fill.hi { background: var(--good); }
+.wr-fill.lo { background: var(--warn); }
+.wr-pct { font-family: var(--f-display); font-weight: 600; font-size: 16px; color: var(--ink); margin-right: 6px; }
+
+/* Seguimientos */
+.fu { display: grid; gap: 8px; }
+.fu-item { display: grid; grid-template-columns: 88px minmax(0,1fr) auto; gap: 10px; align-items: center; padding: 9px 10px; border-radius: 8px; background: var(--surface-2); border: 1px solid var(--line); transition: background .3s; }
+.fu-item.over { border-color: var(--bad); }
+.due { font-size: 11.5px; font-weight: 700; text-transform: uppercase; letter-spacing: .05em; text-align: center; padding: 4px 4px; white-space: nowrap; border-radius: 6px; line-height: 1.15; }
+.due.over { background: var(--bad-soft); color: var(--bad); }
+.due.today { background: var(--warn-soft); color: var(--warn); }
+.due.soon { background: var(--accent-soft); color: var(--accent); }
+.fu-main { min-width: 0; }
+.fu-main .p { font-weight: 600; font-size: 14px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.fu-main .c { font-size: 12.5px; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.fu-btns { display: flex; gap: 6px; }
+.mini { border: 1px solid var(--line); background: var(--surface); color: var(--ink); border-radius: 6px; padding: 5px 8px; font-size: 12.5px; font-weight: 600; white-space: nowrap; }
+.mini.go { background: var(--accent); border-color: var(--accent); color: var(--surface); }
+.mini:hover { filter: brightness(1.05); border-color: var(--muted); }
+.empty { color: var(--muted); font-size: 14px; padding: 14px; text-align: center; border: 1px dashed var(--line); border-radius: 8px; }
+.more { font-size: 12.5px; color: var(--muted); text-align: center; }
+
+/* Tabla */
+.tools { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; justify-content: space-between; }
+.chips { display: flex; gap: 6px; flex-wrap: wrap; }
+.chip { border: 1px solid var(--line); background: var(--surface); color: var(--muted); padding: 5px 12px; border-radius: 99px; font-size: 13px; font-weight: 600; }
+.chip[aria-pressed="true"] { background: var(--ink); color: var(--surface); border-color: var(--ink); }
+.search { border: 1px solid var(--line); background: var(--surface); color: var(--ink); border-radius: 8px; padding: 7px 12px; font: inherit; font-size: 14px; width: 240px; max-width: 100%; }
+.table-wrap { overflow-x: auto; border: 1px solid var(--line); border-radius: 8px; }
+table { width: 100%; border-collapse: collapse; min-width: 780px; font-size: 14px; }
+th { text-align: left; font-size: 11.5px; text-transform: uppercase; letter-spacing: .07em; color: var(--muted); font-weight: 600; padding: 9px 12px; background: var(--surface-2); border-bottom: 1px solid var(--line); white-space: nowrap; }
+td { padding: 9px 12px; border-bottom: 1px solid var(--line); vertical-align: middle; }
+tr:last-child td { border-bottom: 0; }
+td.r, th.r { text-align: right; }
+td .p { font-weight: 600; }
+td .c { font-size: 12.5px; color: var(--muted); }
+tr.flash td { animation: flash 2.2s ease; }
+@keyframes flash { 0%, 40% { background: var(--accent-soft); } 100% { background: transparent; } }
+.st { font: inherit; font-size: 13px; font-weight: 600; border-radius: 99px; padding: 4px 10px; border: 1px solid transparent; cursor: pointer; }
+.st[data-s="enviada"] { background: var(--surface-2); color: var(--ink); border-color: var(--line); }
+.st[data-s="seguimiento"] { background: var(--accent-soft); color: var(--accent); }
+.st[data-s="negociacion"] { background: var(--warn-soft); color: var(--warn); }
+.st[data-s="ganada"] { background: var(--good-soft); color: var(--good); }
+.st[data-s="perdida"] { background: var(--bad-soft); color: var(--bad); }
+.st option { background: var(--surface); color: var(--ink); }
+.dtxt.over { color: var(--bad); font-weight: 600; }
+.dtxt.today { color: var(--warn); font-weight: 600; }
+.dim { color: var(--muted); }
+
+/* Pestañas */
+.tabs { display: flex; gap: 4px; border-bottom: 1px solid var(--line); overflow-x: auto; overflow-y: hidden; }
+.tab { background: none; border: 0; border-bottom: 3px solid transparent; margin-bottom: -1px; padding: 10px 18px; font-weight: 600; font-size: 15px; color: var(--muted); white-space: nowrap; }
+.tab:hover { color: var(--ink); }
+.tab[aria-selected="true"] { color: var(--ink); border-bottom-color: var(--gold); }
+.tab:focus-visible { outline: 2px solid var(--accent); outline-offset: -2px; }
+.view { display: grid; gap: 18px; }
+
+/* Dashboard */
+.kpis.five { grid-template-columns: repeat(5, minmax(0, 1fr)); }
+@media (max-width: 1100px) { .kpis.five { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+@media (max-width: 700px) { .kpis.five { grid-template-columns: repeat(2, minmax(0, 1fr)); } .kpis.five > :last-child { grid-column: 1 / -1; } }
+.dgrid { display: grid; grid-template-columns: minmax(0, 1.55fr) minmax(0, 1fr); gap: 12px; align-items: start; }
+@media (max-width: 1000px) { .dgrid { grid-template-columns: minmax(0, 1fr); } }
+.chart svg { width: 100%; height: auto; display: block; overflow: visible; }
+.insight { font-size: 14px; background: var(--surface-2); border: 1px solid var(--line); border-left: 3px solid var(--gold); border-radius: 6px; padding: 10px 12px; }
+.insight b { font-weight: 700; }
+.seg { display: flex; gap: 4px; flex-wrap: wrap; }
+svg .grid { stroke: var(--line); stroke-width: 1; }
+svg .axis { stroke: var(--muted); stroke-width: 1; }
+svg .ax { fill: var(--muted); font-size: 11px; font-family: var(--f-mono); }
+svg .xl { fill: var(--ink); font-size: 12px; font-family: var(--f-body); font-weight: 600; }
+svg .bar-a { fill: var(--bar); }
+svg .bar-b { fill: var(--muted); fill-opacity: .3; }
+svg .bar-in { fill: #FFFFFF; font-size: 11px; font-family: var(--f-mono); }
+svg .bar-out { fill: var(--ink); font-size: 11px; font-family: var(--f-mono); }
+svg .cum { fill: none; stroke: var(--gold); stroke-width: 2.5; }
+svg .cum-dot { fill: var(--gold); stroke: var(--surface); stroke-width: 2; }
+svg .cum-t { fill: var(--gold-ink); font-size: 11.5px; font-family: var(--f-mono); font-weight: 500; paint-order: stroke; stroke: var(--surface); stroke-width: 4px; stroke-linejoin: round; }
+svg .ref { stroke: var(--bad); stroke-width: 1.2; stroke-dasharray: 5 4; }
+svg .ref-t { fill: var(--bad); font-size: 11px; font-family: var(--f-mono); }
+svg .month { fill: var(--accent); }
+svg .month.now { fill: var(--accent); fill-opacity: .55; }
+svg .bub { fill: var(--accent); fill-opacity: .22; stroke: var(--accent); stroke-width: 1.5; }
+svg .bub-t { fill: var(--ink); font-size: 12px; font-family: var(--f-body); font-weight: 600; }
+svg .quad { stroke: var(--gold); stroke-width: 1.2; stroke-dasharray: 4 4; }
+svg .quad-t { fill: var(--muted); font-size: 10.5px; font-family: var(--f-body); font-weight: 700; letter-spacing: .08em; }
+.fc { width: 100%; border-collapse: collapse; min-width: 0; font-size: 13.5px; }
+.fc th, .fc td { padding: 8px 8px; }
+.fc tfoot td { font-weight: 700; border-top: 2px solid var(--ink); }
+.prob { display: inline-block; min-width: 42px; text-align: center; padding: 2px 6px; border-radius: 99px; background: var(--accent-soft); color: var(--accent); font-family: var(--f-mono); font-size: 12px; }
+.note { font-size: 12.5px; color: var(--muted); margin: 0; }
+
+/* Formulario */
+.overlay { position: fixed; inset: 0; background: rgba(10,14,20,.45); display: grid; place-items: center; padding: 16px; z-index: 10; }
+.sheet { background: var(--surface); color: var(--ink); border: 1px solid var(--line); border-radius: 12px; width: 460px; max-width: 100%; padding: 20px; display: grid; gap: 14px; box-shadow: var(--shadow); }
+.sheet h2 { font-family: var(--f-display); font-weight: 600; font-size: 22px; margin: 0; }
+.field { display: grid; gap: 5px; }
+.field label { font-size: 12.5px; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: .06em; }
+.field input, .field select { font: inherit; border: 1px solid var(--line); background: var(--surface-2); color: var(--ink); border-radius: 8px; padding: 8px 10px; }
+.two { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+@media (max-width: 480px) { .two { grid-template-columns: 1fr; } }
+.sheet-actions { display: flex; justify-content: flex-end; gap: 8px; }
+.err { color: var(--bad); font-size: 13px; min-height: 1em; }
+
+/* Toast */
+.toast { position: fixed; left: 50%; bottom: calc(22px + env(safe-area-inset-bottom, 0px)); transform: translateX(-50%); background: var(--ink); color: var(--surface); padding: 10px 16px; border-radius: 8px; font-size: 14px; font-weight: 600; box-shadow: var(--shadow); z-index: 20; max-width: calc(100% - 32px); }
+
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; animation: none !important; } }
+
+html, body { margin: 0; }
+img { max-width: 100%; }
+.site-bar { display: flex; flex-wrap: wrap; gap: 8px 16px; align-items: center; justify-content: space-between; font-size: 14px; }
+.site-bar a { color: var(--muted); text-decoration: none; font-weight: 600; }
+.site-bar a:hover { color: var(--ink); }
+.site-bar a.cta { color: var(--accent); }
+.site-bar a:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: 4px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <nav class="site-bar" aria-label="Sitio">
+    <a href="https://pmdynamicsconsulting.com/">&larr; pmdynamicsconsulting.com</a>
+    <a class="cta" href="https://pmdynamicsconsulting.com/#contacto">¿Quieres una herramienta así? Consulta gratuita &rarr;</a>
+  </nav>
+  <header>
+    <div class="brand">
+      <span class="eyebrow">PM Dynamics Consulting</span>
+      <h1>Rastreador de Cotizaciones</h1>
+      <div class="sub"><span id="hoy"></span></div>
+    </div>
+    <div class="actions">
+      <button class="btn primary" id="nueva" type="button">+ Nueva cotización</button>
+    </div>
+  </header>
+
+  <nav class="tabs" role="tablist" aria-label="Vistas">
+    <button class="tab" role="tab" id="tab-cotiz" aria-controls="view-cotiz" aria-selected="true" type="button">Cotizaciones</button>
+    <button class="tab" role="tab" id="tab-dash" aria-controls="view-dash" aria-selected="false" type="button">Dashboard</button>
+  </nav>
+
+  <div class="view" id="view-cotiz" role="tabpanel" aria-labelledby="tab-cotiz">
+  <section class="kpis" id="kpis" aria-label="Resumen"></section>
+
+  <section class="row3">
+    <div class="panel">
+      <div class="panel-head"><h2>Embudo de cotizaciones</h2><small>Cuántas llegan a cada etapa y qué % avanza</small></div>
+      <div class="funnel" id="funnel"></div>
+    </div>
+    <div class="panel">
+      <div class="panel-head"><h2>Tasa de éxito por tipo de obra</h2><small>Solo cotizaciones cerradas</small></div>
+      <div class="wr" id="winrate"></div>
+    </div>
+    <div class="panel">
+      <div class="panel-head"><h2>Seguimientos</h2><small>Vencidos y próximos 7 días</small></div>
+      <div class="fu" id="followups"></div>
+    </div>
+  </section>
+
+  <section class="panel" aria-label="Todas las cotizaciones">
+    <div class="tools">
+      <div class="chips" id="chips">
+        <button class="chip" type="button" data-f="todas" aria-pressed="true">Todas</button>
+        <button class="chip" type="button" data-f="abiertas" aria-pressed="false">Abiertas</button>
+        <button class="chip" type="button" data-f="ganada" aria-pressed="false">Ganadas</button>
+        <button class="chip" type="button" data-f="perdida" aria-pressed="false">Perdidas</button>
+      </div>
+      <input class="search" id="q" type="search" placeholder="Buscar proyecto o cliente" aria-label="Buscar proyecto o cliente">
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Proyecto</th><th>Tipo de obra</th><th class="r">Monto</th><th>Enviada</th><th>Próx. seguimiento</th><th>Estado</th></tr></thead>
+        <tbody id="rows"></tbody>
+      </table>
+    </div>
+  </section>
+  </div>
+
+  <div class="view" id="view-dash" role="tabpanel" aria-labelledby="tab-dash" hidden>
+    <section class="kpis five" id="dkpis" aria-label="Indicadores clave"></section>
+
+    <section class="dgrid">
+      <div class="panel">
+        <div class="panel-head"><h2>Pareto de ingresos por tipo de obra</h2>
+          <div class="seg" id="pmode">
+            <button class="chip" type="button" data-m="ganado" aria-pressed="true">Ingresos ganados</button>
+            <button class="chip" type="button" data-m="cotizado" aria-pressed="false">Monto cotizado</button>
+          </div>
+        </div>
+        <div class="chart" id="pareto"></div>
+        <div class="insight" id="pinsight"></div>
+      </div>
+      <div class="panel">
+        <div class="panel-head"><h2>Ingresos ganados por mes</h2><small>Últimos 6 meses, por fecha de cierre</small></div>
+        <div class="chart" id="monthly"></div>
+        <div class="insight" id="minsight"></div>
+      </div>
+    </section>
+
+    <section class="dgrid">
+      <div class="panel">
+        <div class="panel-head"><h2>Dónde enfocar el esfuerzo</h2><small>Tasa de éxito vs. ticket promedio · tamaño = ingresos</small></div>
+        <div class="chart" id="matrix"></div>
+      </div>
+      <div class="panel">
+        <div class="panel-head"><h2>Pronóstico ponderado</h2><small>Abiertas × probabilidad de cierre</small></div>
+        <div class="table-wrap"><table class="fc" id="forecast"></table></div>
+        <p class="note">La probabilidad de cada etapa sale del historial: de las cotizaciones cerradas que llegaron a esa etapa, cuántas se ganaron.</p>
+      </div>
+    </section>
+  </div>
+</div>
+
+<div class="overlay" id="overlay" hidden>
+  <form class="sheet" id="form" role="dialog" aria-modal="true" aria-labelledby="form-title" novalidate>
+    <h2 id="form-title">Nueva cotización</h2>
+    <div class="field"><label for="f-proyecto">Proyecto</label><input id="f-proyecto" autocomplete="off" placeholder="Ej. Edificio Mirador – Torre C"></div>
+    <div class="field"><label for="f-cliente">Cliente</label><input id="f-cliente" autocomplete="off" placeholder="Ej. Constructora Andina"></div>
+    <div class="two">
+      <div class="field"><label for="f-tipo">Tipo de obra</label><select id="f-tipo"></select></div>
+      <div class="field"><label for="f-monto">Monto ($)</label><input id="f-monto" type="number" min="0" step="100" inputmode="numeric" placeholder="85000"></div>
+    </div>
+    <div class="field"><label for="f-seg">Primer seguimiento en</label>
+      <select id="f-seg"><option value="2">2 días</option><option value="3" selected>3 días</option><option value="5">5 días</option><option value="7">7 días</option></select>
+    </div>
+    <div class="err" id="f-err" role="alert"></div>
+    <div class="sheet-actions">
+      <button class="btn" type="button" id="cancel">Cancelar</button>
+      <button class="btn primary" type="submit">Guardar cotización</button>
+    </div>
+  </form>
+</div>
+
+<div class="toast" id="toast" role="status" hidden></div>
+
+<script>
+(function () {
+  const DAY = 864e5;
+  const today = new Date(); today.setHours(0, 0, 0, 0);
+  const iso = d => d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
+  const parse = s => { const [y, m, d] = s.split('-').map(Number); return new Date(y, m - 1, d); };
+  const offset = n => iso(new Date(today.getFullYear(), today.getMonth(), today.getDate() + n));
+  const diff = s => Math.round((parse(s) - today) / DAY);
+  const fmtDate = s => parse(s).toLocaleDateString('es', { day: 'numeric', month: 'short' }).replace('.', '');
+  const money = n => '$' + Math.round(n).toLocaleString('en-US');
+  const moneyShort = n => n >= 1e6 ? '$' + (n / 1e6).toFixed(n >= 1e7 ? 0 : 1) + ' M' : n >= 1e3 ? '$' + Math.round(n / 1e3) + ' k' : money(n);
+  const esc = s => String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+
+  const STAGES = [
+    { k: 'enviada', l: 'Enviada' },
+    { k: 'seguimiento', l: 'En seguimiento' },
+    { k: 'negociacion', l: 'Negociación' },
+    { k: 'ganada', l: 'Ganada' },
+    { k: 'perdida', l: 'Perdida' }
+  ];
+  const idx = k => STAGES.findIndex(s => s.k === k);
+  const isOpen = q => idx(q.etapa) < 3;
+  const TIPOS = ['Rociadores – Residencial', 'Rociadores – Comercial', 'Institucional', 'Diseño e Ingeniería', 'Inspección y Mantenimiento', 'Remodelación'];
+  const [RES, COM, INS, DYI, ITM, REM] = TIPOS;
+
+  // [proyecto, cliente, tipo, monto, enviada hace N días, etapa, próximo seguimiento en N días | etapa máxima si cerrada]
+  const SEED = [
+    ['Torre Residencial Alameda', 'Constructora Andina', RES, 184500, 12, 'seguimiento', -3],
+    ['Bodega Logística Norte', 'Grupo Vértice', COM, 412000, 9, 'negociacion', -1],
+    ['Escuela Los Pinos – Ampliación', 'Obras Públicas Ribera', INS, 268300, 6, 'enviada', 0],
+    ['Clínica Santa Lucía – Piso 3', 'Inmobiliaria Roble', REM, 46750, 4, 'enviada', 0],
+    ['Inspección anual – C.C. Las Palmas', 'Administradora Palmas', ITM, 8900, 3, 'enviada', 1],
+    ['Hotel Brisa Marina', 'Desarrollos Cumbre', COM, 356000, 15, 'negociacion', 2],
+    ['Condominio Vista Lago', 'Constructora Andina', RES, 129900, 18, 'seguimiento', -6],
+    ['Planta Alimentos Del Valle – D&I', 'Alimentos Del Valle', DYI, 22400, 5, 'enviada', 3],
+    ['Gimnasio Municipal Oriente', 'Obras Públicas Ribera', INS, 198000, 2, 'enviada', 5],
+    ['Oficinas Paseo Central – Piso 7', 'Grupo Vértice', REM, 38200, 1, 'enviada', 6],
+    ['Mantenimiento trimestral – Torre Faro', 'Administradora Faro', ITM, 5600, 7, 'seguimiento', 4],
+    ['Supermercado Ruta 9', 'Obras Pacífico', COM, 245800, 20, 'seguimiento', 8],
+    ['Residencias Campus Sur – D&I', 'Desarrollos Cumbre', DYI, 31800, 10, 'seguimiento', 10],
+    ['Inspección anual – Colegio San Andrés', 'Fundación San Andrés', ITM, 7400, 40, 'ganada', 3],
+    ['Prueba de bombas – Hospital Norte', 'Servicios Salud Norte', ITM, 12600, 55, 'ganada', 3],
+    ['Mantenimiento – Edificio Atlas', 'Administradora Faro', ITM, 4800, 70, 'perdida', 1],
+    ['Casas Jardín del Río', 'Constructora Andina', RES, 96500, 48, 'ganada', 3],
+    ['Torre Mirador B', 'Inmobiliaria Roble', RES, 312000, 80, 'ganada', 3],
+    ['Local Comercial Plaza Sol', 'Grupo Vértice', COM, 58400, 52, 'ganada', 3],
+    ['Restaurante El Puerto – Ampliación', 'Obras Pacífico', COM, 33900, 66, 'perdida', 0],
+    ['Biblioteca Municipal Centro', 'Obras Públicas Ribera', INS, 176500, 75, 'ganada', 3],
+    ['Laboratorio Biotec – D&I', 'Desarrollos Cumbre', DYI, 18700, 44, 'perdida', 1],
+    ['Bodega Frío Sur – D&I', 'Alimentos Del Valle', DYI, 26300, 60, 'ganada', 3],
+    ['Inspección – Galería Norte', 'Administradora Palmas', ITM, 6200, 50, 'perdida', 0],
+    ['Condominio Los Álamos', 'Inmobiliaria Roble', RES, 158000, 58, 'perdida', 1],
+    ['Edificio Prisma', 'Constructora Andina', RES, 301000, 85, 'perdida', 2],
+    ['Centro de Distribución Oeste', 'Grupo Vértice', COM, 520000, 62, 'perdida', 2],
+    ['Concesionario AutoRed', 'Obras Pacífico', COM, 74000, 46, 'perdida', 0],
+    ['Showroom Muebles Lira', 'Desarrollos Cumbre', COM, 41000, 72, 'perdida', 1],
+    ['Liceo Técnico Industrial', 'Obras Públicas Ribera', INS, 233000, 54, 'perdida', 1],
+    ['Jardín Infantil Arcoíris', 'Obras Públicas Ribera', INS, 64500, 68, 'perdida', 0],
+    ['Hospital Regional – D&I', 'Servicios Salud Norte', DYI, 47000, 78, 'perdida', 1],
+    ['Oficinas Torre Cobre – Piso 12', 'Grupo Vértice', REM, 29500, 57, 'perdida', 1],
+    ['Local Farmacia Centro', 'Inmobiliaria Roble', REM, 18200, 64, 'perdida', 0],
+    ['Residencial Bosque Alto', 'Constructora Andina', RES, 285000, 120, 'ganada', 3],
+    ['Townhouses Mar Azul', 'Inmobiliaria Roble', RES, 138000, 160, 'perdida', 2],
+    ['Centro Médico Plaza Norte', 'Servicios Salud Norte', COM, 189000, 105, 'ganada', 3],
+    ['Bodega Industrial Km 12', 'Obras Pacífico', COM, 262000, 175, 'ganada', 3],
+    ['Escuela Valle Verde', 'Obras Públicas Ribera', INS, 154000, 140, 'ganada', 3],
+    ['Inspección – Torre Central', 'Administradora Faro', ITM, 9800, 100, 'ganada', 3],
+    ['Mantenimiento anual – Hospital Sur', 'Servicios Salud Norte', ITM, 14500, 130, 'ganada', 3],
+    ['Prueba de bombas – Planta Lácteos', 'Alimentos Del Valle', ITM, 11200, 190, 'ganada', 3],
+    ['Data Center Sur – D&I', 'Desarrollos Cumbre', DYI, 39500, 150, 'ganada', 3],
+    ['Oficinas Edificio Nexo – Piso 4', 'Grupo Vértice', REM, 27800, 115, 'ganada', 3],
+    ['Edificio Altamar', 'Constructora Andina', RES, 276000, 110, 'perdida', 2],
+    ['Mall Puerta Oriente', 'Grupo Vértice', COM, 610000, 145, 'perdida', 1],
+    ['Universidad Técnica – Bloque C', 'Obras Públicas Ribera', INS, 342000, 170, 'perdida', 0],
+    ['Clínica Dental Centro', 'Inmobiliaria Roble', REM, 15400, 125, 'perdida', 1],
+    ['Planta Química – D&I', 'Desarrollos Cumbre', DYI, 52000, 185, 'perdida', 2],
+    ['Inspección – Bodegas Puerto', 'Administradora Palmas', ITM, 7900, 155, 'perdida', 0],
+    ['Polideportivo Sur', 'Obras Públicas Ribera', INS, 288000, 98, 'perdida', 1],
+    ['Strip Center Ruta 5', 'Grupo Vértice', COM, 165000, 135, 'perdida', 0],
+    ['Departamentos Las Lomas', 'Constructora Andina', RES, 192000, 88, 'perdida', 2]
+  ];
+
+  function seed() {
+    return SEED.map((r, i) => {
+      const open = idx(r[5]) < 3;
+      return {
+        id: 'q' + (i + 1), proyecto: r[0], cliente: r[1], tipo: r[2], monto: r[3],
+        enviada: offset(-r[4]), etapa: r[5],
+        seguimiento: open ? offset(r[6]) : null,
+        maxIdx: open ? idx(r[5]) : r[6],
+        cerrada: open ? null : offset(-Math.max(r[4] - 16 - (i % 4) * 4, 1))
+      };
+    });
+  }
+
+  const KEY = 'rastreador-cotizaciones-v4';
+  let data;
+  data = null; // cada vez que se abre, arranca con los datos iniciales
+  if (!Array.isArray(data) || !data.length) data = seed();
+  const save = () => {};
+
+  let filter = 'todas', query = '', flashId = null;
+  const $ = id => document.getElementById(id);
+
+  $('hoy').textContent = 'Hoy: ' + today.toLocaleDateString('es', { weekday: 'long', day: 'numeric', month: 'long' });
+
+  function dueInfo(s) {
+    const d = diff(s);
+    if (d < 0) return { cls: 'over', txt: 'Vencido ' + (-d) + ' d', long: 'Hace ' + (-d) + (d === -1 ? ' día' : ' días') };
+    if (d === 0) return { cls: 'today', txt: 'Hoy', long: 'Hoy' };
+    if (d === 1) return { cls: 'soon', txt: 'Mañana', long: 'Mañana' };
+    return { cls: 'soon', txt: 'En ' + d + ' d', long: fmtDate(s) };
+  }
+
+  function renderKPIs() {
+    const open = data.filter(isOpen);
+    const won = data.filter(q => q.etapa === 'ganada');
+    const lost = data.filter(q => q.etapa === 'perdida');
+    const over = open.filter(q => q.seguimiento && diff(q.seguimiento) < 0);
+    const rate = won.length + lost.length ? Math.round(won.length / (won.length + lost.length) * 100) : 0;
+    const sum = a => a.reduce((t, q) => t + q.monto, 0);
+    $('kpis').innerHTML = [
+      { l: 'En juego', v: moneyShort(sum(open)), h: open.length + ' cotizaciones abiertas' },
+      { l: 'Tasa de éxito', v: rate + '%', h: won.length + ' ganadas de ' + (won.length + lost.length) + ' cerradas' },
+      { l: 'Seguimientos vencidos', v: over.length, h: over.length ? moneyShort(sum(over)) + ' esperando una llamada' : 'Todo al día', alert: over.length > 0 },
+      { l: 'Ganado', v: moneyShort(sum(won.filter(q => q.cerrada && diff(q.cerrada) >= -90))), h: 'Últimos 90 días' }
+    ].map(k => '<div class="kpi' + (k.alert ? ' alert' : '') + '"><span class="label">' + k.l + '</span><span class="value">' + k.v + '</span><span class="hint">' + k.h + '</span></div>').join('');
+  }
+
+  function renderFunnel() {
+    const reached = [0, 1, 2, 3].map(i => data.filter(q => q.maxIdx >= i));
+    const top = reached[0].length || 1;
+    let html = '';
+    reached.forEach((list, i) => {
+      const val = list.reduce((t, q) => t + q.monto, 0);
+      const w = Math.max(list.length / top * 100, 22);
+      if (i > 0) {
+        const prev = reached[i - 1].length;
+        const conv = prev ? Math.round(list.length / prev * 100) : 0;
+        html += '<div class="f-row"><span></span><div class="f-conv">↓ <span class="num">' + conv + '%</span> avanza</div></div>';
+      }
+      html += '<div class="f-row"><span class="f-label">' + (i === 0 ? 'Enviadas' : i === 1 ? 'Con seguimiento' : i === 2 ? 'Negociación' : 'Ganadas') + '</span>' +
+        '<div class="f-track"><div class="f-bar' + (i === 3 ? ' won' : '') + '" style="width:' + w + '%"><b>' + list.length + '</b><span class="num">' + moneyShort(val) + '</span></div></div></div>';
+    });
+    const lost = data.filter(q => q.etapa === 'perdida');
+    const noFollow = lost.filter(q => q.maxIdx === 0).length;
+    html += '<div class="f-lost"><span><strong>' + lost.length + ' perdidas</strong> · ' + moneyShort(lost.reduce((t, q) => t + q.monto, 0)) + '</span><span>' + noFollow + ' sin ningún seguimiento</span></div>';
+    $('funnel').innerHTML = html;
+  }
+
+  function renderWinRate() {
+    const rows = TIPOS.map(t => {
+      const won = data.filter(q => q.tipo === t && q.etapa === 'ganada').length;
+      const closed = data.filter(q => q.tipo === t && (q.etapa === 'ganada' || q.etapa === 'perdida')).length;
+      return { t, won, closed, pct: closed ? Math.round(won / closed * 100) : null };
+    }).sort((a, b) => (b.pct ?? -1) - (a.pct ?? -1));
+    $('winrate').innerHTML = rows.map(r => {
+      const cls = r.pct === null ? '' : r.pct >= 60 ? ' hi' : r.pct < 35 ? ' lo' : '';
+      return '<div class="wr-row"><div class="wr-top"><span>' + esc(r.t) + '</span><span><span class="wr-pct">' + (r.pct === null ? '—' : r.pct + '%') + '</span><span class="num">' + r.won + ' de ' + r.closed + '</span></span></div>' +
+        '<div class="wr-track"><div class="wr-fill' + cls + '" style="width:' + (r.pct || 0) + '%"></div></div></div>';
+    }).join('');
+  }
+
+  function renderFollowups() {
+    const list = data.filter(q => isOpen(q) && q.seguimiento && diff(q.seguimiento) <= 7)
+      .sort((a, b) => diff(a.seguimiento) - diff(b.seguimiento));
+    const shown = list.slice(0, 7);
+    if (!shown.length) { $('followups').innerHTML = '<div class="empty">Sin seguimientos pendientes esta semana.</div>'; return; }
+    $('followups').innerHTML = shown.map(q => {
+      const d = dueInfo(q.seguimiento);
+      return '<div class="fu-item' + (d.cls === 'over' ? ' over' : '') + '"><span class="due ' + d.cls + '">' + d.txt + '</span>' +
+        '<div class="fu-main"><div class="p" title="' + esc(q.proyecto) + '">' + esc(q.proyecto) + '</div><div class="c">' + esc(q.cliente) + ' · <span class="num">' + moneyShort(q.monto) + '</span></div></div>' +
+        '<div class="fu-btns"><button class="mini go" type="button" data-done="' + q.id + '">Hecho</button><button class="mini" type="button" data-snooze="' + q.id + '">+3 d</button></div></div>';
+    }).join('') + (list.length > shown.length ? '<div class="more">y ' + (list.length - shown.length) + ' más</div>' : '');
+  }
+
+  function renderTable() {
+    const ql = query.trim().toLowerCase();
+    const list = data.filter(q => {
+      if (filter === 'abiertas' && !isOpen(q)) return false;
+      if ((filter === 'ganada' || filter === 'perdida') && q.etapa !== filter) return false;
+      if (ql && !(q.proyecto + ' ' + q.cliente).toLowerCase().includes(ql)) return false;
+      return true;
+    }).sort((a, b) => b.enviada.localeCompare(a.enviada));
+    if (!list.length) { $('rows').innerHTML = '<tr><td colspan="6" class="dim" style="text-align:center;padding:20px">No hay cotizaciones con ese filtro.</td></tr>'; return; }
+    $('rows').innerHTML = list.map(q => {
+      let seg = '<span class="dim">—</span>';
+      if (isOpen(q) && q.seguimiento) { const d = dueInfo(q.seguimiento); seg = '<span class="dtxt ' + (d.cls === 'soon' ? '' : d.cls) + '">' + d.long + '</span>'; }
+      const opts = STAGES.map(s => '<option value="' + s.k + '"' + (s.k === q.etapa ? ' selected' : '') + '>' + s.l + '</option>').join('');
+      return '<tr' + (q.id === flashId ? ' class="flash"' : '') + '><td><div class="p">' + esc(q.proyecto) + '</div><div class="c">' + esc(q.cliente) + '</div></td>' +
+        '<td>' + esc(q.tipo) + '</td><td class="r num">' + money(q.monto) + '</td><td>' + fmtDate(q.enviada) + '</td><td>' + seg + '</td>' +
+        '<td><select class="st" id="st-' + q.id + '" data-s="' + q.etapa + '" data-id="' + q.id + '" aria-label="Estado de ' + esc(q.proyecto) + '">' + opts + '</select></td></tr>';
+    }).join('');
+  }
+
+  function render() { renderKPIs(); renderFunnel(); renderWinRate(); renderFollowups(); renderTable(); renderDash(); }
+
+  let toastTimer;
+  function toast(msg) {
+    const t = $('toast'); t.textContent = msg; t.hidden = false;
+    clearTimeout(toastTimer); toastTimer = setTimeout(() => { t.hidden = true; }, 2600);
+  }
+
+  const find = id => data.find(q => q.id === id);
+
+  $('followups').addEventListener('click', e => {
+    const b = e.target.closest('button'); if (!b) return;
+    if (b.dataset.done) {
+      const q = find(b.dataset.done);
+      if (q.etapa === 'enviada') { q.etapa = 'seguimiento'; q.maxIdx = Math.max(q.maxIdx, 1); }
+      q.seguimiento = offset(7);
+      toast('Seguimiento registrado. Próximo: ' + fmtDate(q.seguimiento));
+    } else if (b.dataset.snooze) {
+      const q = find(b.dataset.snooze);
+      q.seguimiento = offset(Math.max(diff(q.seguimiento), 0) + 3);
+      toast('Pospuesto al ' + fmtDate(q.seguimiento));
+    }
+    flashId = null; save(); render();
+  });
+
+  $('rows').addEventListener('change', e => {
+    const s = e.target.closest('select.st'); if (!s) return;
+    const q = find(s.dataset.id); const prevOpen = isOpen(q); const k = s.value; const i = idx(k);
+    if (k === 'ganada') { q.maxIdx = 3; q.seguimiento = null; toast('¡Ganada! ' + q.proyecto + ' · ' + money(q.monto)); }
+    else if (k === 'perdida') { if (!prevOpen) q.maxIdx = 0; q.seguimiento = null; toast('Marcada como perdida: ' + q.proyecto); }
+    else { q.maxIdx = prevOpen ? Math.max(q.maxIdx, i) : i; if (!q.seguimiento) q.seguimiento = offset(3); toast(q.proyecto + ' → ' + STAGES[i].l); }
+    q.cerrada = (k === 'ganada' || k === 'perdida') ? iso(today) : null;
+    q.etapa = k; flashId = q.id; save(); render();
+  });
+
+  $('chips').addEventListener('click', e => {
+    const c = e.target.closest('.chip'); if (!c) return;
+    filter = c.dataset.f;
+    document.querySelectorAll('.chip').forEach(x => x.setAttribute('aria-pressed', String(x === c)));
+    renderTable();
+  });
+  $('q').addEventListener('input', e => { query = e.target.value; renderTable(); });
+
+  // Formulario
+  $('f-tipo').innerHTML = TIPOS.map(t => '<option>' + esc(t) + '</option>').join('');
+  const openForm = () => { $('form').reset(); $('f-seg').value = '3'; $('f-err').textContent = ''; $('overlay').hidden = false; $('f-proyecto').focus(); };
+  const closeForm = () => { $('overlay').hidden = true; $('nueva').focus(); };
+  $('nueva').addEventListener('click', openForm);
+  $('cancel').addEventListener('click', closeForm);
+  $('overlay').addEventListener('click', e => { if (e.target === $('overlay')) closeForm(); });
+  document.addEventListener('keydown', e => { if (e.key === 'Escape' && !$('overlay').hidden) closeForm(); });
+  $('form').addEventListener('submit', e => {
+    e.preventDefault();
+    const proyecto = $('f-proyecto').value.trim(), cliente = $('f-cliente').value.trim(), monto = Number($('f-monto').value);
+    if (!proyecto || !cliente) { $('f-err').textContent = 'Escribe el proyecto y el cliente.'; return; }
+    if (!(monto > 0)) { $('f-err').textContent = 'Escribe un monto mayor que cero.'; return; }
+    const n = Number($('f-seg').value);
+    const q = { id: 'q' + Date.now(), proyecto, cliente, tipo: $('f-tipo').value, monto, enviada: iso(today), etapa: 'enviada', seguimiento: offset(n), maxIdx: 0, cerrada: null };
+    data.push(q); flashId = q.id;
+    filter = 'todas'; query = ''; $('q').value = '';
+    document.querySelectorAll('.chip').forEach(x => x.setAttribute('aria-pressed', String(x.dataset.f === 'todas')));
+    save(); render(); closeForm();
+    toast('Cotización guardada. Seguimiento: ' + fmtDate(q.seguimiento));
+  });
+
+
+  // ---------- Dashboard ----------
+  const SHORT = { [RES]: 'Residencial', [COM]: 'Comercial', [INS]: 'Institucional', [DYI]: 'Diseño e Ing.', [ITM]: 'Inspección', [REM]: 'Remodelación' };
+  let paretoMode = 'ganado';
+  const sumOf = a => a.reduce((t, q) => t + q.monto, 0);
+  function niceMax(v) {
+    if (v <= 0) return 1;
+    const p = Math.pow(10, Math.floor(Math.log10(v))), n = v / p;
+    return (n <= 1 ? 1 : n <= 2 ? 2 : n <= 2.5 ? 2.5 : n <= 5 ? 5 : 10) * p;
+  }
+  const listNames = a => a.length <= 1 ? a.join('') : a.slice(0, -1).join(', ') + ' y ' + a[a.length - 1];
+
+  function stageProb() {
+    const closed = data.filter(q => !isOpen(q));
+    return [0, 1, 2].map(i => {
+      const reached = closed.filter(q => q.maxIdx >= i);
+      const won = reached.filter(q => q.etapa === 'ganada').length;
+      return reached.length ? won / reached.length : 0;
+    });
+  }
+
+  function renderDash() {
+    const won = data.filter(q => q.etapa === 'ganada'), lost = data.filter(q => q.etapa === 'perdida'), open = data.filter(isOpen);
+    const byType = TIPOS.map(t => {
+      const w = won.filter(q => q.tipo === t), l = lost.filter(q => q.tipo === t);
+      return { t, l: SHORT[t], won: sumOf(w), quoted: sumOf(data.filter(q => q.tipo === t)), nWon: w.length, nClosed: w.length + l.length };
+    });
+    const totalWon = sumOf(won), avgWon = won.length ? totalWon / won.length : 0;
+    const top = [...byType].sort((a, b) => b.won - a.won)[0];
+    const probs = stageProb();
+    const forecast = open.reduce((t, q) => t + q.monto * probs[idx(q.etapa)], 0);
+    const lostNoFu = lost.filter(q => q.maxIdx === 0);
+
+    $('dkpis').innerHTML = [
+      { l: 'Ingresos ganados', v: moneyShort(totalWon), h: won.length + ' proyectos ganados' },
+      { l: 'Ticket promedio', v: moneyShort(avgWon), h: 'Por proyecto ganado' },
+      { l: 'Mayor fuente', v: totalWon ? Math.round(top.won / totalWon * 100) + '%' : '—', h: 'de los ingresos viene de ' + top.l },
+      { l: 'Pronóstico ponderado', v: moneyShort(forecast), h: 'Lo que probablemente cierre de ' + moneyShort(sumOf(open)) + ' abiertos' },
+      { l: 'Perdido sin seguimiento', v: moneyShort(sumOf(lostNoFu)), h: lostNoFu.length + ' cotizaciones nunca recibieron una llamada', alert: lostNoFu.length > 0 }
+    ].map(k => '<div class="kpi' + (k.alert ? ' alert' : '') + '"><span class="label">' + k.l + '</span><span class="value">' + k.v + '</span><span class="hint">' + k.h + '</span></div>').join('');
+
+    renderPareto(byType);
+    renderMonthly(won);
+    renderMatrix(byType, won.length + lost.length ? won.length / (won.length + lost.length) * 100 : 0, avgWon);
+    renderForecast(open, probs);
+  }
+
+  function renderPareto(byType) {
+    const key = paretoMode === 'ganado' ? 'won' : 'quoted';
+    const rows = byType.map(r => ({ l: r.l, v: r[key] })).filter(r => r.v > 0).sort((a, b) => b.v - a.v);
+    if (!rows.length) { $('pareto').innerHTML = '<div class="empty">Aún no hay datos.</div>'; $('pinsight').textContent = ''; return; }
+    const total = rows.reduce((t, r) => t + r.v, 0);
+    let cum = 0; rows.forEach(r => { cum += r.v; r.cum = cum / total * 100; });
+    const W = 640, H = 300, ml = 58, mr = 46, mt = 22, mb = 34, iw = W - ml - mr, ih = H - mt - mb;
+    const max = total, bw = iw / rows.length; // eje izquierdo = total, así cada barra se lee contra el % de la derecha
+    const Y = v => mt + ih - v / max * ih, YP = p => mt + ih - p / 100 * ih;
+    let g = '';
+    for (let i = 0; i <= 4; i++) {
+      const y = mt + ih - ih * i / 4;
+      g += '<line class="grid" x1="' + ml + '" x2="' + (W - mr) + '" y1="' + y + '" y2="' + y + '"/>' +
+        '<text class="ax" x="' + (ml - 8) + '" y="' + (y + 4) + '" text-anchor="end">' + (i ? moneyShort(max * i / 4) : '$0') + '</text>' +
+        '<text class="ax" x="' + (W - mr + 8) + '" y="' + (y + 4) + '">' + (25 * i) + '%</text>';
+    }
+    g += '<line class="ref" x1="' + ml + '" x2="' + (W - mr) + '" y1="' + YP(80) + '" y2="' + YP(80) + '"/><text class="ref-t" x="' + (W - mr - 4) + '" y="' + (YP(80) + 14) + '" text-anchor="end">80%</text>';
+    let crossed = false;
+    const vital = [];
+    rows.forEach((r, i) => {
+      const isVital = !crossed; if (r.cum >= 80) crossed = true; if (isVital) vital.push(r);
+      const w = bw * .62, x = ml + i * bw + (bw - w) / 2, y = Y(r.v), h = mt + ih - y;
+      g += '<rect class="' + (isVital ? 'bar-a' : 'bar-b') + '" x="' + x + '" y="' + y + '" width="' + w + '" height="' + h + '" rx="3"><title>' + esc(r.l) + ': ' + money(r.v) + '</title></rect>';
+      g += h > 24 && isVital ? '<text class="bar-in" x="' + (x + w / 2) + '" y="' + (y + 16) + '" text-anchor="middle">' + moneyShort(r.v) + '</text>'
+        : '<text class="bar-out" x="' + (x + w / 2) + '" y="' + (y - 6) + '" text-anchor="middle">' + moneyShort(r.v) + '</text>';
+      g += '<text class="xl" x="' + (x + w / 2) + '" y="' + (H - mb + 18) + '" text-anchor="middle">' + esc(r.l) + '</text>';
+    });
+    const pts = rows.map((r, i) => [ml + i * bw + bw / 2, YP(r.cum)]);
+    g += '<polyline class="cum" points="' + pts.map(p => p.join(',')).join(' ') + '"/>';
+    rows.forEach((r, i) => {
+      g += '<circle class="cum-dot" cx="' + pts[i][0] + '" cy="' + pts[i][1] + '" r="4.5"/>' +
+        '<text class="cum-t" x="' + pts[i][0] + '" y="' + (pts[i][1] - 10) + '" text-anchor="middle">' + Math.round(r.cum) + '%</text>';
+    });
+    g += '<line class="axis" x1="' + ml + '" x2="' + (W - mr) + '" y1="' + (mt + ih) + '" y2="' + (mt + ih) + '"/>';
+    $('pareto').innerHTML = '<svg viewBox="0 0 ' + W + ' ' + H + '" role="img" aria-label="Diagrama de Pareto por tipo de obra">' + g + '</svg>';
+    const pct = Math.round(vital[vital.length - 1].cum);
+    $('pinsight').innerHTML = '<b>' + vital.length + ' de ' + rows.length + '</b> tipos de obra (' + esc(listNames(vital.map(v => v.l))) + ') concentran el <b>' + pct + '%</b> ' +
+      (paretoMode === 'ganado' ? 'de los ingresos ganados. Ahí conviene poner primero el tiempo de cotización.' : 'del monto cotizado. Compáralo con los ingresos ganados para ver dónde se cotiza mucho y se gana poco.');
+  }
+
+  function renderMonthly(won) {
+    const months = [];
+    for (let m = 5; m >= 0; m--) {
+      const d = new Date(today.getFullYear(), today.getMonth() - m, 1);
+      const list = won.filter(q => q.cerrada && parse(q.cerrada).getFullYear() === d.getFullYear() && parse(q.cerrada).getMonth() === d.getMonth());
+      months.push({ l: d.toLocaleDateString('es', { month: 'short' }).replace('.', ''), v: sumOf(list), n: list.length, now: m === 0 });
+    }
+    const W = 400, H = 300, ml = 46, mr = 8, mt = 22, mb = 34, iw = W - ml - mr, ih = H - mt - mb;
+    const max = niceMax(Math.max(...months.map(m => m.v), 1)), bw = iw / months.length;
+    let g = '';
+    for (let i = 0; i <= 4; i++) {
+      const y = mt + ih - ih * i / 4;
+      g += '<line class="grid" x1="' + ml + '" x2="' + (W - mr) + '" y1="' + y + '" y2="' + y + '"/><text class="ax" x="' + (ml - 6) + '" y="' + (y + 4) + '" text-anchor="end">' + (i ? moneyShort(max * i / 4) : '$0') + '</text>';
+    }
+    months.forEach((m, i) => {
+      const w = bw * .56, x = ml + i * bw + (bw - w) / 2, h = m.v / max * ih, y = mt + ih - h;
+      g += '<rect class="month' + (m.now ? ' now' : '') + '" x="' + x + '" y="' + y + '" width="' + w + '" height="' + h + '" rx="3"><title>' + m.n + ' proyectos · ' + money(m.v) + '</title></rect>' +
+        '<text class="bar-out" x="' + (x + w / 2) + '" y="' + (y - 6) + '" text-anchor="middle">' + (m.v ? moneyShort(m.v) : '—') + '</text>' +
+        '<text class="xl" x="' + (x + w / 2) + '" y="' + (H - mb + 18) + '" text-anchor="middle">' + m.l + (m.now ? '*' : '') + '</text>';
+    });
+    g += '<line class="axis" x1="' + ml + '" x2="' + (W - mr) + '" y1="' + (mt + ih) + '" y2="' + (mt + ih) + '"/>';
+    $('monthly').innerHTML = '<svg viewBox="0 0 ' + W + ' ' + H + '" role="img" aria-label="Ingresos ganados por mes">' + g + '</svg>';
+    const full = months.filter(m => !m.now), avg = full.reduce((t, m) => t + m.v, 0) / full.length;
+    const best = [...full].sort((a, b) => b.v - a.v)[0];
+    $('minsight').innerHTML = 'Promedio mensual: <b>' + moneyShort(avg) + '</b>. Mejor mes: <b>' + best.l + '</b>, con ' + moneyShort(best.v) + '. <span class="dim">* Mes en curso.</span>';
+  }
+
+  function renderMatrix(byType, rateAll, avgAll) {
+    const pts = byType.filter(r => r.nClosed > 0).map(r => ({ l: r.l, x: r.nWon / r.nClosed * 100, y: r.nWon ? r.won / r.nWon : 0, rev: r.won }));
+    const W = 640, H = 320, ml = 58, mr = 16, mt = 16, mb = 42, iw = W - ml - mr, ih = H - mt - mb;
+    const maxY = niceMax(Math.max(...pts.map(p => p.y), avgAll, 1)), maxRev = Math.max(...pts.map(p => p.rev), 1);
+    const X = v => ml + v / 100 * iw, Y = v => mt + ih - v / maxY * ih;
+    let g = '';
+    for (let i = 0; i <= 4; i++) {
+      const y = mt + ih - ih * i / 4, x = ml + iw * i / 4;
+      g += '<line class="grid" x1="' + ml + '" x2="' + (W - mr) + '" y1="' + y + '" y2="' + y + '"/><text class="ax" x="' + (ml - 8) + '" y="' + (y + 4) + '" text-anchor="end">' + (i ? moneyShort(maxY * i / 4) : '$0') + '</text>' +
+        '<text class="ax" x="' + x + '" y="' + (mt + ih + 16) + '" text-anchor="middle">' + (25 * i) + '%</text>';
+    }
+    g += '<text class="ax" x="' + (ml + iw / 2) + '" y="' + (H - 4) + '" text-anchor="middle">Tasa de éxito →</text>';
+    g += '<line class="quad" x1="' + X(rateAll) + '" x2="' + X(rateAll) + '" y1="' + mt + '" y2="' + (mt + ih) + '"/><line class="quad" x1="' + ml + '" x2="' + (W - mr) + '" y1="' + Y(avgAll) + '" y2="' + Y(avgAll) + '"/>';
+    g += '<text class="quad-t" x="' + (W - mr - 6) + '" y="' + (mt + 14) + '" text-anchor="end">PRIORIZAR</text>' +
+      '<text class="quad-t" x="' + (ml + 6) + '" y="' + (mt + 14) + '">MEJORAR EL CIERRE</text>' +
+      '<text class="quad-t" x="' + (W - mr - 6) + '" y="' + (mt + ih - 8) + '" text-anchor="end">VOLUMEN SEGURO</text>' +
+      '<text class="quad-t" x="' + (ml + 6) + '" y="' + (mt + ih - 8) + '">REVISAR SI CONVIENE</text>';
+    pts.sort((a, b) => b.rev - a.rev).forEach(p => {
+      const r = 7 + 26 * Math.sqrt(p.rev / maxRev), cx = X(p.x), cy = Y(p.y), right = p.x < 70;
+      g += '<circle class="bub" cx="' + cx + '" cy="' + cy + '" r="' + r + '"><title>' + esc(p.l) + ': ' + Math.round(p.x) + '% de éxito · ticket ' + money(p.y) + ' · ' + money(p.rev) + ' ganado</title></circle>' +
+        '<text class="bub-t" x="' + (right ? cx + r + 6 : cx - r - 6) + '" y="' + (cy + 4) + '" text-anchor="' + (right ? 'start' : 'end') + '">' + esc(p.l) + '</text>';
+    });
+    $('matrix').innerHTML = '<svg viewBox="0 0 ' + W + ' ' + H + '" role="img" aria-label="Matriz de tasa de éxito contra ticket promedio por tipo de obra">' + g + '</svg>';
+  }
+
+  function renderForecast(open, probs) {
+    let tn = 0, tm = 0, tw = 0;
+    const body = [0, 1, 2].map(i => {
+      const list = open.filter(q => idx(q.etapa) === i), m = sumOf(list), w = m * probs[i];
+      tn += list.length; tm += m; tw += w;
+      return '<tr><td>' + STAGES[i].l + ' <span class="dim">(' + list.length + ')</span></td><td class="r num">' + moneyShort(m) + '</td><td class="r"><span class="prob">' + Math.round(probs[i] * 100) + '%</span></td><td class="r num"><b>' + moneyShort(w) + '</b></td></tr>';
+    }).join('');
+    $('forecast').innerHTML = '<thead><tr><th>Etapa</th><th class="r">Monto</th><th class="r">Prob.</th><th class="r">Ponderado</th></tr></thead><tbody>' + body + '</tbody>' +
+      '<tfoot><tr><td>Total <span class="dim">(' + tn + ')</span></td><td class="r num">' + moneyShort(tm) + '</td><td></td><td class="r num">' + moneyShort(tw) + '</td></tr></tfoot>';
+  }
+
+  $('pmode').addEventListener('click', e => {
+    const c = e.target.closest('.chip'); if (!c) return;
+    paretoMode = c.dataset.m;
+    $('pmode').querySelectorAll('.chip').forEach(x => x.setAttribute('aria-pressed', String(x === c)));
+    renderDash();
+  });
+
+  // Pestañas
+  function showTab(name) {
+    const dash = name === 'dash';
+    $('view-dash').hidden = !dash; $('view-cotiz').hidden = dash;
+    $('tab-dash').setAttribute('aria-selected', String(dash)); $('tab-cotiz').setAttribute('aria-selected', String(!dash));
+    try { localStorage.setItem(KEY + '-tab', name); } catch (e) {}
+  }
+  $('tab-cotiz').addEventListener('click', () => showTab('cotiz'));
+  $('tab-dash').addEventListener('click', () => showTab('dash'));
+  let startTab = location.hash === '#dashboard' ? 'dash' : null;
+  if (!startTab) { try { startTab = localStorage.getItem(KEY + '-tab'); } catch (e) {} }
+  showTab(startTab === 'dash' ? 'dash' : 'cotiz');
+
+  render();
+})();
+</script>
+</body>
+</html>
