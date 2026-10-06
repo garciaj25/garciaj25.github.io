@@ -250,12 +250,38 @@
     .footer-logo span { color: var(--gold); }
     .footer-copy { font-size: 0.8rem; color: rgba(255,255,255,0.35); }
  
+    /* ── DEMOS ── */
+    .demos { background: var(--white); }
+    .demos-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2rem; margin-top: 1rem; }
+    .demo-card {
+      display: flex; flex-direction: column;
+      border-radius: 10px; overflow: hidden;
+      border: 1px solid rgba(10,22,40,0.07);
+      background: var(--cream);
+      text-decoration: none; color: inherit;
+      transition: transform 0.25s, box-shadow 0.25s;
+    }
+    .demo-card:hover { transform: translateY(-6px); box-shadow: 0 20px 40px rgba(10,22,40,0.1); }
+    .demo-card:focus-visible { outline: 2px solid var(--teal); outline-offset: 3px; }
+    .demo-preview { background: var(--navy); aspect-ratio: 2 / 1; overflow: hidden; border-bottom: 3px solid var(--gold); }
+    .demo-preview img { width: 100%; height: 100%; object-fit: cover; object-position: top; display: block; transition: transform 0.4s; }
+    .demo-card:hover .demo-preview img { transform: scale(1.04); }
+    .demo-body { padding: 2rem; display: flex; flex-direction: column; flex: 1; }
+    .demo-tag { font-size: 0.72rem; letter-spacing: 0.16em; text-transform: uppercase; color: var(--teal); margin-bottom: 0.6rem; }
+    .demo-title { font-family: 'Fraunces', serif; font-size: 1.3rem; font-weight: 600; margin-bottom: 0.3rem; }
+    .demo-title-en { font-size: 0.8rem; color: var(--gray); font-style: italic; margin-bottom: 0.75rem; }
+    .demo-desc { font-size: 0.9rem; line-height: 1.7; color: #4b5563; margin-bottom: 1.5rem; }
+    .demo-link { margin-top: auto; font-weight: 500; font-size: 0.95rem; color: var(--teal); }
+    .demo-card:hover .demo-link { color: var(--teal-light); }
+    .demos-note { margin-top: 2.5rem; font-size: 0.95rem; color: #4b5563; }
+    .demos-note a { color: var(--teal); font-weight: 500; }
+
     /* ── RESPONSIVE ── */
     @media (max-width: 900px) {
       .hero { grid-template-columns: 1fr; }
       .hero-carousel { height: 300px; }
       .about, .why-grid { grid-template-columns: 1fr; }
-      .services-grid { grid-template-columns: 1fr; }
+      .services-grid, .demos-grid { grid-template-columns: 1fr; }
       .process-steps { grid-template-columns: 1fr 1fr; }
       .stats { grid-template-columns: 1fr; gap: 1rem; }
       .why-photo { position: static; height: 280px; }
@@ -276,6 +302,7 @@
   <ul class="nav-links">
     <li><a href="#servicios">Servicios</a></li>
     <li><a href="#proceso">Proceso</a></li>
+    <li><a href="#demos">Demos</a></li>
     <li><a href="#nosotros">Nosotros</a></li>
     <li><a href="#contacto">Contacto</a></li>
   </ul>
@@ -437,6 +464,50 @@
   </div>
 </section>
  
+<!-- DEMOS -->
+<section class="demos" id="demos">
+  <p class="section-tag">Demos · Live Tools</p>
+  <h2>Herramientas que puedes probar</h2>
+  <p class="section-sub">Real tools you can try right now — built with the same approach we bring to your business</p>
+  <div class="demos-grid">
+
+    <a class="demo-card" href="/demo/">
+      <div class="demo-preview"><img src="img/demos/rastreador-cotizaciones.jpg" alt="Dashboard del Rastreador de Cotizaciones con Pareto de ingresos por tipo de obra" width="1200" height="600" loading="lazy" /></div>
+      <div class="demo-body">
+        <p class="demo-tag">Ventas · Datos</p>
+        <div class="demo-title">Rastreador de Cotizaciones</div>
+        <div class="demo-title-en">Quote Tracker &amp; Dashboard</div>
+        <div class="demo-desc">Embudo de cotizaciones, recordatorios de seguimiento y un dashboard con Pareto de ingresos por tipo de obra. Para que ningún negocio se pierda entre las grietas.</div>
+        <span class="demo-link">Abrir demo &rarr;</span>
+      </div>
+    </a>
+
+    <a class="demo-card" href="/tracker/">
+      <div class="demo-preview"><img src="img/demos/avance-de-obra.jpg" alt="Avance de obra por piso y fase en el Sprinkler Progress Tracker" width="1200" height="600" loading="lazy" /></div>
+      <div class="demo-body">
+        <p class="demo-tag">Gestión de proyectos</p>
+        <div class="demo-title">Avance de Obra</div>
+        <div class="demo-title-en">Sprinkler Progress Tracker</div>
+        <div class="demo-desc">Avance por piso y por fase (rough-in, inspección, terminaciones), con bloqueos marcados y el porcentaje instalado a la fecha, listo para facturar.</div>
+        <span class="demo-link">Abrir demo &rarr;</span>
+      </div>
+    </a>
+
+    <a class="demo-card" href="/Fire-Pump-Pressure-Setting-Tool/">
+      <div class="demo-preview"><img src="img/demos/bomba-contra-incendios.jpg" alt="Fire Pump Pressure Setting Tool con la banda de presiones según NFPA 20" width="1200" height="600" loading="lazy" /></div>
+      <div class="demo-body">
+        <p class="demo-tag">Ingeniería · NFPA 20</p>
+        <div class="demo-title">Ajuste de Bomba contra Incendios</div>
+        <div class="demo-title-en">Fire Pump Pressure Setting Tool</div>
+        <div class="demo-desc">Ingresas la presión de churn y el rango de succión, y obtienes los puntos de arranque y parada de la bomba jockey y la bomba principal según NFPA 20 (2019).</div>
+        <span class="demo-link">Abrir demo &rarr;</span>
+      </div>
+    </a>
+
+  </div>
+  <p class="demos-note">¿Tienes un proceso que vive en hojas de Excel? <a href="#contacto">Conversemos sobre una herramienta para tu empresa &rarr;</a></p>
+</section>
+
 <!-- GALLERY STRIP -->
 <div class="gallery-strip">
   <p class="gallery-strip-label">Nuestro trabajo en acción · Our work in action</p>
