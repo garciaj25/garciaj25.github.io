@@ -1,1 +1,574 @@
+<title>Control Documental de Obra</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<meta name="theme-color" content="#0A1628">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: navy brand header (same as the PM Dynamics demos); project rail on the left, the selected project on the right: summary, three phase cards, each a list of documents. Report view replaces the main column. Stacks at phone width. */
+:root{
+  --bg:#F7F3EC; --surface:#FFFFFF; --surface-2:#FBF8F3; --ink:#0A1628; --muted:#5C6573; --line:#E5DED1;
+  --accent:#0D7377; --accent-soft:#D7EDEC; --gold:#C9A84C; --gold-ink:#8A6D1F;
+  --hero:#0A1628; --on-hero:#FFFFFF;
+  --good:#1E7A4C; --good-soft:#DDF1E6; --warn:#A86300; --warn-soft:#FBEBD3; --bad:#B4232A; --bad-soft:#F9DEDF;
+  --wait:#5B47A8; --wait-soft:#ECE8F8; --na:#6B7280; --na-soft:#ECEAE6;
+  --shadow:0 1px 2px rgba(10,22,40,.06),0 8px 24px rgba(10,22,40,.08);
+  --f-display:"Fraunces",Georgia,"Times New Roman",serif;
+  --f-body:"DM Sans","Segoe UI",system-ui,sans-serif;
+  --f-mono:"IBM Plex Mono",ui-monospace,Consolas,monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0A1628; --surface:#112038; --surface-2:#16284A; --ink:#EEF1F5; --muted:#9AA6B8; --line:#24375A;
+  --accent:#3FB5B9; --accent-soft:#0F3A40; --gold:#D9BC6A; --gold-ink:#D9BC6A; --hero:#06101F; --on-hero:#FFFFFF;
+  --good:#4CC38A; --good-soft:#15342A; --warn:#E3A548; --warn-soft:#3A2C14; --bad:#F06A5F; --bad-soft:#3D1C1C;
+  --wait:#A796EE; --wait-soft:#2A2550; --na:#9AA6B8; --na-soft:#1D2D4A;
+  --shadow:0 1px 2px rgba(0,0,0,.3),0 8px 24px rgba(0,0,0,.25); color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0A1628; --surface:#112038; --surface-2:#16284A; --ink:#EEF1F5; --muted:#9AA6B8; --line:#24375A;
+  --accent:#3FB5B9; --accent-soft:#0F3A40; --gold:#D9BC6A; --gold-ink:#D9BC6A; --hero:#06101F; --on-hero:#FFFFFF;
+  --good:#4CC38A; --good-soft:#15342A; --warn:#E3A548; --warn-soft:#3A2C14; --bad:#F06A5F; --bad-soft:#3D1C1C;
+  --wait:#A796EE; --wait-soft:#2A2550; --na:#9AA6B8; --na-soft:#1D2D4A;
+  --shadow:0 1px 2px rgba(0,0,0,.3),0 8px 24px rgba(0,0,0,.25); color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font:15px/1.45 var(--f-body);padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:16px 48px}
+.page{max-width:1280px;margin:0 auto;display:flex;flex-direction:column;gap:16px}
+h1,h2,h3{font-family:var(--f-display);font-weight:600;margin:0;text-wrap:balance;letter-spacing:-.1px}
+button,input,select{font:inherit;color:inherit}
+button{cursor:pointer}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.mono{font-family:var(--f-mono);font-variant-numeric:tabular-nums}
+.label{font-size:11.5px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);font-weight:600}
+a{color:var(--accent)}
 
+/* header */
+header.top{display:flex;flex-wrap:wrap;align-items:center;gap:14px 20px;justify-content:space-between;background:var(--hero);color:var(--on-hero);border-radius:12px;padding:18px 22px;border-bottom:3px solid var(--gold)}
+.brand{display:grid;gap:3px;min-width:0}
+.eyebrow{font-size:11.5px;text-transform:uppercase;letter-spacing:.16em;font-weight:600;color:var(--gold)}
+header.top h1{font-size:30px;line-height:1.1}
+.sub{opacity:.75;font-size:13.5px;display:flex;flex-wrap:wrap;gap:6px 10px;align-items:center}
+.tag{font-size:11px;text-transform:uppercase;letter-spacing:.08em;font-weight:600;padding:2px 8px;border-radius:99px;border:1px solid var(--gold);color:var(--gold)}
+.top-links{display:flex;gap:8px;flex-wrap:wrap}
+.top-links a{color:var(--on-hero);text-decoration:none;font-size:13.5px;font-weight:600;padding:8px 14px;border-radius:8px;border:1px solid rgba(255,255,255,.3)}
+.top-links a:hover{border-color:var(--on-hero)}
+.top-links a.primary{background:var(--accent);border-color:var(--accent)}
+
+.btn{border:1px solid var(--line);background:var(--surface);color:var(--ink);padding:8px 14px;border-radius:8px;font-weight:600;font-size:14px}
+.btn:hover{border-color:var(--muted)}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:#FFFFFF}
+.btn.small{padding:5px 10px;font-size:13px}
+.btn.block{width:100%}
+.btn.danger{color:var(--bad);border-color:var(--bad)}
+.btn.ghost{background:none;border-color:transparent;color:var(--accent);padding-inline:4px}
+
+.wrap{display:grid;grid-template-columns:280px minmax(0,1fr);gap:16px;align-items:start}
+@media (max-width:900px){.wrap{grid-template-columns:minmax(0,1fr)}}
+
+/* rail */
+.rail{background:var(--surface);border:1px solid var(--line);border-radius:10px;overflow:hidden;position:sticky;top:calc(env(safe-area-inset-top,0px) + 12px)}
+@media (max-width:900px){.rail{position:static}}
+.rail-h{padding:14px 16px 10px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:baseline}
+.rail-h h2{font-size:18px}
+.plist{list-style:none;margin:0;padding:6px;display:flex;flex-direction:column;gap:2px;max-height:55vh;overflow:auto}
+.pitem{display:block;width:100%;text-align:left;background:none;border:1px solid transparent;border-radius:8px;padding:10px}
+.pitem:hover{background:var(--surface-2)}
+.pitem[aria-current="true"]{background:var(--surface-2);border-color:var(--line);box-shadow:inset 3px 0 0 var(--gold)}
+.pitem .nm{font-weight:600;display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.pitem .r2{display:flex;justify-content:space-between;gap:8px;font-size:12.5px;color:var(--muted);margin-top:4px}
+.bar{height:6px;border-radius:3px;background:var(--line);overflow:hidden;margin-top:7px}
+.bar i{display:block;height:100%;background:var(--accent)}
+.rail-foot{padding:10px;border-top:1px solid var(--line);display:grid;gap:6px}
+.rail-note{font-size:12px;color:var(--muted);padding:0 12px 12px}
+.ex{font-size:10.5px;text-transform:uppercase;letter-spacing:.08em;font-weight:600;color:var(--gold-ink);border:1px solid var(--gold);border-radius:99px;padding:1px 7px;margin-left:6px;vertical-align:2px}
+
+/* main */
+.main{display:flex;flex-direction:column;gap:16px;min-width:0}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:10px;min-width:0}
+.phead{padding:18px 20px;display:flex;flex-wrap:wrap;gap:14px 28px;justify-content:space-between;align-items:flex-end}
+.phead h2{font-size:28px;line-height:1.1}
+.meta{display:flex;flex-wrap:wrap;gap:4px 16px;color:var(--muted);font-size:13.5px;margin-top:6px}
+.meta b{color:var(--ink);font-weight:600}
+.count{text-align:right}
+.count .big{font-family:var(--f-display);font-size:40px;font-weight:600;line-height:1}
+.count .big.past{color:var(--muted);font-size:26px}
+.pactions{display:flex;gap:8px;flex-wrap:wrap;width:100%}
+
+.phases{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));border-top:1px solid var(--line)}
+@media (max-width:620px){.phases{grid-template-columns:minmax(0,1fr)}}
+.ph{padding:14px 20px;border-right:1px solid var(--line);display:grid;gap:6px;background:none;border-top:0;border-bottom:0;border-left:0;text-align:left}
+.ph:last-child{border-right:0}
+@media (max-width:620px){.ph{border-right:0;border-bottom:1px solid var(--line)}.ph:last-child{border-bottom:0}}
+.ph .row{display:flex;justify-content:space-between;align-items:baseline;gap:8px}
+.ph .nm{font-family:var(--f-display);font-weight:600;font-size:18px}
+.ph .pct{font-family:var(--f-mono);font-size:14px;font-weight:500}
+.ph .bar{margin-top:0;height:8px}
+.ph.done .bar i{background:var(--good)}
+.ph small{color:var(--muted);font-size:12.5px}
+
+.stats{display:flex;flex-wrap:wrap;gap:8px;padding:12px 20px 16px;border-top:1px solid var(--line);align-items:center}
+.stats .label{margin-right:4px}
+.fchip{border:1px solid var(--line);background:var(--surface);border-radius:99px;padding:5px 12px;font-size:13px;font-weight:600;display:inline-flex;gap:6px;align-items:baseline}
+.fchip b{font-family:var(--f-mono);font-weight:500}
+.fchip.bad b{color:var(--bad)} .fchip.warn b{color:var(--warn)} .fchip.wait b{color:var(--wait)}
+.fchip[aria-pressed="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.fchip[aria-pressed="true"] b{color:inherit}
+
+.grp-h{padding:16px 20px 12px;display:flex;justify-content:space-between;align-items:baseline;gap:8px 12px;flex-wrap:wrap;border-bottom:1px solid var(--line)}
+.grp-h h3{font-size:22px}
+.grp-h .label{display:block;margin-bottom:2px;color:var(--gold-ink)}
+.grp-h p{margin:2px 0 0;color:var(--muted);font-size:13.5px}
+.docs{list-style:none;margin:0;padding:0}
+.doc{padding:14px 20px;border-bottom:1px solid var(--line);display:grid;grid-template-columns:minmax(0,1fr) auto;gap:10px 16px;position:relative}
+.doc:last-child{border-bottom:0}
+.doc::before{content:"";position:absolute;left:0;top:0;bottom:0;width:3px;background:transparent}
+.doc.overdue::before{background:var(--bad)} .doc.soon::before{background:var(--warn)} .doc.wait::before{background:var(--wait)} .doc.closed::before{background:var(--good)}
+@media (max-width:700px){.doc{grid-template-columns:minmax(0,1fr)}}
+.ttl{font-weight:600}
+.doc.closed .ttl{color:var(--muted)}
+.det{color:var(--muted);font-size:13px;margin-top:2px;max-width:70ch}
+.custom-tag{font-size:10.5px;text-transform:uppercase;letter-spacing:.08em;color:var(--accent);margin-left:6px;font-weight:600}
+.rm{background:none;border:0;color:var(--muted);font-size:12.5px;text-decoration:underline;padding:0;margin-left:8px}
+.seg{display:flex;border:1px solid var(--line);border-radius:8px;overflow:hidden;height:34px;align-self:start}
+.seg button{border:0;background:var(--surface);font-size:13px;font-weight:600;border-right:1px solid var(--line);padding:0 11px;color:var(--muted)}
+.seg button:last-child{border-right:0}
+.seg button:hover{background:var(--surface-2);color:var(--ink)}
+.seg button[aria-pressed="true"][data-v="rec"]{background:var(--good);color:#FFFFFF}
+.seg button[aria-pressed="true"][data-v="na"]{background:var(--na);color:#FFFFFF}
+.seg button[aria-pressed="true"][data-v="esp"]{background:var(--wait);color:#FFFFFF}
+.fields{grid-column:1/-1;display:grid;grid-template-columns:170px minmax(140px,220px) minmax(0,1fr);gap:8px;align-items:center}
+@media (max-width:700px){.fields{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}.fields .fnote{grid-column:1/-1}}
+.fld{width:100%;border:1px solid var(--line);background:var(--surface-2);border-radius:6px;padding:6px 9px;font-size:13.5px;min-width:0}
+.fld:focus{background:var(--surface)}
+.fld.auto{border-style:dashed;color:var(--muted)}
+.duebox{display:grid;gap:3px}
+.rel{font-size:12px;color:var(--muted)}
+.rel.overdue{color:var(--bad);font-weight:600} .rel.soon{color:var(--warn);font-weight:600}
+/* sub-tasks inside an activity */
+.prog{display:grid;gap:5px;justify-items:end;align-self:start;min-width:150px}
+.prog .t{font-size:13px;font-weight:600}
+.prog .bar{width:150px;margin:0;height:7px}
+.doc.closed .prog .bar i{background:var(--good)}
+.subs{grid-column:1/-1;list-style:none;margin:0;padding:0;border:1px solid var(--line);border-radius:8px;overflow:hidden;background:var(--surface-2)}
+.sub{display:grid;grid-template-columns:minmax(0,1.1fr) 150px minmax(110px,150px) minmax(0,1.2fr) auto;gap:8px;align-items:center;padding:8px 10px 8px 14px;border-bottom:1px solid var(--line);position:relative}
+.sub:last-child{border-bottom:0}
+.sub::before{content:"";position:absolute;left:0;top:0;bottom:0;width:3px;background:transparent}
+.sub.overdue::before{background:var(--bad)} .sub.soon::before{background:var(--warn)} .sub.wait::before{background:var(--wait)} .sub.closed::before{background:var(--good)}
+.sub .sn{font-size:14px;font-weight:500;min-width:0}
+.sub.closed .sn{color:var(--muted)}
+.sub .sn .rel{display:block;margin-top:1px}
+.sub .fld{background:var(--surface);padding:5px 8px;font-size:13px}
+.seg.sm{height:30px}
+.seg.sm button{font-size:12px;padding:0 8px}
+@media (max-width:860px){.sub{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}.sub .sn,.sub .snote{grid-column:1/-1}.sub .seg{grid-column:1/-1;justify-self:start}}
+.sub-add{display:flex;gap:8px;padding:8px 10px;border-top:1px dashed var(--line);background:var(--surface)}
+.subs:empty+.sub-add,.sub-add.solo{border:1px dashed var(--line);border-radius:8px}
+.sub-add input{flex:1;min-width:0}
+.sub-wrap{grid-column:1/-1;display:grid;gap:0}
+.sub-wrap .subs{border-bottom-left-radius:0;border-bottom-right-radius:0}
+.sub-wrap .subs+.sub-add{border:1px solid var(--line);border-top:1px dashed var(--line);border-radius:0 0 8px 8px}
+.split{grid-column:1/-1;justify-self:start;background:none;border:0;padding:0;color:var(--accent);font-size:13px;font-weight:600}
+.split:hover{text-decoration:underline}
+tr.subrow td:first-child{padding-left:26px;color:var(--muted)}
+tr.parent td{font-weight:600}
+.add-row{display:flex;gap:8px;padding:12px 20px;border-top:1px dashed var(--line)}
+.add-row input{flex:1;min-width:0}
+.empty{padding:16px 20px;color:var(--muted);font-size:14px}
+
+/* editor */
+.editor{padding:20px}
+.editor h2{font-size:24px;margin-bottom:14px}
+.grid-f{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:12px}
+.grid-f label{display:flex;flex-direction:column;gap:4px}
+.grid-f input{border:1px solid var(--line);background:var(--surface-2);border-radius:6px;padding:8px 10px;min-width:0}
+.ed-actions{display:flex;gap:8px;margin-top:16px;flex-wrap:wrap;align-items:center}
+.ed-actions .sp{flex:1}
+.hint{color:var(--muted);font-size:13px;margin-top:12px;max-width:75ch}
+
+/* report */
+.report{padding:24px;display:grid;gap:18px}
+.rep-h{display:flex;justify-content:space-between;gap:12px 24px;flex-wrap:wrap;border-bottom:2px solid var(--ink);padding-bottom:14px}
+.rep-h h2{font-size:26px}
+.rep-sum{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}
+@media (max-width:620px){.rep-sum{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.kpi{border:1px solid var(--line);border-top:3px solid var(--gold);border-radius:8px;padding:10px 12px;display:grid;gap:2px}
+.kpi .v{font-family:var(--f-display);font-size:28px;font-weight:600;line-height:1.1;font-variant-numeric:tabular-nums}
+.kpi.bad .v{color:var(--bad)}
+.tbl-wrap{overflow-x:auto}
+table{border-collapse:collapse;width:100%;font-size:13.5px;min-width:620px}
+th,td{text-align:left;padding:7px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+th{font-size:11.5px;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);font-weight:600}
+caption{text-align:left;font-family:var(--f-display);font-weight:600;font-size:18px;padding:4px 0 8px}
+.st{font-size:12px;font-weight:600;padding:2px 8px;border-radius:99px;white-space:nowrap;background:var(--na-soft);color:var(--muted)}
+.st.rec{background:var(--good-soft);color:var(--good)} .st.na{background:var(--na-soft);color:var(--na)}
+.st.esp{background:var(--wait-soft);color:var(--wait)} .st.overdue{background:var(--bad-soft);color:var(--bad)} .st.soon{background:var(--warn-soft);color:var(--warn)}
+.rep-foot{color:var(--muted);font-size:12.5px;display:flex;justify-content:space-between;flex-wrap:wrap;gap:6px}
+.rep-actions{display:flex;gap:8px;flex-wrap:wrap}
+
+.toast{position:fixed;left:50%;bottom:calc(env(safe-area-inset-bottom,0px) + 18px);transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:9px 16px;border-radius:8px;font-size:13.5px;z-index:10;max-width:calc(100% - 32px)}
+@media (prefers-reduced-motion:no-preference){.bar i{transition:width .3s}}
+
+@media print{
+  body{background:#fff;color:#000;padding:0}
+  header.top,.rail,.rep-actions,.toast{display:none!important}
+  .wrap{display:block}
+  .card{border:0}
+  table{min-width:0}
+}
+</style>
+
+<div class="page">
+  <header class="top">
+    <div class="brand">
+      <span class="eyebrow">PM Dynamics · Demo</span>
+      <h1>Control Documental de Obra</h1>
+      <div class="sub"><span>Inicio, construcción y cierre de cada proyecto en una sola lista</span><span class="tag">Funciona sin internet</span></div>
+    </div>
+    <nav class="top-links" aria-label="Enlaces">
+      <a href="https://pmdynamicsconsulting.com/" target="_blank" rel="noopener">← pmdynamicsconsulting.com</a>
+      <a class="primary" href="https://pmdynamicsconsulting.com/#contacto" target="_blank" rel="noopener">¿Quieres una herramienta así? Consulta gratuita →</a>
+    </nav>
+  </header>
+
+  <div class="wrap">
+    <aside class="rail" aria-label="Proyectos">
+      <div class="rail-h"><h2>Proyectos</h2><span class="label" id="pcount"></span></div>
+      <ul class="plist" id="plist"></ul>
+      <div class="rail-foot">
+        <button class="btn primary block" id="newBtn" type="button">+ Nuevo proyecto</button>
+        <button class="btn small block" id="resetBtn" type="button">Restablecer el ejemplo</button>
+      </div>
+      <p class="rail-note" id="saveNote">Los datos se guardan solo en este navegador. No salen de tu equipo.</p>
+    </aside>
+    <main class="main" id="main"></main>
+  </div>
+</div>
+<div class="toast" id="toast" hidden></div>
+
+<script>
+/* Each activity is due relative to the project's start date ('ini') or delivery date ('fin'). off = days after that date (negative = before).
+   add = placeholder for activities that normally hold several sub-tasks (actas, cortes, pruebas por piso). Any activity can be split into sub-tasks. */
+const D=(id,t,ref,off,d,add)=>({id,t,ref,off,d:d||'',add:add||''});
+const PHASES=[
+ {key:'ini',n:'Fase 1',title:'Inicio',desc:'Lo que debe estar firmado y vigente antes de entrar a obra.',items:[
+  D('contrato','Contrato u orden de servicio firmado','ini',-10),
+  D('polizas','Pólizas del contrato aprobadas','ini',-5,'Con recibo de pago y aprobación del contratante.','Agregar póliza'),
+  D('anticipo','Póliza de buen manejo del anticipo','ini',-5,'Solo si el contrato tiene anticipo.'),
+  D('acta','Acta de inicio firmada','ini',0),
+  D('personal','Listado del personal con cédulas','ini',-3),
+  D('ss','Afiliaciones a seguridad social y ARL (planilla PILA)','ini',-3,'Nadie entra a obra sin ARL vigente.'),
+  D('alturas','Certificados de trabajo en alturas vigentes','ini',-3),
+  D('sst','Plan de SG-SST y matriz de riesgos del proyecto','ini',-3),
+  D('planos','Planos aprobados para construcción','ini',0),
+  D('presu','Presupuesto y cuadro de cantidades aprobado','ini',0),
+  D('crono','Cronograma inicial aprobado','ini',7),
+  D('fichas','Fichas técnicas de materiales aprobadas','ini',15,'Rociadores, válvulas y tubería con listado UL o aprobación FM.')]},
+ {key:'con',n:'Fase 2',title:'Construcción',desc:'Registros que se repiten durante la obra. Agrega cada acta, corte o prueba como subtarea.',items:[
+  D('bitacora','Bitácora de obra al día','ini',30,'Revisión mensual.'),
+  D('comite','Actas de comité de obra','ini',30,'Una por cada comité.','Agregar acta (ej. Comité No. 8)'),
+  D('cortes','Actas de corte de obra para facturar','ini',30,'Una por cada corte de facturación.','Agregar corte (ej. Corte No. 5)'),
+  D('hidro','Pruebas hidrostáticas por piso o zona','fin',-60,'200 psi durante 2 horas (NFPA 13), firmadas por la interventoría.','Agregar prueba (ej. Pisos 13 y 14)'),
+  D('interv','Informes de inspección de la interventoría','fin',-40,'','Agregar informe'),
+  D('pila','Pago mensual de seguridad social del personal','ini',30,'','Agregar mes'),
+  D('cambios','Órdenes de cambio aprobadas por escrito','fin',-30,'Lo que no está firmado no se cobra.','Agregar orden de cambio (ej. OC-08)')]},
+ {key:'cie',n:'Fase 3',title:'Cierre',desc:'Lo que necesitas para entregar, liquidar y cobrar la retención.',items:[
+  D('pfinal','Pruebas finales del sistema','fin',-20,'','Agregar prueba'),
+  D('asbuilt','Planos récord (as-built)','fin',-15),
+  D('bomberos','Inspección del Cuerpo de Bomberos','fin',-10,'Necesaria para el concepto técnico de seguridad humana.'),
+  D('manuales','Manuales de operación y mantenimiento','fin',-10),
+  D('garantias','Certificados de garantía de equipos y obra','fin',-10),
+  D('capac','Acta de capacitación al personal del cliente','fin',-7),
+  D('entrega','Acta de entrega y recibo a satisfacción','fin',0),
+  D('estab','Póliza de estabilidad y calidad de la obra','fin',5),
+  D('paz','Paz y salvo de seguridad social y proveedores','fin',10),
+  D('liq','Acta de liquidación del contrato','fin',20),
+  D('factura','Factura final','fin',20),
+  D('rete','Devolución de la retención en garantía','fin',45)]}
+];
+const ST={'':'Pendiente',rec:'Recibido',na:'No aplica',esp:'En espera'};
+const KEY='pmd-control-documental-v2';
+
+const $=s=>document.querySelector(s);
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const parseD=s=>{const m=/^(\d{4})-(\d{2})-(\d{2})$/.exec(s||'');return m?new Date(+m[1],+m[2]-1,+m[3]):null};
+const iso=d=>d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+const today=()=>{const t=new Date();return new Date(t.getFullYear(),t.getMonth(),t.getDate())};
+const addD=(d,n)=>{const x=new Date(d);x.setDate(x.getDate()+n);return x};
+const days=(a,b)=>Math.round((a-b)/864e5);
+const fmt=d=>d.toLocaleDateString('es-CO',{day:'numeric',month:'short',year:'numeric'});
+const fmtS=d=>d.toLocaleDateString('es-CO',{day:'numeric',month:'short'});
+const rel=n=>n===0?'Vence hoy':n<0?`Vencido hace ${-n} día${n===-1?'':'s'}`:`Vence en ${n} día${n===1?'':'s'}`;
+const uid=()=>Date.now().toString(36)+Math.random().toString(36).slice(2,5);
+
+/* ---------- example: a 14-storey residential building, dated around today so it always looks current ---------- */
+function sample(){
+  const t=today();const d=n=>iso(addD(t,n));
+  const p={id:'ejemplo',example:true,code:'PMD-24-031',name:'Torre Altavista',scope:'Edificio residencial · 14 pisos y 2 sótanos · red contra incendios',
+    client:'Constructora Andina S.A.S.',city:'Medellín',start:d(-75),end:d(45),director:'Ing. Laura Restrepo',resident:'Carlos Mejía',items:{}};
+  const set=(k,v)=>p.items[k]={...(p.items[k]||{}),...v};
+  const subs=(k,list)=>{const m={};list.forEach(([tt,off,status,resp,note],i)=>m['s'+i]={t:tt,due:off==null?'':d(off),status:status||'',resp:resp||'',note:note||'',o:i});set(k,{subs:m})};
+  ['contrato','acta','personal','ss','alturas','sst','planos','presu','crono'].forEach(k=>set(k,{status:'rec',resp:'Laura Restrepo'}));
+  set('anticipo',{status:'na',note:'Contrato sin anticipo'});
+  set('fichas',{status:'rec',resp:'Carlos Mejía',note:'Aprobadas por la interventoría'});
+  subs('polizas',[['Póliza de cumplimiento',-80,'rec','Laura Restrepo'],['Póliza de salarios y prestaciones sociales',-80,'rec','Laura Restrepo'],['Póliza de responsabilidad civil extracontractual',-80,'rec','Laura Restrepo']]);
+  set('bitacora',{status:'rec',resp:'Carlos Mejía'});
+  subs('comite',[['Comité No. 1',-68,'rec','Laura Restrepo'],['Comité No. 2',-54,'rec','Laura Restrepo'],['Comité No. 3',-40,'rec','Laura Restrepo'],
+    ['Comité No. 4',-26,'rec','Laura Restrepo'],['Comité No. 5',-12,'rec','Laura Restrepo','Se presentó la OC-07'],['Comité No. 6',2,'','Laura Restrepo'],['Comité No. 7',16,'','Laura Restrepo']]);
+  subs('cortes',[['Corte No. 1 · Sótanos y pisos 1 a 3',-45,'rec','Laura Restrepo','Pagado'],['Corte No. 2 · Pisos 4 a 9',-15,'rec','Laura Restrepo','Pagado'],
+    ['Corte No. 3 · Pisos 10 a 14',15,'','Laura Restrepo','Medición en curso'],['Corte No. 4 · Cubierta y cuarto de bombas',40,'','Laura Restrepo']]);
+  subs('hidro',[['Sótanos 1 y 2',-40,'rec','Carlos Mejía'],['Pisos 1 a 3',-32,'rec','Carlos Mejía'],['Pisos 4 a 6',-24,'rec','Carlos Mejía'],
+    ['Pisos 7 a 9',-12,'rec','Carlos Mejía'],['Pisos 10 a 12',-3,'','Carlos Mejía','Probado; falta la firma de la interventoría'],['Pisos 13, 14 y cubierta',10,'','Carlos Mejía']]);
+  subs('interv',[['Informe mensual No. 1',-45,'rec','Interventoría'],['Informe mensual No. 2',-15,'rec','Interventoría'],['Informe mensual No. 3',15,'','Interventoría']]);
+  subs('pila',[['Mes 1',-45,'rec','Administración'],['Mes 2',-15,'rec','Administración'],['Mes 3',15,'','Administración']]);
+  subs('cambios',[['OC-03 · Reubicación de rociadores piso 2',-50,'rec','Laura Restrepo'],['OC-05 · Rociadores adicionales sótano 1',-30,'rec','Laura Restrepo'],
+    ['OC-07 · Gabinetes adicionales piso 14',-5,'esp','Laura Restrepo','Sin firma del cliente']]);
+  subs('pfinal',[['Prueba de la bomba contra incendios',25,'','Carlos Mejía'],['Prueba de drenaje principal',25,'','Carlos Mejía'],['Prueba de alarmas de flujo por piso',27,'','Carlos Mejía']]);
+  set('bomberos',{resp:'Laura Restrepo'});
+  set('asbuilt',{resp:'Dibujante'});
+  return p;
+}
+
+/* ---------- storage: this browser only; the page still works if storage is blocked ---------- */
+let state={projects:[],sel:null};let canStore=true;
+function load(){
+  try{const raw=localStorage.getItem(KEY);if(raw){const s=JSON.parse(raw);if(s&&Array.isArray(s.projects))state=s}}catch(e){canStore=false}
+  if(!state.projects.length){state.projects=[sample()];state.sel='ejemplo'}
+}
+function persist(){if(!canStore)return;try{localStorage.setItem(KEY,JSON.stringify(state))}catch(e){canStore=false;$('#saveNote').textContent='Este navegador no permite guardar. Los cambios se pierden al cerrar la página.'}}
+const cur=()=>state.projects.find(p=>p.id===state.sel);
+
+/* ---------- logic ---------- */
+function docsFor(p,phase){
+  const out=phase.items.map(it=>({...it}));
+  Object.entries(p.items||{}).filter(([k,v])=>v&&v.custom&&v.phase===phase.key&&!v.deleted)
+    .sort((a,b)=>(a[1].created||0)-(b[1].created||0))
+    .forEach(([k,v])=>out.push({id:k,t:v.text,ref:phase.key==='ini'?'ini':'fin',off:phase.key==='ini'?0:-10,d:'',add:'Agregar subtarea',custom:true}));
+  return out;
+}
+function flagOf(status,dd){
+  if(status==='rec'||status==='na')return'closed';
+  if(status==='esp')return'wait';
+  if(dd!==null&&dd<0)return'overdue';
+  if(dd!==null&&dd<=7)return'soon';
+  return'';
+}
+function subsOf(p,it){
+  const m=((p.items||{})[it.id]||{}).subs||{};
+  return Object.entries(m).filter(([k,v])=>v&&!v.deleted).map(([k,v])=>({id:k,...v})).sort((a,b)=>(a.o??a.created??0)-(b.o??b.created??0));
+}
+function docState(p,it){
+  const s=(p.items||{})[it.id]||{};
+  const base=parseD(it.ref==='ini'?p.start:p.end);
+  let due=parseD(s.due),auto=false;
+  if(!due&&base){due=addD(base,it.off);auto=true}
+  const dd=due?days(due,today()):null;
+  const subs=subsOf(p,it).map(sb=>{let sdue=parseD(sb.due),sauto=false;if(!sdue&&due){sdue=due;sauto=true}
+    const sdd=sdue?days(sdue,today()):null;return{sb,status:sb.status||'',due:sdue,auto:sauto,dd:sdd,flag:flagOf(sb.status||'',sdd)}});
+  const status=s.status||'';
+  let flag=flagOf(status,dd),closedN=0;
+  if(subs.length){
+    closedN=subs.filter(x=>x.flag==='closed').length;
+    flag=closedN===subs.length?'closed':subs.some(x=>x.flag==='overdue')?'overdue':subs.some(x=>x.flag==='wait')?'wait':subs.some(x=>x.flag==='soon')?'soon':'';
+  }
+  return{status,due,auto,dd,flag,subs,closedN,resp:s.resp||'',note:s.note||''};
+}
+/* Units for progress: every sub-task counts once; an activity without sub-tasks counts once. */
+function units(ds){return ds.subs.length?ds.subs.map(x=>x.flag):[ds.flag]}
+function phaseStats(p,ph){
+  const r={total:0,closed:0,overdue:0,soon:0,wait:0};
+  docsFor(p,ph).forEach(it=>units(docState(p,it)).forEach(f=>{r.total++;if(f==='closed')r.closed++;if(f==='overdue')r.overdue++;if(f==='soon')r.soon++;if(f==='wait')r.wait++}));
+  r.pct=r.total?Math.round(r.closed/r.total*100):0;return r;
+}
+function stats(p){
+  const r={total:0,closed:0,overdue:0,soon:0,wait:0};
+  PHASES.forEach(ph=>{const s=phaseStats(p,ph);for(const k in r)r[k]+=s[k]});
+  r.pct=r.total?Math.round(r.closed/r.total*100):0;r.open=r.total-r.closed;return r;
+}
+
+/* ---------- render ---------- */
+let filter='all',view='list',editing=null,delArm=false;const splitOpen=new Set();
+function renderRail(){
+  $('#pcount').textContent=state.projects.length;
+  $('#plist').innerHTML=state.projects.map(p=>{const s=stats(p);const end=parseD(p.end);
+    let when='Sin fecha de entrega';if(end){const d=days(end,today());when=d>0?`Entrega en ${d} d`:d===0?'Entrega hoy':`Entregado ${fmtS(end)}`}
+    return`<li><button type="button" class="pitem" data-sel="${esc(p.id)}" aria-current="${p.id===state.sel}">
+      <span class="nm">${esc(p.name||'Proyecto sin nombre')}${p.example?'<span class="ex">Ejemplo</span>':''}</span>
+      <span class="bar"><i style="width:${s.pct}%"></i></span>
+      <span class="r2"><span>${s.pct}% · ${when}</span>${s.overdue?`<span style="color:var(--bad);font-weight:600">${s.overdue} vencidos</span>`:''}</span></button></li>`}).join('');
+}
+function renderEditor(){
+  const isNew=editing==='new';const p=isNew?{}:cur()||{};
+  const f=(id,l,v,ph,type='text',req='')=>`<label><span class="label">${l}</span><input id="${id}" type="${type}" value="${esc(v)}" placeholder="${esc(ph)}" ${req}></label>`;
+  return`<section class="card editor"><h2>${isNew?'Nuevo proyecto':'Datos del proyecto'}</h2><form id="edForm"><div class="grid-f">
+    ${f('f-name','Nombre del proyecto',p.name,'Edificio Los Robles','text','required')}
+    ${f('f-scope','Descripción',p.scope,'Edificio residencial · 10 pisos')}
+    ${f('f-code','Código',p.code,'PMD-24-032')}
+    ${f('f-client','Cliente o constructora',p.client,'Constructora ejemplo S.A.S.')}
+    ${f('f-city','Ciudad',p.city,'Bogotá')}
+    ${f('f-start','Fecha de inicio',p.start,'','date')}
+    ${f('f-end','Fecha de entrega',p.end,'','date')}
+    ${f('f-dir','Director de obra',p.director,'')}
+    ${f('f-res','Residente',p.resident,'')}
+  </div>
+  <p class="hint">Con las fechas de inicio y entrega, cada documento recibe una fecha límite sugerida. Por ejemplo, las pólizas 5 días antes del inicio y los planos récord 15 días antes de la entrega. Puedes cambiar cualquier fecha.</p>
+  <div class="ed-actions"><button class="btn primary" type="submit">${isNew?'Crear proyecto':'Guardar'}</button><button class="btn" type="button" id="edCancel">Cancelar</button>
+  <span class="sp"></span>${isNew?'':`<button class="btn danger" type="button" id="edDelete">${delArm?'Confirmar: borrar proyecto':'Borrar proyecto'}</button>`}</div></form></section>`;
+}
+const fpass=f=>filter==='all'||(filter==='open'&&f!=='closed')||(filter===f)||(filter==='wait'&&f==='wait');
+const segBtns=(k,sub,status,sm)=>`<div class="seg${sm?' sm':''}" role="group" aria-label="Estado">${[['rec','Recibido'],['esp','En espera'],['na','No aplica']].map(([v,l])=>`<button type="button" data-k="${esc(k)}"${sub?` data-sub="${esc(sub)}"`:''} data-v="${v}" aria-pressed="${status===v}">${l}</button>`).join('')}</div>`;
+function renderSub(it,x){
+  const k=it.id,sid=x.sb.id,base=`${esc(k)}-${esc(sid)}`;
+  return`<li class="sub ${x.flag}">
+    <div class="sn">${esc(x.sb.t)} <button type="button" class="rm" data-rmsub="${esc(sid)}" data-k="${esc(k)}">Quitar</button>${x.due&&x.flag!=='closed'?`<span class="rel ${x.flag}">${rel(x.dd)}</span>`:''}</div>
+    <input class="fld mono${x.auto?' auto':''}" type="date" id="sd-${base}" data-k="${esc(k)}" data-sub="${esc(sid)}" data-f="due" value="${x.due?iso(x.due):''}" aria-label="Fecha límite: ${esc(x.sb.t)}">
+    <input class="fld" id="sr-${base}" data-k="${esc(k)}" data-sub="${esc(sid)}" data-f="resp" value="${esc(x.sb.resp)}" placeholder="Responsable" aria-label="Responsable: ${esc(x.sb.t)}">
+    <input class="fld snote" id="sn-${base}" data-k="${esc(k)}" data-sub="${esc(sid)}" data-f="note" value="${esc(x.sb.note)}" placeholder="Nota" aria-label="Nota: ${esc(x.sb.t)}">
+    ${segBtns(k,sid,x.status,true)}</li>`;
+}
+function renderDoc(p,it,ds){
+  const k=it.id;const has=ds.subs.length>0;
+  const visSubs=ds.subs.filter(x=>filter==='all'||fpass(x.flag));
+  const addForm=(solo)=>`<form class="sub-add${solo?' solo':''}" data-addsub="${esc(k)}"><input class="fld" id="as-${esc(k)}" placeholder="${esc(it.add||'Agregar subtarea')}" aria-label="Nueva subtarea para ${esc(it.t)}"><button class="btn small" type="submit">Agregar</button></form>`;
+  let right=has?`<div class="prog"><span class="t">${ds.closedN} de ${ds.subs.length} listos</span><span class="bar"><i style="width:${Math.round(ds.closedN/ds.subs.length*100)}%"></i></span></div>`:segBtns(k,'',ds.status,false);
+  let below='';
+  if(has){below=`<div class="sub-wrap"><ul class="subs">${visSubs.map(x=>renderSub(it,x)).join('')}</ul>${filter==='all'?addForm(false):''}</div>`}
+  else if(filter==='all'){below=(it.add||splitOpen.has(k))?`<div class="sub-wrap">${addForm(true)}</div>`:`<button type="button" class="split" data-split="${esc(k)}">+ Dividir en subtareas</button>`}
+  return`<li class="doc ${ds.flag}">
+    <div><div class="ttl">${esc(it.t)}${it.custom?`<span class="custom-tag">Agregado</span><button type="button" class="rm" data-rm="${esc(k)}">Quitar</button>`:''}</div>${it.d?`<div class="det">${esc(it.d)}</div>`:''}</div>
+    ${right}
+    ${has?'':`<div class="fields">
+      <div class="duebox"><input class="fld mono${ds.auto?' auto':''}" type="date" id="d-${esc(k)}" data-k="${esc(k)}" data-f="due" value="${ds.due?iso(ds.due):''}" aria-label="Fecha límite">
+        ${ds.due&&ds.flag!=='closed'?`<span class="rel ${ds.flag}">${rel(ds.dd)}</span>`:''}</div>
+      <input class="fld" id="r-${esc(k)}" data-k="${esc(k)}" data-f="resp" value="${esc(ds.resp)}" placeholder="Responsable" aria-label="Responsable">
+      <input class="fld fnote" id="n-${esc(k)}" data-k="${esc(k)}" data-f="note" value="${esc(ds.note)}" placeholder="Nota (qué falta, quién lo tiene…)" aria-label="Nota">
+    </div>`}
+    ${below}</li>`;
+}
+function renderList(p){
+  const st=stats(p);const end=parseD(p.end),start=parseD(p.start);
+  let cd='';if(end){const d=days(end,today());cd=`<div class="count"><div class="label">${d>=0?'Días para la entrega':'Entregado el'}</div><div class="big mono${d<0?' past':''}">${d>=0?d:fmt(end)}</div></div>`}
+  const chip=(f,cls,n,l)=>`<button type="button" class="fchip ${cls}" data-filter="${f}" aria-pressed="${filter===f}"><b>${n}</b>${l}</button>`;
+  let h=`<section class="card"><div class="phead"><div>
+      <div class="label mono">${esc(p.code||'')}${p.example?' · Proyecto de ejemplo':''}</div><h2>${esc(p.name||'Proyecto sin nombre')}</h2>
+      <div class="meta">${p.scope?`<span><b>${esc(p.scope)}</b></span>`:''}${p.client?`<span>${esc(p.client)}</span>`:''}${p.city?`<span>${esc(p.city)}</span>`:''}</div>
+      <div class="meta">${start?`<span>Inicio <b>${fmt(start)}</b></span>`:''}${end?`<span>Entrega <b>${fmt(end)}</b></span>`:'<span>Sin fecha de entrega. Agrégala en Editar datos.</span>'}
+      ${p.director?`<span>Director ${esc(p.director)}</span>`:''}${p.resident?`<span>Residente ${esc(p.resident)}</span>`:''}</div></div>${cd}
+      <div class="pactions"><button class="btn primary small" type="button" data-act="report">Ver reporte</button><button class="btn small" type="button" data-act="edit">Editar datos</button></div></div>
+    <div class="phases">${PHASES.map(ph=>{const s=phaseStats(p,ph);return`<a class="ph${s.pct===100?' done':''}" href="#fase-${ph.key}" style="text-decoration:none;color:inherit">
+      <span class="row"><span class="nm">${ph.title}</span><span class="pct">${s.pct}%</span></span><span class="bar"><i style="width:${s.pct}%"></i></span>
+      <small>${s.closed} de ${s.total} listos${s.overdue?` · <span style="color:var(--bad);font-weight:600">${s.overdue} vencidos</span>`:''}</small></a>`}).join('')}</div>
+    <div class="stats"><span class="label">Mostrar</span>${chip('all','',st.total,'Todos')}${chip('open','',st.open,'Pendientes')}${chip('overdue','bad',st.overdue,'Vencidos')}${chip('soon','warn',st.soon,'Vencen en 7 días')}${chip('wait','wait',st.wait,'En espera')}</div></section>`;
+  let shown=0;
+  PHASES.forEach(ph=>{
+    const rows=docsFor(p,ph).map(it=>[it,docState(p,it)]).filter(([it,ds])=>filter==='all'||units(ds).some(fpass));shown+=rows.length;
+    if(filter!=='all'&&!rows.length)return;const s=phaseStats(p,ph);
+    h+=`<section class="card" id="fase-${ph.key}"><div class="grp-h"><div><span class="label">${ph.n}</span><h3>${ph.title}</h3><p>${ph.desc}</p></div><span class="label">${s.closed} de ${s.total} listos</span></div>
+      <ul class="docs">${rows.map(([it,ds])=>renderDoc(p,it,ds)).join('')}</ul>
+      ${filter==='all'?`<form class="add-row" data-add="${ph.key}"><input class="fld" id="add-${ph.key}" placeholder="Agregar una actividad a ${ph.title.toLowerCase()}" aria-label="Nueva actividad"><button class="btn small" type="submit">Agregar</button></form>`:''}</section>`;
+  });
+  if(!shown)h+=`<section class="card"><p class="empty">Ningún documento coincide con este filtro.</p></section>`;
+  return h;
+}
+function stLabel(flag,status){
+  const c=flag==='closed'?status:flag==='wait'?'esp':flag;
+  const l=flag==='closed'?(ST[status]||'Recibido'):flag==='wait'?'En espera':flag==='overdue'?'Vencido':'Pendiente';
+  return`<span class="st ${c}">${l}</span>`;
+}
+function renderReport(p){
+  const st=stats(p);const end=parseD(p.end),start=parseD(p.start);
+  const rows=(it)=>{const ds=docState(p,it);
+    if(!ds.subs.length)return`<tr><td>${esc(it.t)}</td><td>${stLabel(ds.flag,ds.status)}</td><td class="mono">${ds.due?fmt(ds.due):'—'}</td><td>${esc(ds.resp)||'—'}</td><td>${esc(ds.note)}</td></tr>`;
+    return`<tr class="parent"><td>${esc(it.t)}</td><td>${ds.flag==='closed'?stLabel('closed','rec'):`<span class="st ${ds.flag==='overdue'?'overdue':ds.flag==='wait'?'esp':''}">${ds.closedN} de ${ds.subs.length}</span>`}</td><td></td><td></td><td></td></tr>`+
+      ds.subs.map(x=>`<tr class="subrow"><td>↳ ${esc(x.sb.t)}</td><td>${stLabel(x.flag,x.status)}</td><td class="mono">${x.due?fmt(x.due):'—'}</td><td>${esc(x.sb.resp)||'—'}</td><td>${esc(x.sb.note)}</td></tr>`).join('')};
+  const inTop=window.self===window.top;
+  return`<section class="card report" id="report">
+    <div class="rep-actions"><button class="btn small" type="button" data-act="back">← Volver a la lista</button><button class="btn primary small" type="button" data-act="copy">Copiar reporte</button>${inTop?'<button class="btn small" type="button" data-act="print">Imprimir o guardar PDF</button>':''}</div>
+    <div class="rep-h"><div><div class="label">Reporte de control documental</div><h2>${esc(p.name||'Proyecto')}</h2>
+      <div class="meta">${p.code?`<span class="mono">${esc(p.code)}</span>`:''}${p.scope?`<span>${esc(p.scope)}</span>`:''}${p.client?`<span>${esc(p.client)}</span>`:''}${p.city?`<span>${esc(p.city)}</span>`:''}</div></div>
+      <div class="meta" style="flex-direction:column;align-items:flex-end;gap:2px">${start?`<span>Inicio <b>${fmt(start)}</b></span>`:''}${end?`<span>Entrega <b>${fmt(end)}</b></span>`:''}${p.director?`<span>Director ${esc(p.director)}</span>`:''}</div></div>
+    <div class="rep-sum">
+      <div class="kpi"><span class="label">Avance documental</span><span class="v">${st.pct}%</span></div>
+      <div class="kpi"><span class="label">Listos</span><span class="v">${st.closed}/${st.total}</span></div>
+      <div class="kpi${st.overdue?' bad':''}"><span class="label">Vencidos</span><span class="v">${st.overdue}</span></div>
+      <div class="kpi"><span class="label">En espera</span><span class="v">${st.wait}</span></div></div>
+    ${PHASES.map(ph=>{const s=phaseStats(p,ph);return`<div class="tbl-wrap"><table><caption>${ph.title} · ${s.pct}%</caption>
+      <thead><tr><th>Documento</th><th>Estado</th><th>Fecha límite</th><th>Responsable</th><th>Nota</th></tr></thead>
+      <tbody>${docsFor(p,ph).map(rows).join('')}</tbody></table></div>`}).join('')}
+    <div class="rep-foot"><span>Generado el ${fmt(today())}</span><span>PM Dynamics Consulting · pmdynamicsconsulting.com</span></div></section>`;
+}
+function renderMain(){
+  const m=$('#main');
+  if(editing){m.innerHTML=renderEditor();return}
+  const p=cur();
+  if(!p){m.innerHTML=`<section class="card editor"><h2>Sin proyectos</h2><p class="hint">Crea un proyecto para tener la lista completa de documentos de inicio, construcción y cierre.</p><div class="ed-actions"><button class="btn primary" type="button" data-act="new">+ Nuevo proyecto</button></div></section>`;return}
+  m.innerHTML=view==='report'?renderReport(p):renderList(p);
+}
+function render(focusId){
+  const a=document.activeElement;let keep=null;
+  if(a&&a.id&&a.closest('#main')&&a.tagName==='INPUT')keep={id:a.id,s:a.selectionStart,e:a.selectionEnd,type:a.type};
+  renderRail();renderMain();
+  const fid=focusId||(keep&&keep.id);
+  if(fid){const el=document.getElementById(fid);if(el){el.focus();if(!focusId&&keep.type==='text'&&keep.s!=null)try{el.setSelectionRange(keep.s,keep.e)}catch(e){}}}
+}
+function patch(k,obj,focusId){const p=cur();p.items=p.items||{};p.items[k]={...(p.items[k]||{}),...obj};persist();render(focusId)}
+function patchSub(k,sid,obj,focusId){const p=cur();p.items=p.items||{};const it=p.items[k]=p.items[k]||{};it.subs=it.subs||{};it.subs[sid]={...(it.subs[sid]||{}),...obj};persist();render(focusId)}
+let tt;function toast(t){const el=$('#toast');el.textContent=t;el.hidden=false;clearTimeout(tt);tt=setTimeout(()=>el.hidden=true,3000)}
+
+function reportText(p){
+  const st=stats(p);const L=[`CONTROL DOCUMENTAL – ${p.code?p.code+' ':''}${p.name||''}`];
+  if(p.scope)L.push(p.scope);if(p.client)L.push(`Cliente: ${p.client}`);
+  if(p.end)L.push(`Entrega: ${fmt(parseD(p.end))}`);
+  L.push(`Avance: ${st.pct}% (${st.closed} de ${st.total}) · Vencidos: ${st.overdue} · En espera: ${st.wait}`);
+  const mk=(status)=>status==='rec'?'[✓]':status==='na'?'[N/A]':status==='esp'?'[EN ESPERA]':'[ ]';
+  const tail=(flag,due,resp,note)=>`${flag!=='closed'&&due?` – vence ${fmtS(due)}${flag==='overdue'?' (VENCIDO)':''}`:''}${resp?` – ${resp}`:''}${note?` – ${note}`:''}`;
+  PHASES.forEach(ph=>{const s=phaseStats(p,ph);L.push('',`${ph.title.toUpperCase()} – ${s.pct}%`);
+    docsFor(p,ph).forEach(it=>{const d=docState(p,it);
+      if(!d.subs.length){L.push(`${mk(d.status)} ${it.t}${tail(d.flag,d.due,d.resp,d.note)}`);return}
+      L.push(`${it.t} (${d.closedN} de ${d.subs.length})`);
+      d.subs.forEach(x=>L.push(`    ${mk(x.status)} ${x.sb.t}${tail(x.flag,x.due,x.sb.resp,x.sb.note)}`))})});
+  L.push('',`Generado el ${fmt(today())}`);return L.join('\n');
+}
+
+/* ---------- events ---------- */
+document.addEventListener('click',e=>{
+  const b=e.target.closest('button');if(!b)return;
+  if(b.dataset.sel){state.sel=b.dataset.sel;editing=null;view='list';filter='all';persist();render();window.scrollTo({top:0});return}
+  if(b.id==='newBtn'||b.dataset.act==='new'){editing='new';delArm=false;return render()}
+  if(b.id==='resetBtn'){state.projects=state.projects.filter(p=>p.id!=='ejemplo');state.projects.unshift(sample());state.sel='ejemplo';editing=null;view='list';filter='all';persist();render();return toast('Ejemplo restablecido')}
+  if(b.dataset.act==='edit'){editing=state.sel;delArm=false;return render()}
+  if(b.dataset.act==='report'){view='report';render();return window.scrollTo({top:0})}
+  if(b.dataset.act==='back'){view='list';return render()}
+  if(b.dataset.act==='print'){try{window.print()}catch(err){}return}
+  if(b.dataset.act==='copy'){const txt=reportText(cur());
+    try{navigator.clipboard.writeText(txt).then(()=>toast('Reporte copiado. Pégalo en tu correo.'),()=>toast('No se pudo copiar en esta vista.'))}catch(err){toast('No se pudo copiar en esta vista.')}return}
+  if(b.id==='edCancel'){editing=null;return render()}
+  if(b.id==='edDelete'){if(!delArm){delArm=true;render();setTimeout(()=>{if(delArm){delArm=false;render()}},4000);return}
+    state.projects=state.projects.filter(p=>p.id!==editing);delArm=false;editing=null;state.sel=state.projects[0]?.id||null;persist();render();return toast('Proyecto borrado')}
+  if(b.dataset.filter){filter=filter===b.dataset.filter&&b.dataset.filter!=='all'?'all':b.dataset.filter;return render()}
+  if(b.dataset.split){splitOpen.add(b.dataset.split);return render('as-'+b.dataset.split)}
+  if(b.dataset.v){const k=b.dataset.k,sid=b.dataset.sub;
+    if(sid){const now=(((cur().items||{})[k]||{}).subs||{})[sid]?.status||'';return patchSub(k,sid,{status:now===b.dataset.v?'':b.dataset.v})}
+    const now=((cur().items||{})[k]||{}).status||'';return patch(k,{status:now===b.dataset.v?'':b.dataset.v})}
+  if(b.dataset.rmsub)return patchSub(b.dataset.k,b.dataset.rmsub,{deleted:true});
+  if(b.dataset.rm)return patch(b.dataset.rm,{deleted:true});
+});
+document.addEventListener('change',e=>{const el=e.target;if(!el.dataset||!el.dataset.f||!cur())return;
+  if(el.dataset.sub)return patchSub(el.dataset.k,el.dataset.sub,{[el.dataset.f]:el.value.trim()});
+  patch(el.dataset.k,{[el.dataset.f]:el.value.trim()})});
+document.addEventListener('submit',e=>{
+  e.preventDefault();const f=e.target;
+  if(f.id==='edForm'){
+    const data={name:$('#f-name').value.trim(),scope:$('#f-scope').value.trim(),code:$('#f-code').value.trim(),client:$('#f-client').value.trim(),city:$('#f-city').value.trim(),
+      start:$('#f-start').value,end:$('#f-end').value,director:$('#f-dir').value.trim(),resident:$('#f-res').value.trim()};
+    if(editing==='new'){const p={id:'p'+uid(),...data,items:{}};state.projects.push(p);state.sel=p.id;toast('Proyecto creado')}
+    else Object.assign(cur(),data);
+    editing=null;view='list';filter='all';persist();return render();
+  }
+  if(f.dataset.addsub){const k=f.dataset.addsub;const inp=f.querySelector('input');const t=inp.value.trim();if(!t)return;
+    splitOpen.delete(k);return patchSub(k,'s'+uid(),{t,status:'',created:Date.now()},'as-'+k)}
+  if(f.dataset.add){const inp=f.querySelector('input');const t=inp.value.trim();if(!t)return;
+    patch('c'+uid(),{custom:true,phase:f.dataset.add,text:t,created:Date.now()})}
+});
+
+load();
+if(!state.projects.some(p=>p.id===state.sel))state.sel=state.projects[0]?.id||null;
+render();
+</script>
